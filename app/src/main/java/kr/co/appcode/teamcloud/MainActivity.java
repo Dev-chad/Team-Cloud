@@ -19,10 +19,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         cookie = getIntent().getStringExtra("cookie");
         Log.d("intent", cookie);
-
         TextView textId = (TextView)findViewById(R.id.text_id);
         TextView textEmail = (TextView)findViewById(R.id.text_email);
         TextView textName = (TextView)findViewById(R.id.text_name);
@@ -73,4 +71,6 @@ public class MainActivity extends AppCompatActivity {
             return resultCode;
         }
     }
+
+
 }

@@ -26,7 +26,8 @@
                 android:maxLines="1"
                 android:maxLength="320"
                 android:hint="E-MAIL"
-                android:inputType="text"/>
+                android:inputType="textEmailAddress"
+                android:text="luxe.end@gmail.com"/>
         </android.support.design.widget.TextInputLayout>
 
         <Button
@@ -148,7 +149,7 @@
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:maxLines="1"
-            android:maxLength="30"
+            android:maxLength="20"
             android:hint="NAME"
             android:inputType="text"
             android:imeOptions="actionDone"/>

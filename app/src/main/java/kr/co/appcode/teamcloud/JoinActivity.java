@@ -4,11 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -28,30 +31,7 @@ import java.util.Locale;
 import java.util.Random;
 
 public class JoinActivity extends AppCompatActivity {
-
-    //region Constant
-    private final String TAG = "JoinActivity";
-
-    private final int JOIN_COMPLETE = 1;
-    private final int JOIN_EMPTY_EMAIL = 2;
-    private final int JOIN_DUPLICATE_EMAIL = 3;
-    private final int JOIN_EMPTY_PASSWORD = 4;
-    private final int JOIN_EMPTY_NICKNAME = 5;
-    private final int JOIN_DUPLICATE_NICKNAME = 6;
-    private final int JOIN_EMPTY_NAME = 7;
-    private final int JOIN_QUERY_ERROR = -1;
-
-    private final int DUPLICATED = 1;
-    private final int NOT_DUPLICATED = 2;
-
-    private final int MODE_CHECK_EMAIL = 1;
-    private final int MODE_CHECK_NICKNAME = 2;
-    private final int MODE_AUTH_EMAIL = 3;
-    private final int MODE_JOIN_SUBMIT = 4;
-
-    private final int MAIL_SEND_COMPLETE = 1;
-    private final int MAIL_SEND_ERROR = 2;
-    //endregion
+    private static final String TAG = "JoinActivity";
 
     private LinearLayout layoutEmailAuth;
 
@@ -72,7 +52,6 @@ public class JoinActivity extends AppCompatActivity {
 
     private Button btnCheckEmail;
     private Button btnCheckNickname;
-    private Button btnAuth;
 
     private boolean isCheckedEmail = false;
     private boolean isCheckedNickname = false;
@@ -81,6 +60,7 @@ public class JoinActivity extends AppCompatActivity {
     private int authCode;
 
     TimerAsyncTask timerAsyncTask = new TimerAsyncTask();
+    TimerThread timerThread = new TimerThread();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +124,27 @@ public class JoinActivity extends AppCompatActivity {
             }
         });
 
+        editPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() == 0){
+                    if(layoutEditPassword.isErrorEnabled()){
+                        layoutEditPassword.setErrorEnabled(false);
+                    }
+                }
+            }
+        });
+
         editCheckPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -160,9 +161,40 @@ public class JoinActivity extends AppCompatActivity {
                 if (!editPassword.getText().toString().equals(s.toString())) {
                     layoutEditCheckPassword.setError("비밀번호가 같지 않습니다.");
                     isSamePassword = false;
+                } else if(s.length() == 0){
+                    if(layoutEditCheckPassword.isErrorEnabled()){
+                        layoutEditCheckPassword.setErrorEnabled(false);
+                    }
                 } else {
                     layoutEditCheckPassword.setErrorEnabled(false);
                     isSamePassword = true;
+                }
+            }
+        });
+
+        editName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() == 0){
+                    if(layoutEditName.isErrorEnabled()){
+                        layoutEditName.setErrorEnabled(false);
+                    }
+                } else if(s.length() < 3){
+                    layoutEditName.setError("이름은 2~20 사이로 입력해주세요.");
+                } else{
+                    if(layoutEditName.isErrorEnabled()){
+                        layoutEditName.setErrorEnabled(false);
+                    }
                 }
             }
         });
@@ -171,36 +203,18 @@ public class JoinActivity extends AppCompatActivity {
         btnCheckEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isCheckedEmail){
+                closingSoftKeyboard();
+
+                if (!isCheckedEmail) {
                     String email = editEmail.getText().toString();
 
                     if (email.contains("@") && email.contains(".")) {
-
+                        setAuthCode();
                         HashMap<String, String> values = new HashMap<>();
                         values.put("email", email);
 
-                        int resultCode = httpPost(values, MODE_CHECK_EMAIL);
-
-                        if (resultCode == DUPLICATED) {
-                            layoutEditEmail.setError("이미 등록된 이메일입니다.");
-                        } else {
-                            setAuthCode();
-                            values.put("authCode", String.valueOf(authCode));
-
-                            resultCode = httpPost(values, MODE_AUTH_EMAIL);
-
-                            if(resultCode == MAIL_SEND_COMPLETE){
-                                Snackbar.make(v, "이메일을 발송했습니다. 인증번호를 확인해주세요.", Snackbar.LENGTH_SHORT).show();
-                                if(timerAsyncTask != null && timerAsyncTask.getStatus() == AsyncTask.Status.RUNNING){
-                                    timerAsyncTask.cancel(false);
-                                }
-
-                                timerAsyncTask = new TimerAsyncTask();
-                                timerAsyncTask.execute();
-                            } else {
-                                Snackbar.make(v, "이메일을 전송하지 못했습니다.", Snackbar.LENGTH_SHORT).show();
-                            }
-                        }
+                        HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(JoinActivity.this, values, Constant.MODE_AUTH_EMAIL);
+                        httpPostAsyncTask.execute();
                     } else {
                         layoutEditEmail.setError("이메일 형식이 올바르지 않습니다..");
                     }
@@ -214,28 +228,18 @@ public class JoinActivity extends AppCompatActivity {
         btnCheckNickname.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                closingSoftKeyboard();
 
-                if(!isCheckedNickname){
+                if (!isCheckedNickname) {
                     String nickname = editNickname.getText().toString();
 
                     if (nickname.length() >= 3 && nickname.length() <= 15) {
                         HashMap<String, String> values = new HashMap<>();
                         values.put("nickname", nickname);
 
-                        int resultCode = httpPost(values, MODE_CHECK_NICKNAME);
+                        HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(JoinActivity.this, values, Constant.MODE_CHECK_NICKNAME);
+                        httpPostAsyncTask.execute();
 
-                        if (resultCode == DUPLICATED) {
-                            layoutEditNickname.setError("이미 등록된 닉네임입니다.");
-                        } else {
-                            btnCheckNickname.setText("확인완료");
-                            isCheckedNickname = true;
-
-                            if (layoutEditNickname.isErrorEnabled()) {
-                                layoutEditNickname.setErrorEnabled(false);
-                            }
-                        }
                     } else {
                         layoutEditNickname.setError("닉네임은 3글자 이상 15글자 이하로 입력해주세요.");
                     }
@@ -245,18 +249,20 @@ public class JoinActivity extends AppCompatActivity {
             }
         });
 
-        btnAuth = (Button)findViewById(R.id.btn_auth);
+        Button btnAuth = (Button) findViewById(R.id.btn_auth);
         btnAuth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(timerAsyncTask.getStatus() == AsyncTask.Status.RUNNING){
-                    if (editAuth.getText().toString().equals(String.valueOf(authCode))){
+                closingSoftKeyboard();
+
+                if (timerThread.isAlive()) {
+                    if (editAuth.getText().toString().equals(String.valueOf(authCode))) {
                         isCheckedEmail = true;
                         editAuth.setText("");
                         layoutEmailAuth.setVisibility(View.GONE);
                         btnCheckEmail.setText("인증완료");
-                        if(timerAsyncTask.getStatus() == AsyncTask.Status.RUNNING){
-                            timerAsyncTask.cancel(false);
+                        if (timerThread.isAlive()) {
+                            timerThread.setStop();
                         }
                     } else {
                         Snackbar.make(v, "인증번호가 올바르지 않습니다.", Snackbar.LENGTH_SHORT).show();
@@ -294,105 +300,73 @@ public class JoinActivity extends AppCompatActivity {
                     values.put("nickname", editNickname.getText().toString());
                     values.put("name", editName.getText().toString());
 
-                    int result = httpPost(values, MODE_JOIN_SUBMIT);
-
-                    if(result == JOIN_COMPLETE){
-                        Intent intent = new Intent(JoinActivity.this, LoginActivity.class);
-                        Toast.makeText(JoinActivity.this, "환영합니다.", Toast.LENGTH_SHORT).show();
-                        startActivity(intent);
-                    }
+                    HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(JoinActivity.this, values, Constant.MODE_JOIN_SUBMIT);
+                    httpPostAsyncTask.execute();
                 }
             }
         });
     }
 
-    private int httpPost(HashMap<String, String> values, int mode) {
-        HttpPostThread httpPostThread = null;
-        String url = "http://appcode.co.kr/TeamCloud/";
+    private class TimerThread extends Thread{
+        private int minute;
+        private int second;
+        private boolean isStop;
 
-        if (mode == MODE_JOIN_SUBMIT) {
-            url += "join.php";
-        } else if (mode == MODE_AUTH_EMAIL) {
-            url += "emailAuth.php";
-        } else {
-            url += "duplicateCheck.php";
+        public void setStop(){
+            isStop = true;
         }
 
-        try {
-            httpPostThread = new HttpPostThread(values, new URL(url), mode);
-            httpPostThread.start();
-            httpPostThread.join();
-        } catch (InterruptedException | MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        if (httpPostThread != null) {
-            return httpPostThread.getResultCode();
-        } else {
-            return 0;
-        }
-    }
-
-    /*private boolean validCheck(int resultCode){
-
-    }*/
-
-    private void initErrorMsg() {
-        layoutEditEmail.setErrorEnabled(false);
-        layoutEditPassword.setErrorEnabled(false);
-        layoutEditCheckPassword.setErrorEnabled(false);
-        layoutEditNickname.setErrorEnabled(false);
-        layoutEditName.setErrorEnabled(false);
-    }
-
-    private class HttpPostThread extends Thread {
-        private HashMap<String, String> values;
-        private URL url;
-        private int resultCode;
-        private int mode;
-
-        private HttpPostThread(HashMap<String, String> values, URL url, int mode) {
-            this.values = values;
-            this.url = url;
-            this.mode = mode;
-        }
-
+        @Override
         public void run() {
-            try {
-                String body = "";
+            Bundle data = new Bundle();
+            Message msg = handler.obtainMessage();
 
-                if (mode == MODE_CHECK_EMAIL) {
-                    body = "email=" + values.get("email");
-                } else if(mode == MODE_AUTH_EMAIL){
-                    body = "email=" + values.get("email")+"&auth_code="+values.get("authCode");
-                } else if (mode == MODE_CHECK_NICKNAME) {
-                    body = "nickname=" + values.get("nickname");
-                } else if (mode == MODE_JOIN_SUBMIT) {
-                    body = "email=" + values.get("email") + "&password=" + values.get("password") + "&nickname=" + values.get("nickname") + "&name=" + values.get("name");
+            minute = 0;
+            second = 30;
+            handler.sendEmptyMessage(0);
+            msg.what=1;
+            while((minute > 0 || second >0) && !isStop){
+                try {
+                    sleep(1000);
+                    if (second == 0){
+                        minute--;
+                        second = 59;
+                    } else{
+                        second--;
+                    }
+                    msg = handler.obtainMessage();
+                    msg.what=1;
+                    data.putString("time", minute+":"+String.format(Locale.KOREAN, "%02d", second));
+                    msg.setData(data);
+
+                    if(!isStop){
+                        handler.sendMessage(msg);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(!isStop){
+                setAuthCode();
+            }
+
+        }
+
+        final Handler handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                if(msg.what == 0){
+                    if (layoutEmailAuth.getVisibility() == View.GONE) {
+                        layoutEmailAuth.setVisibility(View.VISIBLE);
+                    }
+                    textTime.setText("3:00");
+                } else{
+                    textTime.setText(msg.getData().getString("time"));
                 }
 
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
-
-                OutputStream os = conn.getOutputStream();
-                os.write(body.getBytes("UTF-8"));
-                os.flush();
-                os.close();
-
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-
-                resultCode = Integer.valueOf(br.readLine());
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        }
-
-        private int getResultCode() {
-            return resultCode;
-        }
+        };
     }
 
     private class TimerAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -403,7 +377,7 @@ public class JoinActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if(layoutEmailAuth.getVisibility() == View.GONE){
+            if (layoutEmailAuth.getVisibility() == View.GONE) {
                 layoutEmailAuth.setVisibility(View.VISIBLE);
             }
             minute = 0;
@@ -427,7 +401,7 @@ public class JoinActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
             while (minute > 0 || second > 0) {
                 try {
-                    if(this.isCancelled()){
+                    if (this.isCancelled()) {
                         return null;
                     }
                     Thread.sleep(1000);
@@ -448,12 +422,128 @@ public class JoinActivity extends AppCompatActivity {
         }
     }
 
-    private void setAuthCode(){
+    private void setAuthCode() {
         Random rand = new Random();
         int start = 100000;
         int end = 999999;
         double range = end - start + 1;
 
-        authCode = (int)(rand.nextDouble() * range + start);
+        authCode = (int) (rand.nextDouble() * range + start);
+    }
+
+    private class HttpPostAsyncTask extends AsyncTask<Void, Void, Integer> {
+
+        private int mode;
+        private HashMap<String, String> values;
+        private String body;
+        private URL url;
+        private Context context;
+
+        private HttpPostAsyncTask(Context context, HashMap<String, String> values, int mode) {
+            super();
+            this.values = values;
+            this.mode = mode;
+            this.context = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            if (mode == Constant.MODE_AUTH_EMAIL) {
+                body = "email=" + values.get("email") + "&auth_code=" + authCode;
+            } else if (mode == Constant.MODE_CHECK_NICKNAME) {
+                body = "nickname=" + values.get("nickname");
+            } else if (mode == Constant.MODE_JOIN_SUBMIT) {
+                body = "email=" + values.get("email") + "&password=" + values.get("password") + "&nickname=" + values.get("nickname") + "&name=" + values.get("name");
+            }
+
+            try {
+                url = new URL("http://appcode.co.kr/TeamCloud/join.php");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            try {
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+
+                OutputStream os = conn.getOutputStream();
+                os.write(body.getBytes("UTF-8"));
+                os.flush();
+                os.close();
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+
+                return Integer.valueOf(br.readLine());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            super.onPostExecute(result);
+
+            if (mode == Constant.MODE_AUTH_EMAIL) {
+                if (result == Constant.DUPLICATED) {
+                    layoutEditEmail.setError("이미 등록된 이메일입니다.");
+                } else {
+                    if(layoutEditEmail.isErrorEnabled()){
+                        layoutEditEmail.setErrorEnabled(false);
+                    }
+                    Snackbar.make(btnCheckEmail, "이메일을 발송했습니다. 인증번호를 확인해주세요.", Snackbar.LENGTH_SHORT).show();
+                    if(timerThread.isAlive()){
+                        timerThread.setStop();
+                        Log.d(TAG, "Stopped timer thread.");
+                    }
+                    timerThread = new TimerThread();
+                    timerThread.start();
+                    /*if (timerAsyncTask != null && timerAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
+                        timerAsyncTask.cancel(false);
+                    }
+                    timerAsyncTask = new TimerAsyncTask();
+                    timerAsyncTask.execute();*/
+                }
+            } else if (mode == Constant.MODE_CHECK_NICKNAME) {
+                if (result == Constant.DUPLICATED) {
+                    layoutEditNickname.setError("이미 등록된 닉네임입니다.");
+                } else {
+                    btnCheckNickname.setText("확인완료");
+                    isCheckedNickname = true;
+
+                    if (layoutEditNickname.isErrorEnabled()) {
+                        layoutEditNickname.setErrorEnabled(false);
+                    }
+                }
+            } else if (mode == Constant.MODE_JOIN_SUBMIT) {
+                if (result == Constant.JOIN_COMPLETE) {
+                    Intent intent = new Intent(JoinActivity.this, LoginActivity.class);
+                    Toast.makeText(JoinActivity.this, "환영합니다.", Toast.LENGTH_SHORT).show();
+                    startActivity(intent);
+                }
+            }
+        }
+    }
+
+    private void closingSoftKeyboard(){
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+    }
+
+    private void initErrorMsg() {
+        layoutEditEmail.setErrorEnabled(false);
+        layoutEditPassword.setErrorEnabled(false);
+        layoutEditCheckPassword.setErrorEnabled(false);
+        layoutEditNickname.setErrorEnabled(false);
+        layoutEditName.setErrorEnabled(false);
     }
 }
