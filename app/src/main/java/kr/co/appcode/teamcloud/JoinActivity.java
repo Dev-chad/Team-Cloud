@@ -1,5 +1,6 @@
 package kr.co.appcode.teamcloud;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -59,7 +60,7 @@ public class JoinActivity extends AppCompatActivity {
 
     private int authCode;
 
-    TimerAsyncTask timerAsyncTask = new TimerAsyncTask();
+//    TimerAsyncTask timerAsyncTask = new TimerAsyncTask();
     TimerThread timerThread = new TimerThread();
 
     @Override
@@ -84,6 +85,7 @@ public class JoinActivity extends AppCompatActivity {
 
         textTime = (TextView) findViewById(R.id.text_time);
 
+        //TODO: incomplete email validation check
         editEmail.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -124,6 +126,7 @@ public class JoinActivity extends AppCompatActivity {
             }
         });
 
+        //TODO: incomplete password validation check
         editPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -353,6 +356,7 @@ public class JoinActivity extends AppCompatActivity {
 
         }
 
+        // TODO: this handler can cause a memory leak.
         final Handler handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
@@ -369,7 +373,7 @@ public class JoinActivity extends AppCompatActivity {
         };
     }
 
-    private class TimerAsyncTask extends AsyncTask<Void, Void, Void> {
+    /*private class TimerAsyncTask extends AsyncTask<Void, Void, Void> {
 
         private int minute;
         private int second;
@@ -420,7 +424,7 @@ public class JoinActivity extends AppCompatActivity {
 
             return null;
         }
-    }
+    }*/
 
     private void setAuthCode() {
         Random rand = new Random();
@@ -438,6 +442,7 @@ public class JoinActivity extends AppCompatActivity {
         private String body;
         private URL url;
         private Context context;
+        private ProgressDialog progressDialog;
 
         private HttpPostAsyncTask(Context context, HashMap<String, String> values, int mode) {
             super();
@@ -449,6 +454,9 @@ public class JoinActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
+            progressDialog = new ProgressDialog(context);
+            progressDialog.show();
 
             if (mode == Constant.MODE_AUTH_EMAIL) {
                 body = "email=" + values.get("email") + "&auth_code=" + authCode;
@@ -531,6 +539,7 @@ public class JoinActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             }
+            progressDialog.dismiss();
         }
     }
 

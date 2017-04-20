@@ -7,13 +7,6 @@
     android:layout_height="match_parent"
     tools:context="kr.co.appcode.teamcloud.MainActivity">
 
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/btn_facebook_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp" />
 
     <TextView
         android:id="@+id/text_id"
