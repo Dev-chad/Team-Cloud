@@ -48,8 +48,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".JoinActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".CustomProgressDialog"></activity>
+        <activity android:name=".HomeActivity" />
     </application>
 
 </manifest>

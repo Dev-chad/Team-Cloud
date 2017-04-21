@@ -54,13 +54,14 @@ public class JoinActivity extends AppCompatActivity {
     private Button btnCheckEmail;
     private Button btnCheckNickname;
 
-    private boolean isCheckedEmail = false;
-    private boolean isCheckedNickname = false;
-    private boolean isSamePassword = false;
+    private boolean isCheckedEmail;
+    private boolean isCheckedNickname;
+    private boolean isSamePassword;
+    private boolean isRunningEmailCheck;
 
     private int authCode;
 
-//    TimerAsyncTask timerAsyncTask = new TimerAsyncTask();
+    //    TimerAsyncTask timerAsyncTask = new TimerAsyncTask();
     TimerThread timerThread = new TimerThread();
 
     @Override
@@ -103,6 +104,12 @@ public class JoinActivity extends AppCompatActivity {
                     btnCheckEmail.setText("인증");
                     isCheckedEmail = false;
                 }
+
+                if(s.length() == 0){
+                    if(layoutEditEmail.isErrorEnabled()){
+                        layoutEditEmail.setErrorEnabled(false);
+                    }
+                }
             }
         });
 
@@ -140,8 +147,8 @@ public class JoinActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(s.length() == 0){
-                    if(layoutEditPassword.isErrorEnabled()){
+                if (s.length() == 0) {
+                    if (layoutEditPassword.isErrorEnabled()) {
                         layoutEditPassword.setErrorEnabled(false);
                     }
                 }
@@ -164,8 +171,8 @@ public class JoinActivity extends AppCompatActivity {
                 if (!editPassword.getText().toString().equals(s.toString())) {
                     layoutEditCheckPassword.setError("비밀번호가 같지 않습니다.");
                     isSamePassword = false;
-                } else if(s.length() == 0){
-                    if(layoutEditCheckPassword.isErrorEnabled()){
+                } else if (s.length() == 0) {
+                    if (layoutEditCheckPassword.isErrorEnabled()) {
                         layoutEditCheckPassword.setErrorEnabled(false);
                     }
                 } else {
@@ -188,14 +195,14 @@ public class JoinActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(s.length() == 0){
-                    if(layoutEditName.isErrorEnabled()){
+                if (s.length() == 0) {
+                    if (layoutEditName.isErrorEnabled()) {
                         layoutEditName.setErrorEnabled(false);
                     }
-                } else if(s.length() < 3){
+                } else if (s.length() < 3) {
                     layoutEditName.setError("이름은 2~20 사이로 입력해주세요.");
-                } else{
-                    if(layoutEditName.isErrorEnabled()){
+                } else {
+                    if (layoutEditName.isErrorEnabled()) {
                         layoutEditName.setErrorEnabled(false);
                     }
                 }
@@ -310,12 +317,12 @@ public class JoinActivity extends AppCompatActivity {
         });
     }
 
-    private class TimerThread extends Thread{
+    private class TimerThread extends Thread {
         private int minute;
         private int second;
         private boolean isStop;
 
-        public void setStop(){
+        public void setStop() {
             isStop = true;
         }
 
@@ -327,50 +334,76 @@ public class JoinActivity extends AppCompatActivity {
             minute = 0;
             second = 30;
             handler.sendEmptyMessage(0);
-            msg.what=1;
-            while((minute > 0 || second >0) && !isStop){
+            msg.what = 1;
+            while ((minute > 0 || second > 0) && !isStop) {
                 try {
                     sleep(1000);
-                    if (second == 0){
+                    if (second == 0) {
                         minute--;
                         second = 59;
-                    } else{
+                    } else {
                         second--;
                     }
                     msg = handler.obtainMessage();
-                    msg.what=1;
-                    data.putString("time", minute+":"+String.format(Locale.KOREAN, "%02d", second));
+                    msg.what = 1;
+                    data.putString("time", minute + ":" + String.format(Locale.KOREAN, "%02d", second));
                     msg.setData(data);
 
-                    if(!isStop){
+                    if (!isStop) {
                         handler.sendMessage(msg);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+
             }
 
-            if(!isStop){
+            if (!isStop) {
                 setAuthCode();
             }
-
         }
 
         // TODO: this handler can cause a memory leak.
-        final Handler handler = new Handler(){
+
+
+        final Handler handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                if(msg.what == 0){
+                if (msg.what == 0) {
                     if (layoutEmailAuth.getVisibility() == View.GONE) {
                         layoutEmailAuth.setVisibility(View.VISIBLE);
                     }
                     textTime.setText("3:00");
-                } else{
+                } else {
                     textTime.setText(msg.getData().getString("time"));
                 }
-
             }
         };
+
+        /*private static final class WeakHandler extends Handler {
+            private final WeakReference<JoinActivity> ref;
+
+            public WeakHandler(JoinActivity ref) {
+                this.ref = new WeakReference<>(ref);
+            }
+
+            @Override
+            public void handleMessage(Message msg) {
+                JoinActivity act = ref.get();
+
+                if (act != null) {
+                    if (msg.what == 0) {
+                        if (act.layoutEmailAuth.getVisibility() == View.GONE) {
+                            act.layoutEmailAuth.setVisibility(View.VISIBLE);
+                        }
+                        act.textTime.setText("3:00");
+                    } else {
+                        act.textTime.setText(msg.getData().getString("time"));
+                    }
+                }
+            }
+        }*/
     }
 
     /*private class TimerAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -505,11 +538,11 @@ public class JoinActivity extends AppCompatActivity {
                 if (result == Constant.DUPLICATED) {
                     layoutEditEmail.setError("이미 등록된 이메일입니다.");
                 } else {
-                    if(layoutEditEmail.isErrorEnabled()){
+                    if (layoutEditEmail.isErrorEnabled()) {
                         layoutEditEmail.setErrorEnabled(false);
                     }
                     Snackbar.make(btnCheckEmail, "이메일을 발송했습니다. 인증번호를 확인해주세요.", Snackbar.LENGTH_SHORT).show();
-                    if(timerThread.isAlive()){
+                    if (timerThread.isAlive()) {
                         timerThread.setStop();
                         Log.d(TAG, "Stopped timer thread.");
                     }
@@ -543,7 +576,7 @@ public class JoinActivity extends AppCompatActivity {
         }
     }
 
-    private void closingSoftKeyboard(){
+    private void closingSoftKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }

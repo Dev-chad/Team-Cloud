@@ -14,6 +14,10 @@ public class Constant {
     public static final int JOIN_EMPTY_NAME = 7;
     public static final int JOIN_QUERY_ERROR = -1;
 
+    public static final int LOGIN_ERROR = 2;
+    public static final int LOGIN_EMPTY_ID = 3;
+    public static final int LOGIN_EMPTY_PASSWORD = 4;
+
     public static final int DUPLICATED = 2;
     public static final int NOT_DUPLICATED = 1;
 
