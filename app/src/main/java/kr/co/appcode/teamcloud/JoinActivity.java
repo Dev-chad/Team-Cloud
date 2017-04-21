@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,6 +19,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.rengwuxian.materialedittext.MaterialEditText;
+import com.rengwuxian.materialedittext.validation.RegexpValidator;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -36,17 +38,11 @@ public class JoinActivity extends AppCompatActivity {
 
     private LinearLayout layoutEmailAuth;
 
-    private TextInputLayout layoutEditEmail;
-    private TextInputLayout layoutEditPassword;
-    private TextInputLayout layoutEditCheckPassword;
-    private TextInputLayout layoutEditNickname;
-    private TextInputLayout layoutEditName;
-
-    private EditText editEmail;
-    private EditText editPassword;
-    private EditText editCheckPassword;
-    private EditText editNickname;
-    private EditText editName;
+    private MaterialEditText editEmail;
+    private MaterialEditText editPassword;
+    private MaterialEditText editCheckPassword;
+    private MaterialEditText editNickname;
+    private MaterialEditText editName;
     private EditText editAuth;
 
     private TextView textTime;
@@ -71,22 +67,23 @@ public class JoinActivity extends AppCompatActivity {
 
         layoutEmailAuth = (LinearLayout) findViewById(R.id.layout_emailAuth);
 
-        layoutEditEmail = (TextInputLayout) findViewById(R.id.layout_editEmail);
-        layoutEditPassword = (TextInputLayout) findViewById(R.id.layout_editPassword);
-        layoutEditCheckPassword = (TextInputLayout) findViewById(R.id.layout_editCheckPassword);
-        layoutEditNickname = (TextInputLayout) findViewById(R.id.layout_editNickname);
-        layoutEditName = (TextInputLayout) findViewById(R.id.layout_editName);
+        editEmail = (MaterialEditText) findViewById(R.id.edit_email);
+        editEmail.addValidator(new RegexpValidator("이메일을 입력해주세요.", "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$"));
 
-        editEmail = (EditText) findViewById(R.id.edit_email);
-        editPassword = (EditText) findViewById(R.id.edit_password);
-        editCheckPassword = (EditText) findViewById(R.id.edit_check_password);
-        editNickname = (EditText) findViewById(R.id.edit_nickname);
-        editName = (EditText) findViewById(R.id.edit_name);
+        editPassword = (MaterialEditText) findViewById(R.id.edit_password);
+        editPassword.addValidator(new RegexpValidator("최소 1개의 숫자 혹은 특수문자를 포함한 6~20자리 문자", "^(?=.*[0-9])(?=.*[a-z])(?=[\\S]+$).{6,20}$"));
+
+        editCheckPassword = (MaterialEditText) findViewById(R.id.edit_check_password);
+        editNickname = (MaterialEditText) findViewById(R.id.edit_nickname);
+        editNickname.addValidator(new RegexpValidator("4~15자리의 영문, 숫자만 가능", "^[a-z0-9]{4,15}$"));
+
+        editName = (MaterialEditText) findViewById(R.id.edit_name);
+        editName.addValidator(new RegexpValidator("최소 2자 최대 20자", "^[가-힣a-zA-Z]{2,10}$"));
+
         editAuth = (EditText) findViewById(R.id.edit_auth);
 
         textTime = (TextView) findViewById(R.id.text_time);
 
-        //TODO: incomplete email validation check
         editEmail.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -103,14 +100,18 @@ public class JoinActivity extends AppCompatActivity {
                 if (isCheckedEmail) {
                     btnCheckEmail.setText("인증");
                     isCheckedEmail = false;
-                }
-
-                if(s.length() == 0){
-                    if(layoutEditEmail.isErrorEnabled()){
-                        layoutEditEmail.setErrorEnabled(false);
+                } else if (layoutEmailAuth.getVisibility() != View.GONE) {
+                    layoutEmailAuth.setVisibility(View.GONE);
+                    if (timerThread.isAlive()) {
+                        timerThread.setStop();
                     }
                 }
+
+                if (s.length() == 0) {
+                    editEmail.setError(null);
+                }
             }
+
         });
 
         editNickname.addTextChangedListener(new TextWatcher() {
@@ -130,10 +131,13 @@ public class JoinActivity extends AppCompatActivity {
                     btnCheckNickname.setText("중복확인");
                     isCheckedNickname = false;
                 }
+
+                if (s.length() == 0) {
+                    editNickname.setError(null);
+                }
             }
         });
 
-        //TODO: incomplete password validation check
         editPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -148,9 +152,7 @@ public class JoinActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() == 0) {
-                    if (layoutEditPassword.isErrorEnabled()) {
-                        layoutEditPassword.setErrorEnabled(false);
-                    }
+                    editPassword.setError(null);
                 }
             }
         });
@@ -168,65 +170,38 @@ public class JoinActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!editPassword.getText().toString().equals(s.toString())) {
-                    layoutEditCheckPassword.setError("비밀번호가 같지 않습니다.");
-                    isSamePassword = false;
-                } else if (s.length() == 0) {
-                    if (layoutEditCheckPassword.isErrorEnabled()) {
-                        layoutEditCheckPassword.setErrorEnabled(false);
-                    }
-                } else {
-                    layoutEditCheckPassword.setErrorEnabled(false);
-                    isSamePassword = true;
-                }
-            }
-        });
-
-        editName.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
                 if (s.length() == 0) {
-                    if (layoutEditName.isErrorEnabled()) {
-                        layoutEditName.setErrorEnabled(false);
-                    }
-                } else if (s.length() < 3) {
-                    layoutEditName.setError("이름은 2~20 사이로 입력해주세요.");
-                } else {
-                    if (layoutEditName.isErrorEnabled()) {
-                        layoutEditName.setErrorEnabled(false);
-                    }
+                    editCheckPassword.setError(null);
+                } else if (!s.toString().equals(editPassword.getText().toString())) {
+                    isSamePassword = false;
+                    editCheckPassword.setError("비밀번호가 같지 않습니다.");
+                } else if (s.length() > 0 && s.toString().equals(editPassword.getText().toString())) {
+                    isSamePassword = true;
+                    editCheckPassword.setError(null);
                 }
             }
         });
 
-        btnCheckEmail = (Button) findViewById(R.id.btn_check_email);
-        btnCheckEmail.setOnClickListener(new View.OnClickListener() {
+        btnCheckEmail = (Button)
+
+                findViewById(R.id.btn_check_email);
+        btnCheckEmail.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 closingSoftKeyboard();
 
                 if (!isCheckedEmail) {
-                    String email = editEmail.getText().toString();
+                    if (editEmail.validate()) {
+                        String email = editEmail.getText().toString();
 
-                    if (email.contains("@") && email.contains(".")) {
                         setAuthCode();
                         HashMap<String, String> values = new HashMap<>();
                         values.put("email", email);
 
                         HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(JoinActivity.this, values, Constant.MODE_AUTH_EMAIL);
                         httpPostAsyncTask.execute();
-                    } else {
-                        layoutEditEmail.setError("이메일 형식이 올바르지 않습니다..");
                     }
                 } else {
                     Snackbar.make(v, "이미 이메일 인증을 완료하였습니다.", Snackbar.LENGTH_SHORT).show();
@@ -234,8 +209,12 @@ public class JoinActivity extends AppCompatActivity {
             }
         });
 
-        btnCheckNickname = (Button) findViewById(R.id.btn_check_nickname);
-        btnCheckNickname.setOnClickListener(new View.OnClickListener() {
+        btnCheckNickname = (Button)
+
+                findViewById(R.id.btn_check_nickname);
+        btnCheckNickname.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 closingSoftKeyboard();
@@ -243,7 +222,7 @@ public class JoinActivity extends AppCompatActivity {
                 if (!isCheckedNickname) {
                     String nickname = editNickname.getText().toString();
 
-                    if (nickname.length() >= 3 && nickname.length() <= 15) {
+                    if (editNickname.validate()) {
                         HashMap<String, String> values = new HashMap<>();
                         values.put("nickname", nickname);
 
@@ -251,7 +230,7 @@ public class JoinActivity extends AppCompatActivity {
                         httpPostAsyncTask.execute();
 
                     } else {
-                        layoutEditNickname.setError("닉네임은 3글자 이상 15글자 이하로 입력해주세요.");
+
                     }
                 } else {
                     Snackbar.make(v, "이미 닉네임 중복검사를 완료하였습니다.", Snackbar.LENGTH_SHORT).show();
@@ -260,7 +239,9 @@ public class JoinActivity extends AppCompatActivity {
         });
 
         Button btnAuth = (Button) findViewById(R.id.btn_auth);
-        btnAuth.setOnClickListener(new View.OnClickListener() {
+        btnAuth.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 closingSoftKeyboard();
@@ -288,20 +269,20 @@ public class JoinActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                initErrorMsg();
-
                 if (!isCheckedEmail) {
-                    layoutEditEmail.setError("이메일 인증을 해주세요.");
+                    editEmail.setError("이메일 인증을 해주세요");
                 } else if (editPassword.length() == 0) {
-                    layoutEditPassword.setError("비밀번호를 입력해주세요.");
+                    editPassword.setError("비밀번호를 입력해주세요");
+                } else if (!editPassword.validate()) {
+
                 } else if (editCheckPassword.length() == 0) {
-                    layoutEditCheckPassword.setError("비밀번호 확인란을 입력해주세요.");
+                    editCheckPassword.setError("비밀번호 확인을 입력해주세요");
                 } else if (!isSamePassword) {
-                    layoutEditCheckPassword.setError("비밀번호가 같지 않습니다.");
+                    editCheckPassword.setError("비밀번호가 같지 않습니다.");
                 } else if (!isCheckedNickname) {
-                    layoutEditNickname.setError("닉네임 중복검사를 해주세요.");
-                } else if (editName.length() == 0) {
-                    layoutEditName.setError("이름을 입력해주세요.");
+                    editNickname.setError("닉네임 중복검사를 해주세요");
+                } else if (!editName.validate()) {
+
                 } else {
                     HashMap<String, String> values = new HashMap<>();
 
@@ -380,84 +361,7 @@ public class JoinActivity extends AppCompatActivity {
                 }
             }
         };
-
-        /*private static final class WeakHandler extends Handler {
-            private final WeakReference<JoinActivity> ref;
-
-            public WeakHandler(JoinActivity ref) {
-                this.ref = new WeakReference<>(ref);
-            }
-
-            @Override
-            public void handleMessage(Message msg) {
-                JoinActivity act = ref.get();
-
-                if (act != null) {
-                    if (msg.what == 0) {
-                        if (act.layoutEmailAuth.getVisibility() == View.GONE) {
-                            act.layoutEmailAuth.setVisibility(View.VISIBLE);
-                        }
-                        act.textTime.setText("3:00");
-                    } else {
-                        act.textTime.setText(msg.getData().getString("time"));
-                    }
-                }
-            }
-        }*/
     }
-
-    /*private class TimerAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        private int minute;
-        private int second;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            if (layoutEmailAuth.getVisibility() == View.GONE) {
-                layoutEmailAuth.setVisibility(View.VISIBLE);
-            }
-            minute = 0;
-            second = 30;
-            textTime.setText("3:00");
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            setAuthCode();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-            textTime.setText(minute + ":" + String.format(Locale.KOREAN, "%02d", second));
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            while (minute > 0 || second > 0) {
-                try {
-                    if (this.isCancelled()) {
-                        return null;
-                    }
-                    Thread.sleep(1000);
-                    if (second == 0) {
-                        minute--;
-                        second = 59;
-                    } else {
-                        second--;
-                    }
-
-                    publishProgress();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return null;
-        }
-    }*/
 
     private void setAuthCode() {
         Random rand = new Random();
@@ -536,11 +440,8 @@ public class JoinActivity extends AppCompatActivity {
 
             if (mode == Constant.MODE_AUTH_EMAIL) {
                 if (result == Constant.DUPLICATED) {
-                    layoutEditEmail.setError("이미 등록된 이메일입니다.");
+                    editEmail.setError("이미 등록된 이메일입니다.");
                 } else {
-                    if (layoutEditEmail.isErrorEnabled()) {
-                        layoutEditEmail.setErrorEnabled(false);
-                    }
                     Snackbar.make(btnCheckEmail, "이메일을 발송했습니다. 인증번호를 확인해주세요.", Snackbar.LENGTH_SHORT).show();
                     if (timerThread.isAlive()) {
                         timerThread.setStop();
@@ -556,14 +457,12 @@ public class JoinActivity extends AppCompatActivity {
                 }
             } else if (mode == Constant.MODE_CHECK_NICKNAME) {
                 if (result == Constant.DUPLICATED) {
-                    layoutEditNickname.setError("이미 등록된 닉네임입니다.");
+                    editNickname.setError("이미 등록된 닉네임입니다.");
                 } else {
                     btnCheckNickname.setText("확인완료");
                     isCheckedNickname = true;
 
-                    if (layoutEditNickname.isErrorEnabled()) {
-                        layoutEditNickname.setErrorEnabled(false);
-                    }
+
                 }
             } else if (mode == Constant.MODE_JOIN_SUBMIT) {
                 if (result == Constant.JOIN_COMPLETE) {
@@ -574,6 +473,7 @@ public class JoinActivity extends AppCompatActivity {
             }
             progressDialog.dismiss();
         }
+
     }
 
     private void closingSoftKeyboard() {
@@ -581,11 +481,4 @@ public class JoinActivity extends AppCompatActivity {
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }
 
-    private void initErrorMsg() {
-        layoutEditEmail.setErrorEnabled(false);
-        layoutEditPassword.setErrorEnabled(false);
-        layoutEditCheckPassword.setErrorEnabled(false);
-        layoutEditNickname.setErrorEnabled(false);
-        layoutEditName.setErrorEnabled(false);
-    }
 }
