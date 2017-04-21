@@ -25,9 +25,8 @@
                 android:paddingEnd="10dp"
                 android:maxLines="1"
                 android:maxLength="320"
-                android:hint="E-MAIL"
-                android:inputType="textEmailAddress"
-                android:text="luxe.end@gmail.com"/>
+                android:hint="이메일"
+                android:inputType="textEmailAddress"/>
         </android.support.design.widget.TextInputLayout>
 
         <Button
@@ -85,7 +84,7 @@
             android:paddingEnd="10dp"
             android:maxLines="1"
             android:maxLength="20"
-            android:hint="PASSWORD"
+            android:hint="비밀번호"
             android:inputType="textPassword"/>
     </android.support.design.widget.TextInputLayout>
 
@@ -102,7 +101,7 @@
             android:paddingEnd="10dp"
             android:maxLines="1"
             android:maxLength="20"
-            android:hint="PASSWORD CHECK"
+            android:hint="비밀번호 확인"
             android:inputType="textPassword"/>
     </android.support.design.widget.TextInputLayout>
 
@@ -124,7 +123,7 @@
                 android:paddingEnd="10dp"
                 android:maxLines="1"
                 android:maxLength="15"
-                android:hint="NICKNAME"
+                android:hint="닉네임"
                 android:inputType="text"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -150,7 +149,7 @@
             android:paddingEnd="10dp"
             android:maxLines="1"
             android:maxLength="20"
-            android:hint="NAME"
+            android:hint="이름"
             android:inputType="text"
             android:imeOptions="actionDone"/>
     </android.support.design.widget.TextInputLayout>
@@ -160,6 +159,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="JOIN"/>
+        android:text="가입"/>
 
 </LinearLayout>

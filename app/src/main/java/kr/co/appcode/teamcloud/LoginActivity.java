@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -58,6 +60,8 @@ public class LoginActivity extends AppCompatActivity {
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                closingSoftKeyboard();
+
                 String id = editId.getText().toString();
                 String password = editPassword.getText().toString();
 
@@ -146,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private class HttpPostAsyncTask extends AsyncTask<Void, Void, User> {
 
-        private int mode;
+        private int errorCode;
         private HashMap<String, String> values;
         private URL url;
         private Context context;
@@ -161,6 +165,9 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
 
+            progressDialog = new ProgressDialog(LoginActivity.this);
+            progressDialog.setMessage("잠시 기다려주세요.");
+            progressDialog.show();
             try {
                 url = new URL("http://appcode.co.kr/TeamCloud/login.php");
             } catch (MalformedURLException e) {
@@ -198,27 +205,11 @@ public class LoginActivity extends AppCompatActivity {
                 JSONArray jsonArray = jsonObject.getJSONArray("result");
                 jsonObject = jsonArray.getJSONObject(0);
                 if(jsonObject.has("error")){
-                    Log.d(TAG, "error " + jsonObject.getInt("error"));
+                    errorCode = jsonObject.getInt("error");
+                    Log.d(TAG, "Error code : " + errorCode);
                 } else {
                     Log.d(TAG, "Json => " + jsonObject.toString());
-                }
-               /* json = sb.toString();
-                Log.d(TAG, sb.toString());
-
-                if (json.equals("2\n")) {
-                    mode = Constant.LOGIN_ERROR;
-                } else if (json.equals("3")) {
-                    mode = Constant.LOGIN_EMPTY_ID;
-                } else if (json.equals("4")) {
-                    mode = Constant.LOGIN_EMPTY_PASSWORD;
-                } else {
-
-                    JSONArray jsonArray = new JSONArray(sb.toString());
-                    Log.d(TAG, jsonArray.length() + "");
-
-                    JSONObject jsonObject = jsonArray.getJSONObject(0);
                     User user = new User(jsonObject);
-
                     String cookie = conn.getHeaderField("Set-Cookie");
                     if (cookie != null) {
                         Log.d("cookie", cookie);
@@ -226,7 +217,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     return user;
-                }*/
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -236,63 +227,26 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(User result) {
-            /*if(result != null){
+            if(result != null){
                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 intent.putExtra("login_user", result);
                 startActivity(intent);
             } else {
-                if(mode == Constant.LOGIN_ERROR){
-                    layoutEditId.setError("로그인에 실패였습니다.");
-                }else if(mode == Constant.LOGIN_EMPTY_ID){
+                if(errorCode == Constant.LOGIN_ERROR){
+                    Snackbar.make(layoutEditId, "로그인에 실패하였습니다.", Snackbar.LENGTH_SHORT).show();
+                }else if(errorCode == Constant.LOGIN_EMPTY_ID){
                     layoutEditId.setError("이메일을 입력하지 않았습니다.");
-                }else if(mode == Constant.LOGIN_EMPTY_PASSWORD){
+                }else if(errorCode == Constant.LOGIN_EMPTY_PASSWORD){
                     layoutEditPassword.setError("비밀번호를 입력하지 않았습니다.");
                 }
-            }*/
+            }
+
+            progressDialog.dismiss();
         }
     }
 
-   /* private class HttpPostThread extends Thread {
-        private HashMap<String, String> values;
-        private URL url;
-        private int resultCode;
-        private int mode;
-
-        private HttpPostThread(HashMap<String, String> values, URL url, int mode) {
-            this.values = values;
-            this.url = url;
-            this.mode = mode;
-        }
-
-        public void run() {
-            try {
-                String body = "id="+values.get("id")+"&password="+values.get("password");
-
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
-
-                OutputStream os = conn.getOutputStream();
-                os.write(body.getBytes("UTF-8"));
-                os.flush();
-                os.close();
-
-                cookie = conn.getHeaderField("Set-Cookie");
-                if(cookie != null){
-                    Log.d("cookie", cookie);
-                }
-
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                resultCode = Integer.valueOf(br.readLine());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        private int getResultCode() {
-            return resultCode;
-        }
-    }*/
+    private void closingSoftKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+    }
 }
