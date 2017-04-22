@@ -68,23 +68,25 @@ public class JoinActivity extends AppCompatActivity {
         layoutEmailAuth = (LinearLayout) findViewById(R.id.layout_emailAuth);
 
         editEmail = (MaterialEditText) findViewById(R.id.edit_email);
-        editEmail.addValidator(new RegexpValidator("이메일을 입력해주세요.", "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$"));
+        editEmail.addValidator(new RegexpValidator("이메일 형식이 올바르지 않습니다.", "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$"));
 
         editPassword = (MaterialEditText) findViewById(R.id.edit_password);
-        editPassword.addValidator(new RegexpValidator("최소 1개의 숫자 혹은 특수문자를 포함한 6~20자리 문자", "^(?=.*[0-9])(?=.*[a-z])(?=[\\S]+$).{6,20}$"));
+        editPassword.addValidator(new RegexpValidator("영문, 숫자, 특수문자를 포함한 6~20자의 문자", "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{6,20}$"));
 
         editCheckPassword = (MaterialEditText) findViewById(R.id.edit_check_password);
         editNickname = (MaterialEditText) findViewById(R.id.edit_nickname);
-        editNickname.addValidator(new RegexpValidator("4~15자리의 영문, 숫자만 가능", "^[a-z0-9]{4,15}$"));
-
+        editNickname.addValidator(new RegexpValidator("영문을 포함한 4~15자의 숫자, _, - 가능", "^(?=.*[a-zA-Z])([_a-z0-9-]){4,15}$"));
         editName = (MaterialEditText) findViewById(R.id.edit_name);
-        editName.addValidator(new RegexpValidator("최소 2자 최대 20자", "^[가-힣a-zA-Z]{2,10}$"));
+//        editName.addValidator(new RegexpValidator("한글 최소 2~10자 영문 4~20자", "^([가-힣]{2,20}|[a-z][A-Z]{4,20})$"));
+        editName.addValidator(new RegexpValidator("2~20자의 한글 또는 영문만 가능", "^[a-zA-Z가-힛]{2,20}$"));
 
         editAuth = (EditText) findViewById(R.id.edit_auth);
 
         textTime = (TextView) findViewById(R.id.text_time);
 
         editEmail.addTextChangedListener(new TextWatcher() {
+
+            //region Unused method
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -94,6 +96,7 @@ public class JoinActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
+            //endregion
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -107,6 +110,10 @@ public class JoinActivity extends AppCompatActivity {
                     }
                 }
 
+                if (btnCheckEmail.getText().toString().equals("재전송")) {
+                    btnCheckEmail.setText("인증");
+                }
+
                 if (s.length() == 0) {
                     editEmail.setError(null);
                 }
@@ -115,6 +122,8 @@ public class JoinActivity extends AppCompatActivity {
         });
 
         editNickname.addTextChangedListener(new TextWatcher() {
+
+            //region Unused method
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -124,6 +133,7 @@ public class JoinActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
+            //endregion
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -132,13 +142,24 @@ public class JoinActivity extends AppCompatActivity {
                     isCheckedNickname = false;
                 }
 
+                if (editNickname.validate()) {
+                    editNickname.setHelperText(null);
+                } else {
+                    if (editNickname.getHelperText() == null) {
+                        editNickname.setHelperText("4~15자리의 영문, 숫자만 가능");
+                    }
+                }
+
                 if (s.length() == 0) {
                     editNickname.setError(null);
+
                 }
             }
         });
 
         editPassword.addTextChangedListener(new TextWatcher() {
+
+            //region Unused method
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -148,16 +169,33 @@ public class JoinActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
+            //endregion
 
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() == 0) {
                     editPassword.setError(null);
+                } else if (editPassword.validate()) {
+                    editPassword.setHelperText(null);
+                } else {
+                    editPassword.setHelperText("영문, 숫자, 특수문자를 포함한 6~20자리 문자");
+                }
+
+                if (editCheckPassword.length() > 0) {
+                    if (s.toString().equals(editCheckPassword.getText().toString())) {
+                        isSamePassword = true;
+                        editCheckPassword.setError(null);
+                    } else {
+                        isSamePassword = false;
+                        editCheckPassword.setError("비밀번호가 같지 않습니다.");
+                    }
                 }
             }
         });
 
         editCheckPassword.addTextChangedListener(new TextWatcher() {
+
+            //region Unused method
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -167,41 +205,96 @@ public class JoinActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
+            //endregion
 
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() == 0) {
                     editCheckPassword.setError(null);
                 } else if (!s.toString().equals(editPassword.getText().toString())) {
-                    isSamePassword = false;
+                    if (isSamePassword) {
+                        isSamePassword = false;
+                    }
                     editCheckPassword.setError("비밀번호가 같지 않습니다.");
-                } else if (s.length() > 0 && s.toString().equals(editPassword.getText().toString())) {
+                } else {
+                    Log.d(TAG, "same");
                     isSamePassword = true;
                     editCheckPassword.setError(null);
                 }
             }
         });
 
-        btnCheckEmail = (Button)
+        editName.addTextChangedListener(new TextWatcher() {
 
-                findViewById(R.id.btn_check_email);
-        btnCheckEmail.setOnClickListener(new View.OnClickListener()
+            //region Unused method
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+            //endregion
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 0) {
+                    editName.setError(null);
+                } else if (editName.validate()) {
+                    editName.setHelperText(null);
+                } else {
+                    if (editName.getHelperText() == null) {
+                        editName.setHelperText("2~20자의 한글 또는 영문만 가능");
+                    }
+                }
+            }
+        });
+
+        btnCheckEmail = (Button) findViewById(R.id.btn_check_email);
+        btnCheckEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closingSoftKeyboard();
 
                 if (!isCheckedEmail) {
-                    if (editEmail.validate()) {
-                        String email = editEmail.getText().toString();
+                    if (editEmail.length() == 0) {
+                        editEmail.setError("이메일을 입력해주세요.");
+                    } else if (editEmail.validate()) {
+                        if (timerThread.isAlive()) {
+                            Snackbar.make(v, "인증 메일을 다시 보내시겠습니까?", Snackbar.LENGTH_LONG)
+                                    .setAction("Ok", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            String email = editEmail.getText().toString();
 
-                        setAuthCode();
-                        HashMap<String, String> values = new HashMap<>();
-                        values.put("email", email);
+                                            setAuthCode();
+                                            HashMap<String, String> values = new HashMap<>();
+                                            values.put("email", email);
 
-                        HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(JoinActivity.this, values, Constant.MODE_AUTH_EMAIL);
-                        httpPostAsyncTask.execute();
+                                            HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(JoinActivity.this, values, Constant.MODE_AUTH_EMAIL);
+                                            httpPostAsyncTask.execute();
+                                        }
+                                    }).show();
+                        } else {
+                            String email = editEmail.getText().toString();
+
+                            setAuthCode();
+                            HashMap<String, String> values = new HashMap<>();
+                            values.put("email", email);
+
+                            HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(JoinActivity.this, values, Constant.MODE_AUTH_EMAIL);
+                            httpPostAsyncTask.execute();
+                        }
+
+                        if (editAuth.length() > 0) {
+                            editAuth.setText("");
+                        }
+
+                        if (btnCheckEmail.getText().toString().equals("재전송")) {
+                            btnCheckEmail.setText("인증");
+                        }
                     }
                 } else {
                     Snackbar.make(v, "이미 이메일 인증을 완료하였습니다.", Snackbar.LENGTH_SHORT).show();
@@ -209,9 +302,7 @@ public class JoinActivity extends AppCompatActivity {
             }
         });
 
-        btnCheckNickname = (Button)
-
-                findViewById(R.id.btn_check_nickname);
+        btnCheckNickname = (Button) findViewById(R.id.btn_check_nickname);
         btnCheckNickname.setOnClickListener(new View.OnClickListener()
 
         {
@@ -222,15 +313,16 @@ public class JoinActivity extends AppCompatActivity {
                 if (!isCheckedNickname) {
                     String nickname = editNickname.getText().toString();
 
-                    if (editNickname.validate()) {
+                    if (editNickname.length() == 0) {
+                        editNickname.setError("닉네임을 입력해주세요.");
+                    } else if (editNickname.validate()) {
                         HashMap<String, String> values = new HashMap<>();
                         values.put("nickname", nickname);
 
                         HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(JoinActivity.this, values, Constant.MODE_CHECK_NICKNAME);
                         httpPostAsyncTask.execute();
-
                     } else {
-
+                        editNickname.setError("닉네임이 올바르지 않습니다.");
                     }
                 } else {
                     Snackbar.make(v, "이미 닉네임 중복검사를 완료하였습니다.", Snackbar.LENGTH_SHORT).show();
@@ -247,7 +339,9 @@ public class JoinActivity extends AppCompatActivity {
                 closingSoftKeyboard();
 
                 if (timerThread.isAlive()) {
-                    if (editAuth.getText().toString().equals(String.valueOf(authCode))) {
+                    if (editAuth.length() == 0) {
+                        Snackbar.make(v, "인증번호를 입력해주세요.", Snackbar.LENGTH_SHORT).show();
+                    } else if (editAuth.getText().toString().equals(String.valueOf(authCode))) {
                         isCheckedEmail = true;
                         editAuth.setText("");
                         layoutEmailAuth.setVisibility(View.GONE);
@@ -270,19 +364,21 @@ public class JoinActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 if (!isCheckedEmail) {
-                    editEmail.setError("이메일 인증을 해주세요");
+                    editEmail.setError("이메일 인증을 해주세요.");
                 } else if (editPassword.length() == 0) {
-                    editPassword.setError("비밀번호를 입력해주세요");
+                    editPassword.setError("비밀번호를 입력해주세요.");
                 } else if (!editPassword.validate()) {
-
+                    editPassword.setError("비밀번호 형식이 올바르지 않습니다.");
                 } else if (editCheckPassword.length() == 0) {
-                    editCheckPassword.setError("비밀번호 확인을 입력해주세요");
+                    editCheckPassword.setError("비밀번호 확인을 입력해주세요.");
                 } else if (!isSamePassword) {
                     editCheckPassword.setError("비밀번호가 같지 않습니다.");
                 } else if (!isCheckedNickname) {
-                    editNickname.setError("닉네임 중복검사를 해주세요");
+                    editNickname.setError("닉네임 중복검사를 해주세요.");
+                } else if (editName.length() == 0) {
+                    editName.setError("이름을 입력해주세요.");
                 } else if (!editName.validate()) {
-
+                    editName.setError("이름이 올바르지 않습니다.");
                 } else {
                     HashMap<String, String> values = new HashMap<>();
 
@@ -313,7 +409,7 @@ public class JoinActivity extends AppCompatActivity {
             Message msg = handler.obtainMessage();
 
             minute = 0;
-            second = 30;
+            second = 10;
             handler.sendEmptyMessage(0);
             msg.what = 1;
             while ((minute > 0 || second > 0) && !isStop) {
@@ -336,17 +432,15 @@ public class JoinActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-
             }
 
             if (!isStop) {
                 setAuthCode();
+                handler.sendEmptyMessage(2);
             }
         }
 
         // TODO: this handler can cause a memory leak.
-
 
         final Handler handler = new Handler() {
             @Override
@@ -356,8 +450,11 @@ public class JoinActivity extends AppCompatActivity {
                         layoutEmailAuth.setVisibility(View.VISIBLE);
                     }
                     textTime.setText("3:00");
-                } else {
+                } else if (msg.what == 1) {
                     textTime.setText(msg.getData().getString("time"));
+                } else {
+                    btnCheckEmail.setText("재전송");
+                    Snackbar.make(btnCheckEmail, "인증시간이 초과되었습니다.", Snackbar.LENGTH_SHORT).show();
                 }
             }
         };
@@ -393,6 +490,7 @@ public class JoinActivity extends AppCompatActivity {
             super.onPreExecute();
 
             progressDialog = new ProgressDialog(context);
+            progressDialog.setMessage("잠시 기다려주세요...");
             progressDialog.show();
 
             if (mode == Constant.MODE_AUTH_EMAIL) {
@@ -449,11 +547,6 @@ public class JoinActivity extends AppCompatActivity {
                     }
                     timerThread = new TimerThread();
                     timerThread.start();
-                    /*if (timerAsyncTask != null && timerAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
-                        timerAsyncTask.cancel(false);
-                    }
-                    timerAsyncTask = new TimerAsyncTask();
-                    timerAsyncTask.execute();*/
                 }
             } else if (mode == Constant.MODE_CHECK_NICKNAME) {
                 if (result == Constant.DUPLICATED) {
@@ -461,8 +554,6 @@ public class JoinActivity extends AppCompatActivity {
                 } else {
                     btnCheckNickname.setText("확인완료");
                     isCheckedNickname = true;
-
-
                 }
             } else if (mode == Constant.MODE_JOIN_SUBMIT) {
                 if (result == Constant.JOIN_COMPLETE) {

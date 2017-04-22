@@ -21,15 +21,19 @@
             android:hint="이메일"
             android:inputType="textEmailAddress"
             android:maxLength="320"
+            app:met_autoValidate="true"
             app:met_floatingLabel="highlight"
-            app:met_autoValidate="true"/>
+            app:met_helperText=""
+            app:met_helperTextAlwaysShown="true" />
 
         <Button
             android:id="@+id/btn_check_email"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/edit_email"
             android:layout_alignTop="@id/edit_email"
             android:layout_toEndOf="@id/edit_email"
+            android:theme="@style/ColoredBlueButton"
             android:text="인증" />
     </RelativeLayout>
 
@@ -63,7 +67,8 @@
             android:id="@+id/btn_auth"
             android:layout_width="80dp"
             android:layout_height="40dp"
-            android:text="완료" />
+            android:text="완료"
+            android:theme="@style/ColoredBlueButton"/>
     </LinearLayout>
 
 
@@ -76,8 +81,10 @@
         android:maxLength="20"
         android:layout_marginTop="5dp"
         app:met_floatingLabel="highlight"
-        app:met_autoValidate="true" />
-
+        app:met_autoValidate="true"
+        app:met_helperText="영문, 숫자, 특수문자를 포함한 6~20자의 문자"
+        app:met_helperTextColor="@android:color/holo_green_dark"
+        app:met_helperTextAlwaysShown="true"/>
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/edit_check_password"
@@ -87,12 +94,13 @@
         android:inputType="textPassword"
         android:layout_marginTop="5dp"
         app:met_floatingLabel="highlight"
+        app:met_helperText=""
+        app:met_helperTextAlwaysShown="true"
         android:maxLength="20"/>
 
     <RelativeLayout
         android:id="@+id/layout_nickname"
         android:layout_width="300dp"
-        android:layout_marginTop="5dp"
         android:layout_height="wrap_content">
 
         <com.rengwuxian.materialedittext.MaterialEditText
@@ -102,8 +110,12 @@
             android:hint="닉네임"
             android:inputType="text"
             android:maxLength="15"
+            android:layout_marginTop="5dp"
             app:met_floatingLabel="highlight"
-            app:met_autoValidate="true"/>
+            app:met_autoValidate="true"
+            app:met_helperText="영문을 포함한 4~15자의 숫자, _, - 가능"
+            app:met_helperTextColor="@android:color/holo_green_dark"
+            app:met_helperTextAlwaysShown="true"/>
 
         <Button
             android:id="@+id/btn_check_nickname"
@@ -111,6 +123,8 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/edit_nickname"
             android:layout_toEndOf="@id/edit_nickname"
+            android:layout_alignBaseline="@id/edit_nickname"
+            android:theme="@style/ColoredBlueButton"
             android:text="중복확인" />
     </RelativeLayout>
 
@@ -121,16 +135,20 @@
         android:hint="이름"
         android:imeOptions="actionDone"
         android:inputType="text"
-        android:layout_marginTop="5dp"
         app:met_floatingLabel="highlight"
         app:met_autoValidate="true"
-        android:maxLength="20" />
+        android:maxLength="20"
+        android:layout_marginTop="5dp"
+        app:met_helperText="2~20자의 한글 또는 영문만 가능"
+        app:met_helperTextColor="@android:color/holo_green_dark"
+        app:met_helperTextAlwaysShown="true"/>
 
     <Button
         android:id="@+id/btn_join"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:theme="@style/ColoredBlueButton"
         android:text="가입" />
 
 </LinearLayout>
