@@ -154,12 +154,15 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
+            public void onSuccess(final LoginResult loginResult) {
                 final GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         Log.v("result", object.toString());
+                        User user = new User(object, "facebook");
+                        user.setSessionKey(loginResult.getAccessToken().getToken());
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        intent.putExtra("login_user", user);
                         startActivity(intent);
                     }
                 });
@@ -295,10 +298,15 @@ public class LoginActivity extends AppCompatActivity {
 
     private void closingSoftKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        IBinder windowToken = getCurrentFocus().getWindowToken();
-        if(windowToken != null){
-            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        try{
+            IBinder windowToken = getCurrentFocus().getWindowToken();
+            if(windowToken != null){
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+            }
+        }catch (NullPointerException e){
+            e.printStackTrace();
         }
+
     }
 
     @Override

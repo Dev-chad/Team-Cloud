@@ -408,7 +408,7 @@ public class JoinActivity extends AppCompatActivity {
             Message msg = handler.obtainMessage();
 
             minute = 0;
-            second = 10;
+            second = 15;
             handler.sendEmptyMessage(0);
             msg.what = 1;
             while ((minute > 0 || second > 0) && !isStop) {

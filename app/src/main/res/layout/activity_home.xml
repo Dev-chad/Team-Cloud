@@ -1,33 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:padding="30dp"
+
     tools:context="kr.co.appcode.teamcloud.HomeActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_const_id"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:text="아이디 또는 이메일 : "/>
 
     <TextView
         android:id="@+id/text_id"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_const_id"
+        android:textSize="18dp"
+
+        android:text="[아이디 표시]"/>
+
+    <TextView
+        android:id="@+id/text_const_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_below="@id/text_id"
+        android:layout_marginTop="20dp"
+
+        android:textSize="18dp"
+
+        android:text="이름 : "/>
+
     <TextView
         android:id="@+id/text_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_const_name"
+        android:textSize="18dp"
+
+        android:text="[이름 표시]"/>
+
     <TextView
-        android:id="@+id/text_email"
+        android:id="@+id/text_const_key"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_below="@id/text_name"
+        android:layout_marginTop="20dp"
+
+        android:textSize="18dp"
+
+        android:text="키 또는 토큰 : "/>
+
+    <TextView
+        android:id="@+id/text_key"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:layout_below="@id/text_const_key"
+        android:text="[토큰 표시]"/>
+
+    <TextView
+        android:id="@+id/text_const_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_below="@id/text_key"
+        android:layout_marginTop="20dp"
+
+        android:textSize="18dp"
+
+        android:text="로그인 유형 : "/>
+
+    <TextView
+        android:id="@+id/text_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:layout_below="@id/text_const_type"
+        android:text="[로그인 유형]"/>
+
+    <TextView
+        android:id="@+id/text_const_server"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="18dp"
+        android:layout_below="@id/text_type"
+        android:layout_marginTop="20dp"
+
+        android:text="서버 응답 : "/>
+
+    <TextView
+        android:id="@+id/text_server"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_const_server"
+        android:textSize="18dp"
+        android:text=""/>
+    <TextView
+        android:id="@+id/text_server2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_server"
+        android:textSize="18dp"
+        android:text=""/>
 
     <Button
         android:id="@+id/btn_refresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:text="세션 정보 요청"/>
+
+    <com.facebook.login.widget.LoginButton
+        xmlns:facebook="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/btn_facebook_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        facebook:com_facebook_login_text="페이스북 아이디로 로그인"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
 
 
 
-</LinearLayout>
+</RelativeLayout>

@@ -44,6 +44,16 @@ public class User implements Parcelable{
         }
     }
 
+    public User(JSONObject jsonObject, String type){
+        try {
+            id = jsonObject.getString("id");
+            name = jsonObject.getString("name");
+            accountType = type;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     protected User(Parcel in) {
         id = in.readString();
         nickname = in.readString();
