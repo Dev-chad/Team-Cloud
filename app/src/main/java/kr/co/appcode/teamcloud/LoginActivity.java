@@ -5,14 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -21,6 +22,8 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.rengwuxian.materialedittext.MaterialEditText;
+import com.rengwuxian.materialedittext.validation.RegexpValidator;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,10 +40,11 @@ import java.util.HashMap;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
 
-    private TextInputLayout layoutEditId;
-    private TextInputLayout layoutEditPassword;
-    private EditText editId;
-    private EditText editPassword;
+    private MaterialEditText editEmail;
+    private MaterialEditText editPassword;
+
+    private TextView textError;
+    private TextView textForgotPassword;
 
     private CallbackManager callbackManager;
 
@@ -51,52 +55,88 @@ public class LoginActivity extends AppCompatActivity {
 
         callbackManager = CallbackManager.Factory.create();
 
-        layoutEditId = (TextInputLayout) findViewById(R.id.layout_editId);
-        layoutEditPassword = (TextInputLayout) findViewById(R.id.layout_editPassword);
-        editId = (EditText) findViewById(R.id.edit_id);
-        editPassword = (EditText) findViewById(R.id.edit_password);
+        editEmail = (MaterialEditText) findViewById(R.id.edit_email);
+        editEmail.addValidator(new RegexpValidator("이메일 형식이 올바르지 않습니다", "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$"));
+        editPassword = (MaterialEditText) findViewById(R.id.edit_password);
+        editPassword.addValidator(new RegexpValidator("비밀번호 형식이 올바르지 않습니다", "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{6,20}$"));
 
-        Button btnSignIn = (Button) findViewById(R.id.btn_signin);
-        btnSignIn.setOnClickListener(new View.OnClickListener() {
+        textError = (TextView) findViewById(R.id.text_error);
+
+        editEmail.addTextChangedListener(new TextWatcher() {
+            //region Unused method
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+            //endregion
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 0) {
+                    editEmail.setError(null);
+                }
+
+                if (textError.getVisibility() == View.VISIBLE) {
+                    textError.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        editPassword.addTextChangedListener(new TextWatcher() {
+            //region Unused method
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+            //endregion
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 0) {
+                    editPassword.setError(null);
+                }
+
+                if (textError.getVisibility() == View.VISIBLE) {
+                    textError.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        Button btnLogin = (Button) findViewById(R.id.btn_login);
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closingSoftKeyboard();
 
-                String id = editId.getText().toString();
+                String email = editEmail.getText().toString();
                 String password = editPassword.getText().toString();
 
-                // hide error message
-                layoutEditId.setErrorEnabled(false);
-                layoutEditPassword.setErrorEnabled(false);
-
                 // check input value
-                if (id.length() == 0) {
-                    layoutEditId.setError("아이디를 입력해주세요.");
-                } else if (id.contains(" ")) {
-                    layoutEditId.setError("아이디에 공백은 허용하지 않습니다.");
+                if (email.length() == 0) {
+                    editEmail.setError("이메일을 입력해주세요");
+                } else if (!editEmail.validate()) {
+
                 } else if (password.length() == 0) {
-                    layoutEditPassword.setError("비밀번호를 입력해주세요.");
-                } else if (password.contains(" ")) {
-                    layoutEditPassword.setError("비밀번호에 공백은 허용하지 않습니다.");
+                    editPassword.setError("비밀번호를 입력해주세요");
+                } else if (!editPassword.validate()) {
+
                 } else {
                     HashMap<String, String> values = new HashMap<>();
-                    values.put("id", id);
+                    values.put("email", email);
                     values.put("password", password);
 
                     HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(values);
                     httpPostAsyncTask.execute();
-                    /*try {
-                        HttpPostThread httpPostThread = new HttpPostThread(values, new URL("http://appcode.co.kr/TeamCloud/login.php"), 1);
-                        httpPostThread.start();
-                        httpPostThread.join();
-                        Log.d("return", ""+httpPostThread.getResultCode());
-
-                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                        intent.putExtra("cookie", cookie);
-                        startActivity(intent);
-                    } catch (MalformedURLException | InterruptedException e) {
-                        e.printStackTrace();
-                    }*/
                 }
             }
         });
@@ -137,7 +177,16 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException error) {
-                Log.e("LoginError", error.toString());
+                Log.e(TAG, error.toString());
+            }
+        });
+
+        textForgotPassword = (TextView) findViewById(R.id.text_forgotPassword);
+        textForgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, FoundPasswordActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -166,7 +215,7 @@ public class LoginActivity extends AppCompatActivity {
             super.onPreExecute();
 
             progressDialog = new ProgressDialog(LoginActivity.this);
-            progressDialog.setMessage("잠시 기다려주세요.");
+            progressDialog.setMessage("로그인 중...");
             progressDialog.show();
             try {
                 url = new URL("http://appcode.co.kr/TeamCloud/login.php");
@@ -174,7 +223,7 @@ public class LoginActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            body = "id=" + editId.getText().toString() + "&password=" + editPassword.getText().toString();
+            body = "id=" + editEmail.getText().toString() + "&password=" + editPassword.getText().toString();
         }
 
         @Override
@@ -204,7 +253,7 @@ public class LoginActivity extends AppCompatActivity {
                 JSONObject jsonObject = new JSONObject(sb.toString());
                 JSONArray jsonArray = jsonObject.getJSONArray("result");
                 jsonObject = jsonArray.getJSONObject(0);
-                if(jsonObject.has("error")){
+                if (jsonObject.has("error")) {
                     errorCode = jsonObject.getInt("error");
                     Log.d(TAG, "Error code : " + errorCode);
                 } else {
@@ -227,17 +276,16 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(User result) {
-            if(result != null){
+            if (result != null) {
                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 intent.putExtra("login_user", result);
                 startActivity(intent);
             } else {
-                if(errorCode == Constant.LOGIN_ERROR){
-                    Snackbar.make(layoutEditId, "로그인에 실패하였습니다.", Snackbar.LENGTH_SHORT).show();
-                }else if(errorCode == Constant.LOGIN_EMPTY_ID){
-                    layoutEditId.setError("이메일을 입력하지 않았습니다.");
-                }else if(errorCode == Constant.LOGIN_EMPTY_PASSWORD){
-                    layoutEditPassword.setError("비밀번호를 입력하지 않았습니다.");
+                if (errorCode == Constant.LOGIN_ERROR) {
+                    textError.setVisibility(View.VISIBLE);
+                } else if (errorCode == Constant.LOGIN_EMPTY_ID) {
+
+                } else if (errorCode == Constant.LOGIN_EMPTY_PASSWORD) {
                 }
             }
 
@@ -247,6 +295,17 @@ public class LoginActivity extends AppCompatActivity {
 
     private void closingSoftKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        IBinder windowToken = getCurrentFocus().getWindowToken();
+        if(windowToken != null){
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(editPassword.length() > 0){
+            editPassword.setText("");
+        }
     }
 }

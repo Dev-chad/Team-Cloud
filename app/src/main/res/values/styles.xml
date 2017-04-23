@@ -25,10 +25,10 @@
         <item name="android:textColor">#fff</item>
     </style>
 
-    <style name="ColoredWhiteButton" parent="Widget.AppCompat.Button.Colored">
-        <item name="colorButtonNormal">@color/com_facebook_blue</item>
+    <style name="ColoredDarkBlueButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/darkblue</item>
         <item name="colorControlHighlight">@color/colorAccent</item>
-        <item name="android:textColor">#000</item>
+        <item name="android:textColor">#fff</item>
     </style>
 
 </resources>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingStart="30dp"
+    android:paddingEnd="30dp"
+    tools:context="kr.co.appcode.teamcloud.FoundPasswordActivity">
+
+    <LinearLayout
+        android:id="@+id/layout_editForm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="팀클라우드 계정으로 사용중인 이메일로\n새로운 비밀번호를 발급해드립니다"
+            android:textStyle="bold"/>
+        <TextView
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:text="재발급 서비스는 하루에 3번 가능합니다"
+            android:textStyle="bold"
+            android:textColor="@color/red"/>
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/edit_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="사용중인 이메일"
+            android:layout_marginTop="30dp"
+            android:inputType="textEmailAddress"
+            android:imeOptions="actionDone"
+            android:maxLines="1"
+            app:met_floatingLabel="highlight"
+            app:met_clearButton="true"
+            app:met_autoValidate="true"/>
+
+        <Button
+            android:id="@+id/btn_reissue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:theme="@style/ColoredDarkBlueButton"
+            android:text="해당 이메일로 재발급 받기"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/layout_editForm"
+        android:gravity="center"
+        android:text="Team Cloud"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/darkgreen"
+        android:textSize="50dp"
+        android:textStyle="bold" />
+
+</RelativeLayout>

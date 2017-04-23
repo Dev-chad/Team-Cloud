@@ -71,14 +71,13 @@ public class JoinActivity extends AppCompatActivity {
         editEmail.addValidator(new RegexpValidator("이메일 형식이 올바르지 않습니다.", "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$"));
 
         editPassword = (MaterialEditText) findViewById(R.id.edit_password);
-        editPassword.addValidator(new RegexpValidator("영문, 숫자, 특수문자를 포함한 6~20자의 문자", "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{6,20}$"));
+        editPassword.addValidator(new RegexpValidator("영문, 숫자, 특수문자를 포함한 6~20자의 문자.", "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{6,20}$"));
 
         editCheckPassword = (MaterialEditText) findViewById(R.id.edit_check_password);
         editNickname = (MaterialEditText) findViewById(R.id.edit_nickname);
-        editNickname.addValidator(new RegexpValidator("영문을 포함한 4~15자의 숫자, _, - 가능", "^(?=.*[a-zA-Z])([_a-z0-9-]){4,15}$"));
+        editNickname.addValidator(new RegexpValidator("영문을 포함한 4~15자의 숫자, _, - 가능.", "^(?=.*[a-zA-Z])([_a-z0-9-]){4,15}$"));
         editName = (MaterialEditText) findViewById(R.id.edit_name);
-//        editName.addValidator(new RegexpValidator("한글 최소 2~10자 영문 4~20자", "^([가-힣]{2,20}|[a-z][A-Z]{4,20})$"));
-        editName.addValidator(new RegexpValidator("2~20자의 한글 또는 영문만 가능", "^[a-zA-Z가-힛]{2,20}$"));
+        editName.addValidator(new RegexpValidator("2~20자의 한글 또는 영문만 가능.", "^[a-zA-Z가-힛]{2,20}$"));
 
         editAuth = (EditText) findViewById(R.id.edit_auth);
 

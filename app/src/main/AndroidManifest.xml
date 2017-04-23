@@ -29,6 +29,11 @@
         <activity
             android:name=".LoginActivity"
             android:windowSoftInputMode="stateAlwaysHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
         </activity>
         <activity
@@ -43,15 +48,15 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".JoinActivity"
-            android:label="회원가입">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity
+            android:name=".JoinActivity"
+            android:label="회원가입" />
         <activity android:name=".HomeActivity" />
+        <activity
+            android:name=".FoundPasswordActivity"
+            android:label="비밀번호 재발급">
+
+        </activity>
     </application>
 
 </manifest>
