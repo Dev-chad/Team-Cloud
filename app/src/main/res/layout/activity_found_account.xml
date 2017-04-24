@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="팀클라우드 계정으로 사용중인 이메일로\n새로운 비밀번호를 발급해드립니다"
+            android:text="팀클라우드 계정으로 사용중인 이메일을 통해\n새로운 비밀번호를 발급해드립니다"
             android:textStyle="bold"/>
         <TextView
             android:layout_gravity="center"

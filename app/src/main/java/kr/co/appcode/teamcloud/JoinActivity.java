@@ -501,7 +501,7 @@ public class JoinActivity extends AppCompatActivity {
             }
 
             try {
-                url = new URL("http://appcode.co.kr/TeamCloud/join.php");
+                url = new URL(Constant.SERVER_URL+"join.php");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }

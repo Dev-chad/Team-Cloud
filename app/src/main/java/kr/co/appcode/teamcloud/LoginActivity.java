@@ -1,10 +1,8 @@
 package kr.co.appcode.teamcloud;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -14,7 +12,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -26,21 +23,14 @@ import com.facebook.login.widget.LoginButton;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity{
     private static final String TAG = "LoginActivity";
 
     private MaterialEditText editEmail;
@@ -60,8 +50,9 @@ public class LoginActivity extends AppCompatActivity {
             HashMap<String, String> values = new HashMap<>();
             values.put("id", sp.getString("id", ""));
             values.put("password", sp.getString("password", ""));
-            HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(values);
-            httpPostAsyncTask.execute();
+
+           /* HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(values);
+            httpPostAsyncTask.execute();*/
         }
 
         callbackManager = CallbackManager.Factory.create();
@@ -146,8 +137,12 @@ public class LoginActivity extends AppCompatActivity {
                     values.put("id", email);
                     values.put("password", password);
 
-                    HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(values);
-                    httpPostAsyncTask.execute();
+                    HttpPostManager httpPostManager = new HttpPostManager(LoginActivity.this, values, httpCallBack);
+                    httpPostManager.setMode(HttpPostManager.MODE_LOGIN);
+                    httpPostManager.execute();
+
+                    /*HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(values);
+                    httpPostAsyncTask.execute();*/
                 }
             }
         });
@@ -171,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         Log.v("result", object.toString());
                         User user = new User(object, "facebook");
-                        user.setSessionKey(loginResult.getAccessToken().getToken());
+                        user.setSessionInfo(loginResult.getAccessToken().getToken());
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                         intent.putExtra("login_user", user);
                         startActivity(intent);
@@ -211,7 +206,25 @@ public class LoginActivity extends AppCompatActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    private class HttpPostAsyncTask extends AsyncTask<Void, Void, User> {
+    private HttpCallBack httpCallBack = new HttpCallBack() {
+        @Override
+        public void CallBackResult(JSONObject jsonObject) {
+            if(jsonObject != null){
+                if(jsonObject.has("error")){
+
+                } else {
+                    User user = new User(jsonObject);
+                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    intent.putExtra("login_user", user);
+                    startActivity(intent);
+                }
+            } else {
+
+            }
+        }
+    };
+
+   /* private class HttpPostAsyncTask extends AsyncTask<Void, Void, User> {
 
         private int errorCode;
         private HashMap<String, String> values;
@@ -274,7 +287,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(TAG, "Json => " + jsonObject.toString());
 
                     User user = new User(jsonObject);
-                    user.setSessionKey(conn.getHeaderField("Set-Cookie"));
+                    user.setSessionInfo(conn.getHeaderField("Set-Cookie"));
 
                     return user;
                 }
@@ -317,7 +330,7 @@ public class LoginActivity extends AppCompatActivity {
 
             progressDialog.dismiss();
         }
-    }
+    }*/
 
     private void closingSoftKeyboard() {
         try {
@@ -360,5 +373,4 @@ public class LoginActivity extends AppCompatActivity {
         }
         return "";
     }
-
 }

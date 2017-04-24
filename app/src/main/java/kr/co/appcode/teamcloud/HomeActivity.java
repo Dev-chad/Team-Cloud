@@ -57,7 +57,7 @@ public class HomeActivity extends AppCompatActivity {
 
         textId.setText(user.getId());
         textName.setText(user.getName());
-        textKey.setText(user.getSessionKey());
+        textKey.setText(user.getSessionInfo());
         textType.setText(user.getAccountType());
 
         Button btn = (Button) findViewById(R.id.btn_refresh);
@@ -168,7 +168,7 @@ public class HomeActivity extends AppCompatActivity {
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn.setRequestProperty("Cookie", user.getSessionKey());
+                conn.setRequestProperty("Cookie", user.getSessionInfo());
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
 

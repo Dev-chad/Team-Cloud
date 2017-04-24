@@ -18,7 +18,7 @@ public class User implements Parcelable{
     private int used_capacity;
     private int max_capacity;
     private String accountType;
-    private String sessionKey;
+    private String sessionInfo;
 
     public User(String id, String nickname, String name, int credit, int used_capacity, int max_capacity, String accountType) {
         this.id = id;
@@ -38,6 +38,7 @@ public class User implements Parcelable{
             credit = jsonObject.getInt("credit");
             used_capacity = jsonObject.getInt("used_capacity");
             max_capacity = jsonObject.getInt("max_capacity");
+            sessionInfo = jsonObject.getString("sessionInfo");
             accountType = jsonObject.getString("account_type");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -62,7 +63,7 @@ public class User implements Parcelable{
         used_capacity = in.readInt();
         max_capacity = in.readInt();
         accountType = in.readString();
-        sessionKey = in.readString();
+        sessionInfo = in.readString();
     }
 
     @Override
@@ -74,7 +75,7 @@ public class User implements Parcelable{
         dest.writeInt(used_capacity);
         dest.writeInt(max_capacity);
         dest.writeString(accountType);
-        dest.writeString(sessionKey);
+        dest.writeString(sessionInfo);
     }
 
     @Override
@@ -150,11 +151,11 @@ public class User implements Parcelable{
         this.accountType = accountType;
     }
 
-    public String getSessionKey() {
-        return sessionKey;
+    public String getSessionInfo() {
+        return sessionInfo;
     }
 
-    public void setSessionKey(String sessionKey) {
-        this.sessionKey = sessionKey;
+    public void setSessionInfo(String sessionInfo) {
+        this.sessionInfo = sessionInfo;
     }
 }

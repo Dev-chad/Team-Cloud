@@ -1,33 +1,17 @@
 package kr.co.appcode.teamcloud;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class FoundPasswordActivity extends AppCompatActivity {
     private static final String TAG = "FoundPasswordActivity";
@@ -80,8 +64,8 @@ public class FoundPasswordActivity extends AppCompatActivity {
                 if (email.length() == 0) {
                     editEmail.setError("사용중인 이메일을 입력해주세요");
                 } else if (editEmail.validate()) {
-                    HttpPostAsyncTask httpPost = new HttpPostAsyncTask();
-                    httpPost.execute(email);
+                    /*HttpPostAsyncTask httpPost = new HttpPostAsyncTask();
+                    httpPost.execute(email);*/
                 }
             }
         });
@@ -101,7 +85,7 @@ public class FoundPasswordActivity extends AppCompatActivity {
     }
 
 
-    private class HttpPostAsyncTask extends AsyncTask<String, Void, Integer> {
+   /* private class HttpPostAsyncTask extends AsyncTask<String, Void, Integer> {
 
         private URL url;
         private ProgressDialog progressDialog;
@@ -182,5 +166,5 @@ public class FoundPasswordActivity extends AppCompatActivity {
 
             progressDialog.dismiss();
         }
-    }
+    }*/
 }

@@ -131,7 +131,7 @@ public class HttpPost extends Thread {
 
     }
 
-    public String getSessionKey() {
+    public String getSessionInfo() {
         return sessionKey;
     }
 
