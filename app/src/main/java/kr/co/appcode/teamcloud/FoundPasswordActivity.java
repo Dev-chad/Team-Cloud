@@ -1,6 +1,7 @@
 package kr.co.appcode.teamcloud;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -70,6 +72,8 @@ public class FoundPasswordActivity extends AppCompatActivity {
         btnReissue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
 
                 String email = editEmail.getText().toString();
 
@@ -110,7 +114,7 @@ public class FoundPasswordActivity extends AppCompatActivity {
             progressDialog.setMessage("잠시 기다려주세요...");
             progressDialog.show();
             try {
-                url = new URL("http://appcode.co.kr/TeamCloud/reissue.php");
+                url = new URL(Constant.SERVER_URL+"reissue.php");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -119,7 +123,7 @@ public class FoundPasswordActivity extends AppCompatActivity {
         @Override
         protected Integer doInBackground(String... params) {
             try {
-                String body = "email=" + params[0];
+                String body = "id=" + params[0];
 
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");

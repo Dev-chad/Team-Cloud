@@ -3,9 +3,9 @@ package kr.co.appcode.teamcloud;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -34,6 +35,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -44,7 +47,6 @@ public class LoginActivity extends AppCompatActivity {
     private MaterialEditText editPassword;
 
     private TextView textError;
-    private TextView textForgotPassword;
 
     private CallbackManager callbackManager;
 
@@ -52,6 +54,15 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
+        if (sp.contains("id")) {
+            HashMap<String, String> values = new HashMap<>();
+            values.put("id", sp.getString("id", ""));
+            values.put("password", sp.getString("password", ""));
+            HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(values);
+            httpPostAsyncTask.execute();
+        }
 
         callbackManager = CallbackManager.Factory.create();
 
@@ -132,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 } else {
                     HashMap<String, String> values = new HashMap<>();
-                    values.put("email", email);
+                    values.put("id", email);
                     values.put("password", password);
 
                     HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(values);
@@ -184,7 +195,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        textForgotPassword = (TextView) findViewById(R.id.text_forgotPassword);
+        TextView textForgotPassword = (TextView) findViewById(R.id.text_forgotPassword);
         textForgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -221,12 +232,12 @@ public class LoginActivity extends AppCompatActivity {
             progressDialog.setMessage("로그인 중...");
             progressDialog.show();
             try {
-                url = new URL("http://appcode.co.kr/TeamCloud/login.php");
+                url = new URL(Constant.SERVER_URL + "login.php");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
 
-            body = "id=" + editEmail.getText().toString() + "&password=" + editPassword.getText().toString();
+            body = "id=" + values.get("id") + "&password=" + values.get("password");
         }
 
         @Override
@@ -261,12 +272,9 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(TAG, "Error code : " + errorCode);
                 } else {
                     Log.d(TAG, "Json => " + jsonObject.toString());
+
                     User user = new User(jsonObject);
-                    String cookie = conn.getHeaderField("Set-Cookie");
-                    if (cookie != null) {
-                        Log.d("cookie", cookie);
-                        user.setSessionKey(cookie);
-                    }
+                    user.setSessionKey(conn.getHeaderField("Set-Cookie"));
 
                     return user;
                 }
@@ -280,6 +288,21 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(User result) {
             if (result != null) {
+                SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
+                SharedPreferences.Editor spEditor = sp.edit();
+
+                if(sp.contains("id")){
+                    Toast.makeText(LoginActivity.this, "자동 로그인 성공", Toast.LENGTH_SHORT).show();
+                } else {
+                    spEditor.putString("id", result.getId());
+                    spEditor.putString("password", md5(values.get("password")));
+                    Log.d(TAG, values.get("password"));
+                    Log.d(TAG,  md5(values.get("password")));
+                    spEditor.putString("type", "teamcloud");
+                    spEditor.apply();
+                }
+
+
                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 intent.putExtra("login_user", result);
                 startActivity(intent);
@@ -297,23 +320,45 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void closingSoftKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        try{
-            IBinder windowToken = getCurrentFocus().getWindowToken();
-            if(windowToken != null){
-                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-            }
-        }catch (NullPointerException e){
+        try {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if(editPassword.length() > 0){
+        if (editPassword.length() > 0) {
             editPassword.setText("");
         }
     }
+
+
+    public String md5(final String s) {
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest
+                    .getInstance("MD5");
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            // Create Hex String
+            StringBuffer hexString = new StringBuffer();
+            for (int i = 0; i < messageDigest.length; i++) {
+                String h = Integer.toHexString(0xFF & messageDigest[i]);
+                while (h.length() < 2)
+                    h = "0" + h;
+                hexString.append(h);
+            }
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
 }

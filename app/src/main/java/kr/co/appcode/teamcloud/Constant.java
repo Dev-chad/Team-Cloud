@@ -5,6 +5,8 @@ package kr.co.appcode.teamcloud;
  */
 
 public class Constant {
+    public static final String SERVER_URL = "http://appcode.cafe24.com/";
+
     public static final int JOIN_COMPLETE = 1;
     public static final int JOIN_EMPTY_EMAIL = 2;
     public static final int JOIN_DUPLICATE_EMAIL = 3;
