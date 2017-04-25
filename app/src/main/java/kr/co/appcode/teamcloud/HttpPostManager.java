@@ -91,17 +91,17 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
             JSONObject jsonObject = new JSONObject(sb.toString());
             JSONArray jsonArray = jsonObject.getJSONArray("result");
             jsonObject = jsonArray.getJSONObject(0);
+
             if(!jsonObject.has("error")){
                 if(mode == MODE_LOGIN){
                     String sessionInfo = conn.getHeaderField("Set-Cookie");
                     if(sessionInfo != null){
                         jsonObject.put("sessionInfo", sessionInfo);
                     }
-
-                    return jsonObject;
                 }
             }
 
+            return jsonObject;
         } catch (Exception e) {
             e.printStackTrace();
         }

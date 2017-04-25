@@ -23,6 +23,7 @@ import com.facebook.login.widget.LoginButton;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.MessageDigest;
@@ -30,8 +31,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class LoginActivity extends AppCompatActivity{
+public class LoginActivity extends AppCompatActivity {
+    //region Constant
     private static final String TAG = "LoginActivity";
+    private static final int LOGIN_ERROR = 2;
+    private static final int LOGIN_EMPTY_ID = 3;
+    private static final int LOGIN_EMPTY_PASSWORD = 4;
+    //endregion
 
     private MaterialEditText editEmail;
     private MaterialEditText editPassword;
@@ -209,17 +215,29 @@ public class LoginActivity extends AppCompatActivity{
     private HttpCallBack httpCallBack = new HttpCallBack() {
         @Override
         public void CallBackResult(JSONObject jsonObject) {
-            if(jsonObject != null){
-                if(jsonObject.has("error")){
+            if (jsonObject != null) {
+                try{
+                    if (jsonObject.has("error")) {
+                        int errorCode = jsonObject.getInt("error");
 
-                } else {
-                    User user = new User(jsonObject);
-                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    intent.putExtra("login_user", user);
-                    startActivity(intent);
+                        if(errorCode == LOGIN_ERROR){
+                            textError.setVisibility(View.VISIBLE);
+                        } else if (errorCode == LOGIN_EMPTY_ID){
+                            Log.d(TAG, "CallBackResult Method: Empty email error");
+                        } else {
+                            Log.d(TAG, "CallBackResult Method: Empty password error");
+                        }
+                    } else {
+                        User user = new User(jsonObject);
+                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        intent.putExtra("login_user", user);
+                        startActivity(intent);
+                    }
+                } catch (JSONException e){
+                    e.printStackTrace();
                 }
             } else {
-
+                Log.d(TAG, "CallBackResult Method: JsonObject is null");
             }
         }
     };
