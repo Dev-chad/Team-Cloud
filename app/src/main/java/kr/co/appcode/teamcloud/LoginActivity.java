@@ -45,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView textError;
 
     private CallbackManager callbackManager;
+    private HttpPostManager httpPostManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +58,8 @@ public class LoginActivity extends AppCompatActivity {
             values.put("id", sp.getString("id", ""));
             values.put("password", sp.getString("password", ""));
 
-           /* HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(values);
-            httpPostAsyncTask.execute();*/
+            httpPostManager = new HttpPostManager(this, values, httpCallBack);
+            httpPostManager.execute();
         }
 
         callbackManager = CallbackManager.Factory.create();
@@ -136,9 +137,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 } else if (password.length() == 0) {
                     editPassword.setError("비밀번호를 입력해주세요");
-                } else if (!editPassword.validate()) {
-
-                } else {
+                } else if (editPassword.validate()) {
                     HashMap<String, String> values = new HashMap<>();
                     values.put("id", email);
                     values.put("password", password);
@@ -146,9 +145,6 @@ public class LoginActivity extends AppCompatActivity {
                     HttpPostManager httpPostManager = new HttpPostManager(LoginActivity.this, values, httpCallBack);
                     httpPostManager.setMode(HttpPostManager.MODE_LOGIN);
                     httpPostManager.execute();
-
-                    /*HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(values);
-                    httpPostAsyncTask.execute();*/
                 }
             }
         });
@@ -216,24 +212,32 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void CallBackResult(JSONObject jsonObject) {
             if (jsonObject != null) {
-                try{
+                try {
                     if (jsonObject.has("error")) {
                         int errorCode = jsonObject.getInt("error");
 
-                        if(errorCode == LOGIN_ERROR){
+                        if (errorCode == LOGIN_ERROR) {
                             textError.setVisibility(View.VISIBLE);
-                        } else if (errorCode == LOGIN_EMPTY_ID){
+                        } else if (errorCode == LOGIN_EMPTY_ID) {
                             Log.d(TAG, "CallBackResult Method: Empty email error");
                         } else {
                             Log.d(TAG, "CallBackResult Method: Empty password error");
                         }
                     } else {
+                        SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
+                        SharedPreferences.Editor spEditor = sp.edit();
+
+                        spEditor.putString("id", jsonObject.getString("id"));
+//                        spEditor.putString("password", )
+
+                        spEditor.apply();
+
                         User user = new User(jsonObject);
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                         intent.putExtra("login_user", user);
                         startActivity(intent);
                     }
-                } catch (JSONException e){
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             } else {
