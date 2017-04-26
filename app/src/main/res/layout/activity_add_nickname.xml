@@ -17,46 +17,55 @@
         android:layout_centerVertical="true"
         android:orientation="vertical">
 
+
         <TextView
             android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="팀클라우드 계정으로 사용중인 이메일을 통해\n새로운 비밀번호를 발급해드립니다"
+            android:layout_marginTop="10dp"
+            android:text="팀클라우드에서 사용하실 닉네임을 등록해주세요."
+            android:textSize="15sp"
             android:textStyle="bold"/>
 
-        <TextView
-            android:layout_gravity="center"
+        <LinearLayout
+            android:id="@+id/layout_nickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:gravity="center"
-            android:text="재발급 서비스는 하루에 3번 가능합니다"
-            android:textStyle="bold"
-            android:textColor="@color/red"/>
+            android:layout_marginTop="10dp"
+            android:gravity="center">
 
-        <com.rengwuxian.materialedittext.MaterialEditText
-            android:id="@+id/edit_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="사용중인 이메일"
-            android:layout_marginTop="30dp"
-            android:inputType="textEmailAddress"
-            android:imeOptions="actionDone"
-            android:maxLines="1"
-            app:met_floatingLabel="highlight"
-            app:met_clearButton="true"
-            app:met_autoValidate="true"/>
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_nickname"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="닉네임"
+                android:layout_weight="1"
+                android:inputType="text"
+                android:maxLength="15"
+                android:layout_marginTop="5dp"
+                app:met_floatingLabel="highlight"
+                app:met_autoValidate="true"
+                app:met_helperText="영문을 포함한 4~15자의 숫자, _, - 가능"
+                app:met_helperTextColor="@android:color/holo_green_dark"
+                app:met_helperTextAlwaysShown="true"/>
+
+            <Button
+                android:id="@+id/btn_check_nickname"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:theme="@style/ColoredBlueButton"
+                android:text="중복확인" />
+        </LinearLayout>
 
         <Button
-            android:id="@+id/btn_reissue"
+            android:id="@+id/btn_start"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:theme="@style/ColoredDarkBlueButton"
-            android:text="해당 이메일로 재발급 받기"/>
+            android:text="팀클라우드 시작하기"/>
     </LinearLayout>
 
     <TextView
@@ -64,7 +73,7 @@
         android:layout_height="match_parent"
         android:layout_above="@id/layout_editForm"
         android:gravity="center"
-        android:text="Team Cloud"
+        android:text="WELCOME !"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/darkgreen"
         android:textSize="50dp"

@@ -58,7 +58,11 @@ public class LoginActivity extends AppCompatActivity {
             values.put("id", sp.getString("id", ""));
             values.put("password", sp.getString("password", ""));
 
+            Log.d(TAG, "Saved id: " + sp.getString("id", ""));
+            Log.d(TAG, "Saved password: " + sp.getString("password", ""));
+
             httpPostManager = new HttpPostManager(this, values, httpCallBack);
+            httpPostManager.setMode(HttpPostManager.MODE_AUTO_LOGIN);
             httpPostManager.execute();
         }
 
@@ -142,7 +146,7 @@ public class LoginActivity extends AppCompatActivity {
                     values.put("id", email);
                     values.put("password", password);
 
-                    HttpPostManager httpPostManager = new HttpPostManager(LoginActivity.this, values, httpCallBack);
+                    httpPostManager = new HttpPostManager(LoginActivity.this, values, httpCallBack);
                     httpPostManager.setMode(HttpPostManager.MODE_LOGIN);
                     httpPostManager.execute();
                 }
@@ -166,6 +170,7 @@ public class LoginActivity extends AppCompatActivity {
                 final GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
+                        Log.d(TAG, "onCompleted");
                         Log.v("result", object.toString());
                         User user = new User(object, "facebook");
                         user.setSessionInfo(loginResult.getAccessToken().getToken());
@@ -190,6 +195,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onError(FacebookException error) {
                 Log.e(TAG, error.toString());
             }
+
+
         });
 
         TextView textForgotPassword = (TextView) findViewById(R.id.text_forgotPassword);
@@ -206,6 +213,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult");
     }
 
     private HttpCallBack httpCallBack = new HttpCallBack() {
@@ -224,13 +232,15 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "CallBackResult Method: Empty password error");
                         }
                     } else {
-                        SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
-                        SharedPreferences.Editor spEditor = sp.edit();
+                        Log.d(TAG, jsonObject.toString());
+                        if (jsonObject.getString("login_type").equals("normal")){
+                            SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
+                            SharedPreferences.Editor spEditor = sp.edit();
+                            spEditor.putString("id", jsonObject.getString("id"));
+                            spEditor.putString("password", md5(editPassword.getText().toString()));
 
-                        spEditor.putString("id", jsonObject.getString("id"));
-//                        spEditor.putString("password", )
-
-                        spEditor.apply();
+                            spEditor.apply();
+                        }
 
                         User user = new User(jsonObject);
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
@@ -245,114 +255,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     };
-
-   /* private class HttpPostAsyncTask extends AsyncTask<Void, Void, User> {
-
-        private int errorCode;
-        private HashMap<String, String> values;
-        private URL url;
-        private Context context;
-        private ProgressDialog progressDialog;
-        private String body;
-
-        private HttpPostAsyncTask(HashMap<String, String> values) {
-            this.values = values;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            progressDialog = new ProgressDialog(LoginActivity.this);
-            progressDialog.setMessage("로그인 중...");
-            progressDialog.show();
-            try {
-                url = new URL(Constant.SERVER_URL + "login.php");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-
-            body = "id=" + values.get("id") + "&password=" + values.get("password");
-        }
-
-        @Override
-        protected User doInBackground(Void... params) {
-            try {
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Accept", "application/json");
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
-
-                OutputStream os = conn.getOutputStream();
-                os.write(body.getBytes("UTF-8"));
-                os.flush();
-                os.close();
-
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                StringBuilder sb = new StringBuilder();
-
-                String json;
-                while ((json = br.readLine()) != null) {
-                    sb.append(json).append("\n");
-                }
-                Log.d(TAG, sb.toString());
-
-                JSONObject jsonObject = new JSONObject(sb.toString());
-                JSONArray jsonArray = jsonObject.getJSONArray("result");
-                jsonObject = jsonArray.getJSONObject(0);
-                if (jsonObject.has("error")) {
-                    errorCode = jsonObject.getInt("error");
-                    Log.d(TAG, "Error code : " + errorCode);
-                } else {
-                    Log.d(TAG, "Json => " + jsonObject.toString());
-
-                    User user = new User(jsonObject);
-                    user.setSessionInfo(conn.getHeaderField("Set-Cookie"));
-
-                    return user;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(User result) {
-            if (result != null) {
-                SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
-                SharedPreferences.Editor spEditor = sp.edit();
-
-                if(sp.contains("id")){
-                    Toast.makeText(LoginActivity.this, "자동 로그인 성공", Toast.LENGTH_SHORT).show();
-                } else {
-                    spEditor.putString("id", result.getId());
-                    spEditor.putString("password", md5(values.get("password")));
-                    Log.d(TAG, values.get("password"));
-                    Log.d(TAG,  md5(values.get("password")));
-                    spEditor.putString("type", "teamcloud");
-                    spEditor.apply();
-                }
-
-
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                intent.putExtra("login_user", result);
-                startActivity(intent);
-            } else {
-                if (errorCode == Constant.LOGIN_ERROR) {
-                    textError.setVisibility(View.VISIBLE);
-                } else if (errorCode == Constant.LOGIN_EMPTY_ID) {
-
-                } else if (errorCode == Constant.LOGIN_EMPTY_PASSWORD) {
-                }
-            }
-
-            progressDialog.dismiss();
-        }
-    }*/
 
     private void closingSoftKeyboard() {
         try {
@@ -370,7 +272,6 @@ public class LoginActivity extends AppCompatActivity {
             editPassword.setText("");
         }
     }
-
 
     public String md5(final String s) {
         try {
