@@ -18,6 +18,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -53,10 +54,21 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
-        if (sp.contains("id")) {
+        Profile profile = Profile.getCurrentProfile();
+        if (profile != null) {
+            HashMap<String, String> values = new HashMap<>();
+            values.put("id", profile.getId());
+            values.put("loginType", "facebook");
+
+            httpPostManager = new HttpPostManager(this, values, httpCallBack);
+            httpPostManager.setMode(HttpPostManager.MODE_AUTO_LOGIN);
+            httpPostManager.execute();
+
+        } else if (sp.contains("id")) {
             HashMap<String, String> values = new HashMap<>();
             values.put("id", sp.getString("id", ""));
             values.put("password", sp.getString("password", ""));
+            values.put("loginType", "auto");
 
             Log.d(TAG, "Saved id: " + sp.getString("id", ""));
             Log.d(TAG, "Saved password: " + sp.getString("password", ""));
@@ -145,6 +157,7 @@ public class LoginActivity extends AppCompatActivity {
                     HashMap<String, String> values = new HashMap<>();
                     values.put("id", email);
                     values.put("password", password);
+                    values.put("loginType", "normal");
 
                     httpPostManager = new HttpPostManager(LoginActivity.this, values, httpCallBack);
                     httpPostManager.setMode(HttpPostManager.MODE_LOGIN);
@@ -171,12 +184,10 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         Log.d(TAG, "onCompleted");
-                        Log.v("result", object.toString());
-                        User user = new User(object, "facebook");
-                        user.setSessionInfo(loginResult.getAccessToken().getToken());
-                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                        intent.putExtra("login_user", user);
-                        startActivity(intent);
+                        Log.d(TAG, object.toString());
+
+                        HashMap<String, String> values = new HashMap<>();
+
                     }
                 });
 
@@ -219,39 +230,27 @@ public class LoginActivity extends AppCompatActivity {
     private HttpCallBack httpCallBack = new HttpCallBack() {
         @Override
         public void CallBackResult(JSONObject jsonObject) {
-            if (jsonObject != null) {
-                try {
-                    if (jsonObject.has("error")) {
-                        int errorCode = jsonObject.getInt("error");
+            try {
+                if (jsonObject.getInt("resultCode") == Constant.SUCCESS) {
+                    if (jsonObject.getString("loginType").equals("normal")) {
+                        SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
+                        SharedPreferences.Editor spEditor = sp.edit();
+                        spEditor.putString("id", jsonObject.getString("id"));
+                        spEditor.putString("password", md5(editPassword.getText().toString()));
 
-                        if (errorCode == LOGIN_ERROR) {
-                            textError.setVisibility(View.VISIBLE);
-                        } else if (errorCode == LOGIN_EMPTY_ID) {
-                            Log.d(TAG, "CallBackResult Method: Empty email error");
-                        } else {
-                            Log.d(TAG, "CallBackResult Method: Empty password error");
-                        }
-                    } else {
-                        Log.d(TAG, jsonObject.toString());
-                        if (jsonObject.getString("login_type").equals("normal")){
-                            SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
-                            SharedPreferences.Editor spEditor = sp.edit();
-                            spEditor.putString("id", jsonObject.getString("id"));
-                            spEditor.putString("password", md5(editPassword.getText().toString()));
-
-                            spEditor.apply();
-                        }
-
-                        User user = new User(jsonObject);
-                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                        intent.putExtra("login_user", user);
-                        startActivity(intent);
+                        spEditor.apply();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+                    User user = new User(jsonObject);
+                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    intent.putExtra("login_user", user);
+                    startActivity(intent);
+
+                } else {
+                    Log.d(TAG, jsonObject.toString());
                 }
-            } else {
-                Log.d(TAG, "CallBackResult Method: JsonObject is null");
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
     };

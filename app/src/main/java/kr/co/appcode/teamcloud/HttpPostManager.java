@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -24,7 +23,7 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
     public static final int MODE_LOGIN = 1;
     public static final int MODE_AUTO_LOGIN = 2;
     public static final int MODE_JOIN = 3;
-    public static final int MODE_EMAIL_CHECK = 4;
+    public static final int MODE_AUTH_EMAIL = 4;
     public static final int MODE_NICKNAME_CHECK = 5;
     public static final int MODE_JOIN_FACEBOOK = 6;
     public static final int MODE_REISSUE = 7;
@@ -38,39 +37,31 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
     private int mode;
     private ProgressDialog progressDialog;
 
-    public HttpPostManager(Activity context, HashMap<String, String> values, HttpCallBack httpCallBack) {
+    public HttpPostManager(Activity activity, HashMap<String, String> values, HttpCallBack httpCallBack) {
         this.values = values;
         this.httpCallBack = httpCallBack;
-        progressDialog = new ProgressDialog(context);
+        progressDialog = new ProgressDialog(activity);
     }
 
     public void setMode(int mode) {
         this.mode = mode;
 
         try {
-            if(mode == MODE_LOGIN || mode == MODE_AUTO_LOGIN){
-                url = new URL(SERVER_URL+"login.php");
-                body = "id="+values.get("id")+"&password="+values.get("password");
-                if(mode == MODE_AUTO_LOGIN){
-                    body+="&type=auto";
-                } else {
-                    body+="&type=normal";
-                }
-            }else if(mode == MODE_JOIN || mode == MODE_EMAIL_CHECK || mode == MODE_NICKNAME_CHECK){
-                url = new URL(SERVER_URL+"join.php");
-                if(mode == MODE_NICKNAME_CHECK){
-                    body = "nickname=" + values.get("nickname");
-                } else if(mode == MODE_EMAIL_CHECK){
-                    body = "email=" + values.get("email") + "&auth_code=" + values.get("auth_code");
-                } else if(mode == MODE_JOIN){
-                    body = "id=" + values.get("id") + "&password=" + values.get("password") + "&nickname=" + values.get("nickname") + "&name=" + values.get("name");
-                }
-            }else if(mode == MODE_JOIN_FACEBOOK){
-                url = new URL(SERVER_URL+"joinFacebook.php");
-                body = "id=" + values.get("id") + "&token="+values.get("token")+"&nickname="+values.get("nickname")+"&name="+values.get("name");
-            }else if(mode == MODE_REISSUE){
-                url = new URL(SERVER_URL+"reissue.php");
-                body = "id="+values.get("email");
+            if (mode == MODE_LOGIN) {
+                url = new URL(SERVER_URL + "login.php");
+                body = "id=" + values.get("id") + "&password=" + values.get("password") + "&loginType = " + values.get("loginType");
+            } else if (mode == MODE_JOIN) {
+                url = new URL(SERVER_URL + "join.php");
+                body = "id=" + values.get("id") + "&password=" + values.get("password") + "&nickname=" + values.get("nickname") + "&name=" + values.get("name") + "&joinType=" + values.get("joinType");
+            } else if (mode == MODE_AUTH_EMAIL) {
+                url = new URL(SERVER_URL + "emailAuth.php");
+                body = "id=" + values.get("id") + "&authCode=" + values.get("authCode");
+            } else if (mode == MODE_NICKNAME_CHECK) {
+                url = new URL(SERVER_URL + "duplicateCheck.php");
+                body = "nickname=" + values.get("nickname");
+            } else if (mode == MODE_REISSUE) {
+                url = new URL(SERVER_URL + "reissue.php");
+                body = "id=" + values.get("id");
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -110,17 +101,13 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
             }
 
             JSONObject jsonObject = new JSONObject(sb.toString());
-            JSONArray jsonArray = jsonObject.getJSONArray("result");
-            jsonObject = jsonArray.getJSONObject(0);
 
             Log.d(TAG, jsonObject.toString());
 
-            if(!jsonObject.has("error")){
-                if(mode == MODE_LOGIN || mode==MODE_AUTO_LOGIN){
-                    String sessionInfo = conn.getHeaderField("Set-Cookie");
-                    if(sessionInfo != null){
-                        jsonObject.put("sessionInfo", sessionInfo);
-                    }
+            if (mode == MODE_LOGIN || mode == MODE_AUTO_LOGIN) {
+                String sessionInfo = conn.getHeaderField("Set-Cookie");
+                if (sessionInfo != null) {
+                    jsonObject.put("sessionInfo", sessionInfo);
                 }
             }
 

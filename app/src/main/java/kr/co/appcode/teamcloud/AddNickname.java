@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class AddNickname extends AppCompatActivity {
+    private static final String TAG = "AddNickName";
 
     private MaterialEditText editNickname;
 
@@ -66,7 +67,7 @@ public class AddNickname extends AppCompatActivity {
             }
         });
 
-        btnCheckNickname = (Button)findViewById(R.id.btn_check_nickname);
+        btnCheckNickname = (Button) findViewById(R.id.btn_check_nickname);
         btnCheckNickname.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,6 +80,9 @@ public class AddNickname extends AppCompatActivity {
                         HashMap<String, String> values = new HashMap<>();
                         values.put("nickname", nickname);
 
+                        HttpPostManager httpPostManager = new HttpPostManager(AddNickname.this, values, httpCallBack);
+                        httpPostManager.setMode(HttpPostManager.MODE_NICKNAME_CHECK);
+                        httpPostManager.execute();
 
                     } else {
                         editNickname.setError("닉네임이 올바르지 않습니다.");
@@ -90,23 +94,20 @@ public class AddNickname extends AppCompatActivity {
         });
     }
 
-    private HttpCallBack httpCallBack = new HttpCallBack(){
+    private HttpCallBack httpCallBack = new HttpCallBack() {
         @Override
         public void CallBackResult(JSONObject jsonObject) {
-            if (jsonObject != null) {
-                try {
-                    if (jsonObject.getInt("return_code") == Constant.DUPLICATED) {
-                        editNickname.setError("이미 등록된 닉네임입니다.");
-                    } else {
-                        btnCheckNickname.setText("확인완료");
-                        isCheckedNickname = true;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            try {
+                if (jsonObject.getInt("resultCode") == Constant.DUPLICATED) {
+                    editNickname.setError("이미 등록된 닉네임입니다.");
+                } else {
+                    btnCheckNickname.setText("확인완료");
+                    isCheckedNickname = true;
                 }
-            } else {
-
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
     };
+
 }

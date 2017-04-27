@@ -1,9 +1,7 @@
 package kr.co.appcode.teamcloud;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,19 +21,29 @@ import android.widget.Toast;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
 
 public class JoinActivity extends AppCompatActivity {
+    //region constant
     private static final String TAG = "JoinActivity";
 
+    public static final int JOIN_EMPTY_EMAIL = 2;
+    public static final int JOIN_INVALID_EMAIL = 3;
+    public static final int JOIN_DUPLICATE_EMAIL = 4;
+    public static final int JOIN_EMPTY_PASSWORD = 5;
+    public static final int JOINT_INVALID_PASSWORD = 6;
+    public static final int JOIN_EMPTY_NICKNAME = 7;
+    public static final int JOIN_INVALID_NICKNAME = 8;
+    public static final int JOIN_DUPLICATE_NICKNAME = 9;
+    public static final int JOIN_EMPTY_NAME = 10;
+    public static final int JOIN_INVALID_NAME = 11;
+
+    //endregion
     private LinearLayout layoutEmailAuth;
 
     private MaterialEditText editEmail;
@@ -53,7 +61,8 @@ public class JoinActivity extends AppCompatActivity {
     private boolean isCheckedEmail;
     private boolean isCheckedNickname;
     private boolean isSamePassword;
-    private boolean isRunningEmailCheck;
+
+    private HttpPostManager httpPostManager;
 
     private int authCode;
 
@@ -272,8 +281,9 @@ public class JoinActivity extends AppCompatActivity {
                                             HashMap<String, String> values = new HashMap<>();
                                             values.put("email", email);
 
-                                            HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(JoinActivity.this, values, Constant.MODE_AUTH_EMAIL);
-                                            httpPostAsyncTask.execute();
+                                            httpPostManager = new HttpPostManager(JoinActivity.this, values, httpCallBack);
+                                            httpPostManager.setMode(HttpPostManager.MODE_AUTH_EMAIL);
+                                            httpPostManager.execute();
                                         }
                                     }).show();
                         } else {
@@ -281,10 +291,12 @@ public class JoinActivity extends AppCompatActivity {
 
                             setAuthCode();
                             HashMap<String, String> values = new HashMap<>();
-                            values.put("email", email);
+                            values.put("id", email);
+                            values.put("authCode", String.valueOf(authCode));
 
-                            HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(JoinActivity.this, values, Constant.MODE_AUTH_EMAIL);
-                            httpPostAsyncTask.execute();
+                            httpPostManager = new HttpPostManager(JoinActivity.this, values, httpCallBack);
+                            httpPostManager.setMode(HttpPostManager.MODE_AUTH_EMAIL);
+                            httpPostManager.execute();
                         }
 
                         if (editAuth.length() > 0) {
@@ -318,8 +330,9 @@ public class JoinActivity extends AppCompatActivity {
                         HashMap<String, String> values = new HashMap<>();
                         values.put("nickname", nickname);
 
-                        HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(JoinActivity.this, values, Constant.MODE_CHECK_NICKNAME);
-                        httpPostAsyncTask.execute();
+                        httpPostManager = new HttpPostManager(JoinActivity.this, values, httpCallBack);
+                        httpPostManager.setMode(HttpPostManager.MODE_NICKNAME_CHECK);
+                        httpPostManager.execute();
                     } else {
                         editNickname.setError("닉네임이 올바르지 않습니다.");
                     }
@@ -381,13 +394,15 @@ public class JoinActivity extends AppCompatActivity {
                 } else {
                     HashMap<String, String> values = new HashMap<>();
 
-                    values.put("email", editEmail.getText().toString());
+                    values.put("id", editEmail.getText().toString());
                     values.put("password", editPassword.getText().toString());
                     values.put("nickname", editNickname.getText().toString());
                     values.put("name", editName.getText().toString());
+                    values.put("joinType", "teamcloud");
 
-                    HttpPostAsyncTask httpPostAsyncTask = new HttpPostAsyncTask(JoinActivity.this, values, Constant.MODE_JOIN_SUBMIT);
-                    httpPostAsyncTask.execute();
+                    httpPostManager = new HttpPostManager(JoinActivity.this, values, httpCallBack);
+                    httpPostManager.setMode(HttpPostManager.MODE_JOIN);
+                    httpPostManager.execute();
                 }
             }
         });
@@ -468,103 +483,44 @@ public class JoinActivity extends AppCompatActivity {
         authCode = (int) (rand.nextDouble() * range + start);
     }
 
-    private class HttpPostAsyncTask extends AsyncTask<Void, Void, Integer> {
-
-        private int mode;
-        private HashMap<String, String> values;
-        private String body;
-        private URL url;
-        private Context context;
-        private ProgressDialog progressDialog;
-
-        private HttpPostAsyncTask(Context context, HashMap<String, String> values, int mode) {
-            super();
-            this.values = values;
-            this.mode = mode;
-            this.context = context;
-        }
-
+    HttpCallBack httpCallBack = new HttpCallBack() {
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setMessage("잠시 기다려주세요...");
-            progressDialog.show();
-
-            if (mode == Constant.MODE_AUTH_EMAIL) {
-                body = "email=" + values.get("email") + "&auth_code=" + authCode;
-            } else if (mode == Constant.MODE_CHECK_NICKNAME) {
-                body = "nickname=" + values.get("nickname");
-            } else if (mode == Constant.MODE_JOIN_SUBMIT) {
-                body = "email=" + values.get("email") + "&password=" + values.get("password") + "&nickname=" + values.get("nickname") + "&name=" + values.get("name");
-            }
-
+        public void CallBackResult(JSONObject jsonObject) {
             try {
-                url = new URL(Constant.SERVER_URL+"join.php");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        }
+                int mode = jsonObject.getInt("mode");
+                int result = jsonObject.getInt("resultCode");
 
-        @Override
-        protected Integer doInBackground(Void... params) {
-            try {
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
-
-                OutputStream os = conn.getOutputStream();
-                os.write(body.getBytes("UTF-8"));
-                os.flush();
-                os.close();
-
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-
-                return Integer.valueOf(br.readLine());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-
-            if (mode == Constant.MODE_AUTH_EMAIL) {
-                if (result == Constant.DUPLICATED) {
-                    editEmail.setError("이미 등록된 이메일입니다.");
-                } else {
-                    Snackbar.make(btnCheckEmail, "이메일을 발송했습니다. 인증번호를 확인해주세요.", Snackbar.LENGTH_SHORT).show();
-                    if (timerThread.isAlive()) {
-                        timerThread.setStop();
-                        Log.d(TAG, "Stopped timer thread.");
+                if (mode == HttpPostManager.MODE_AUTH_EMAIL) {
+                    if (result == Constant.DUPLICATED) {
+                        editEmail.setError("이미 등록된 이메일입니다.");
+                    } else {
+                        Snackbar.make(btnCheckEmail, "이메일을 발송했습니다. 인증번호를 확인해주세요.", Snackbar.LENGTH_SHORT).show();
+                        if (timerThread.isAlive()) {
+                            timerThread.setStop();
+                            Log.d(TAG, "Stopped timer thread.");
+                        }
+                        timerThread = new TimerThread();
+                        timerThread.start();
                     }
-                    timerThread = new TimerThread();
-                    timerThread.start();
+                } else if (mode == HttpPostManager.MODE_NICKNAME_CHECK) {
+                    if (result == Constant.DUPLICATED) {
+                        editNickname.setError("이미 등록된 닉네임입니다.");
+                    } else {
+                        btnCheckNickname.setText("확인완료");
+                        isCheckedNickname = true;
+                    }
+                } else if (mode == HttpPostManager.MODE_JOIN) {
+                    if (result == Constant.SUCCESS) {
+                        Intent intent = new Intent(JoinActivity.this, LoginActivity.class);
+                        Toast.makeText(JoinActivity.this, "환영합니다.", Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+                    }
                 }
-            } else if (mode == Constant.MODE_CHECK_NICKNAME) {
-                if (result == Constant.DUPLICATED) {
-                    editNickname.setError("이미 등록된 닉네임입니다.");
-                } else {
-                    btnCheckNickname.setText("확인완료");
-                    isCheckedNickname = true;
-                }
-            } else if (mode == Constant.MODE_JOIN_SUBMIT) {
-                if (result == Constant.JOIN_COMPLETE) {
-                    Intent intent = new Intent(JoinActivity.this, LoginActivity.class);
-                    Toast.makeText(JoinActivity.this, "환영합니다.", Toast.LENGTH_SHORT).show();
-                    startActivity(intent);
-                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            progressDialog.dismiss();
         }
-
-    }
+    };
 
     private void closingSoftKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
