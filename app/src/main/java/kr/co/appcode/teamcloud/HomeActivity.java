@@ -10,10 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
 import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -25,24 +25,16 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
 
     private User user;
-
-    private GraphRequest graphRequest;
+    private Profile profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        Profile profile = Profile.getCurrentProfile();
 
-        Log.d(TAG, profile.getName());
-        Log.d(TAG, profile.getProfilePictureUri(1000, 1000).toString());
-        Log.d(TAG, String.valueOf(accessToken.isExpired()));
-        Log.d(TAG, accessToken.getExpires().toString());
-        Log.d(TAG, accessToken.getLastRefresh().toString());
-        AccessToken.refreshCurrentAccessTokenAsync();
-
-
+        profile = Profile.getCurrentProfile();
+        user = getIntent().getParcelableExtra("loginUser");
+        Toast.makeText(this, user.getName()+"님 환영합니다.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -50,14 +42,18 @@ public class HomeActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.menu_logout) {
-            SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
-            SharedPreferences.Editor spEditor = sp.edit();
+            if (profile != null) {
+                LoginManager.getInstance().logOut();
+            } else {
+                SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
+                SharedPreferences.Editor spEditor = sp.edit();
 
-            spEditor.remove("id")
-                    .remove("password")
-                    .remove("type");
+                spEditor.remove("id")
+                        .remove("password")
+                        .remove("type");
 
-            spEditor.apply();
+                spEditor.apply();
+            }
 
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);

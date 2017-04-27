@@ -1,7 +1,9 @@
 package kr.co.appcode.teamcloud;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -9,9 +11,15 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class FoundPasswordActivity extends AppCompatActivity {
     private static final String TAG = "FoundPasswordActivity";
@@ -64,8 +72,12 @@ public class FoundPasswordActivity extends AppCompatActivity {
                 if (email.length() == 0) {
                     editEmail.setError("사용중인 이메일을 입력해주세요");
                 } else if (editEmail.validate()) {
-                    /*HttpPostAsyncTask httpPost = new HttpPostAsyncTask();
-                    httpPost.execute(email);*/
+                    HashMap<String, String> values = new HashMap<>();
+                    values.put("id", email);
+
+                    HttpPostManager httpPostManager = new HttpPostManager(FoundPasswordActivity.this, values, httpCallBack);
+                    httpPostManager.setMode(HttpPostManager.MODE_REISSUE);
+                    httpPostManager.execute();
                 }
             }
         });
@@ -85,62 +97,7 @@ public class FoundPasswordActivity extends AppCompatActivity {
     }
 
 
-   /* private class HttpPostAsyncTask extends AsyncTask<String, Void, Integer> {
-
-        private URL url;
-        private ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            progressDialog = new ProgressDialog(FoundPasswordActivity.this);
-            progressDialog.setMessage("잠시 기다려주세요...");
-            progressDialog.show();
-            try {
-                url = new URL(Constant.SERVER_URL+"reissue.php");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            try {
-                String body = "id=" + params[0];
-
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Accept", "application/json");
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
-
-                OutputStream os = conn.getOutputStream();
-                os.write(body.getBytes("UTF-8"));
-                os.flush();
-                os.close();
-
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                StringBuilder sb = new StringBuilder();
-
-                String json;
-                while ((json = br.readLine()) != null) {
-                    sb.append(json).append("\n");
-                }
-                Log.d(TAG, sb.toString());
-
-                JSONObject jsonObject = new JSONObject(sb.toString());
-                JSONArray jsonArray = jsonObject.getJSONArray("result");
-                jsonObject = jsonArray.getJSONObject(0);
-
-                return jsonObject.getInt("resultCode");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
+   /*
 
         @Override
         protected void onPostExecute(Integer result) {
@@ -167,4 +124,31 @@ public class FoundPasswordActivity extends AppCompatActivity {
             progressDialog.dismiss();
         }
     }*/
+
+    private HttpCallBack httpCallBack = new HttpCallBack() {
+        @Override
+        public void CallBackResult(JSONObject jsonObject) {
+            try {
+                int result = jsonObject.getInt("resultCode");
+                if (result == Constant.SUCCESS) {
+                    Toast.makeText(FoundPasswordActivity.this, "이메일로 새로운 비밀번호를 보내드렸습니다", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(FoundPasswordActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else if (result == 2) {
+                    editEmail.setError("이메일 형식이 올바르지 않습니다.");
+                } else if (result == 3) {
+                    editEmail.setError("회원으로 등록된 이메일이 아닙니다");
+                } else if (result == 4) {
+                    Snackbar.make(editEmail, "재발급 회수가 초과되었습니다. 다음에 이용해주세요", Snackbar.LENGTH_SHORT).show();
+                } else if (result == -1) {
+                    Snackbar.make(editEmail, "이메일 전송을 실패했습니다. 관리자에게 문의하세요", Snackbar.LENGTH_SHORT).show();
+                } else if (result == -2) {
+                    Snackbar.make(editEmail, "비밀번호 재발급을 실패했습니다. 관리자에게 문의하세요", Snackbar.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 }

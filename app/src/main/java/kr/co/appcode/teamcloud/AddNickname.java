@@ -1,5 +1,6 @@
 package kr.co.appcode.teamcloud;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +8,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.facebook.Profile;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
 
@@ -24,10 +27,19 @@ public class AddNickname extends AppCompatActivity {
     private boolean isCheckedNickname;
     private Button btnCheckNickname;
 
+    private Profile profile;
+
+    private HttpPostManager httpPostManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_nickname);
+
+        profile = Profile.getCurrentProfile();
+        if(profile == null){
+            finish();
+        }
 
         editNickname = (MaterialEditText) findViewById(R.id.edit_nickname);
         editNickname.addValidator(new RegexpValidator("영문을 포함한 4~15자의 숫자, _, - 가능.", "^(?=.*[a-zA-Z])([_a-z0-9-]){4,15}$"));
@@ -78,9 +90,10 @@ public class AddNickname extends AppCompatActivity {
                         editNickname.setError("닉네임을 입력해주세요.");
                     } else if (editNickname.validate()) {
                         HashMap<String, String> values = new HashMap<>();
+
                         values.put("nickname", nickname);
 
-                        HttpPostManager httpPostManager = new HttpPostManager(AddNickname.this, values, httpCallBack);
+                        httpPostManager = new HttpPostManager(AddNickname.this, values, httpCallBack);
                         httpPostManager.setMode(HttpPostManager.MODE_NICKNAME_CHECK);
                         httpPostManager.execute();
 
@@ -92,17 +105,48 @@ public class AddNickname extends AppCompatActivity {
                 }
             }
         });
+
+        Button btnStart = (Button)findViewById(R.id.btn_start);
+        btnStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isCheckedNickname){
+                    HashMap<String, String> values = new HashMap<>();
+
+                    values.put("id", profile.getId());
+                    values.put("nickname", editNickname.getText().toString());
+                    values.put("name", profile.getName());
+                    values.put("joinType", "facebook");
+
+                    httpPostManager = new HttpPostManager(AddNickname.this, values, httpCallBack);
+                    httpPostManager.setMode(HttpPostManager.MODE_JOIN);
+                    httpPostManager.execute();
+                }
+            }
+        });
     }
 
     private HttpCallBack httpCallBack = new HttpCallBack() {
         @Override
         public void CallBackResult(JSONObject jsonObject) {
             try {
-                if (jsonObject.getInt("resultCode") == Constant.DUPLICATED) {
-                    editNickname.setError("이미 등록된 닉네임입니다.");
-                } else {
-                    btnCheckNickname.setText("확인완료");
-                    isCheckedNickname = true;
+                if(jsonObject.getInt("mode") == HttpPostManager.MODE_NICKNAME_CHECK){
+                    if (jsonObject.getInt("resultCode") == Constant.DUPLICATED) {
+                        editNickname.setError("이미 등록된 닉네임입니다.");
+                    } else {
+                        btnCheckNickname.setText("확인완료");
+                        isCheckedNickname = true;
+                    }
+                } else if(jsonObject.getInt("mode") == HttpPostManager.MODE_JOIN) {
+                    if (jsonObject.getInt("resultCode") == Constant.SUCCESS) {
+                        User user = new User(jsonObject);
+
+                        Intent intent = new Intent(AddNickname.this, HomeActivity.class);
+                        intent.putExtra("loginUser", user);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(AddNickname.this, jsonObject.getString("resultCode"), Toast.LENGTH_SHORT).show();
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

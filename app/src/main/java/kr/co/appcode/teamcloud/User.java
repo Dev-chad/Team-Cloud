@@ -36,20 +36,10 @@ public class User implements Parcelable{
             nickname = jsonObject.getString("nickname");
             name = jsonObject.getString("name");
             credit = jsonObject.getInt("credit");
-            used_capacity = jsonObject.getInt("used_capacity");
-            max_capacity = jsonObject.getInt("max_capacity");
+            used_capacity = jsonObject.getInt("usedCapacity");
+            max_capacity = jsonObject.getInt("maxCapacity");
             sessionInfo = jsonObject.getString("sessionInfo");
-            accountType = jsonObject.getString("account_type");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public User(JSONObject jsonObject, String type){
-        try {
-            id = jsonObject.getString("id");
-            name = jsonObject.getString("name");
-            accountType = type;
+            accountType = jsonObject.getString("accountType");
         } catch (JSONException e) {
             e.printStackTrace();
         }

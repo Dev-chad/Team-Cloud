@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
             values.put("loginType", "facebook");
 
             httpPostManager = new HttpPostManager(this, values, httpCallBack);
-            httpPostManager.setMode(HttpPostManager.MODE_AUTO_LOGIN);
+            httpPostManager.setMode(HttpPostManager.MODE_LOGIN);
             httpPostManager.execute();
 
         } else if (sp.contains("id")) {
@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "Saved password: " + sp.getString("password", ""));
 
             httpPostManager = new HttpPostManager(this, values, httpCallBack);
-            httpPostManager.setMode(HttpPostManager.MODE_AUTO_LOGIN);
+            httpPostManager.setMode(HttpPostManager.MODE_LOGIN);
             httpPostManager.execute();
         }
 
@@ -186,7 +186,18 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "onCompleted");
                         Log.d(TAG, object.toString());
 
-                        HashMap<String, String> values = new HashMap<>();
+                        try {
+                            HashMap<String, String> values = new HashMap<>();
+
+                            values.put("id", object.getString("id"));
+                            values.put("loginType", "facebook");
+
+                            httpPostManager = new HttpPostManager(LoginActivity.this, values, httpCallBack);
+                            httpPostManager.setMode(HttpPostManager.MODE_LOGIN);
+                            httpPostManager.execute();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
                     }
                 });
@@ -231,8 +242,9 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void CallBackResult(JSONObject jsonObject) {
             try {
+                Log.d(TAG, jsonObject.toString());
                 if (jsonObject.getInt("resultCode") == Constant.SUCCESS) {
-                    if (jsonObject.getString("loginType").equals("normal")) {
+                    if (jsonObject.getString("mode").equals("normal")) {
                         SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
                         SharedPreferences.Editor spEditor = sp.edit();
                         spEditor.putString("id", jsonObject.getString("id"));
@@ -243,11 +255,19 @@ public class LoginActivity extends AppCompatActivity {
 
                     User user = new User(jsonObject);
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    intent.putExtra("login_user", user);
+                    intent.putExtra("loginUser", user);
                     startActivity(intent);
 
-                } else {
-                    Log.d(TAG, jsonObject.toString());
+                } else if(jsonObject.getInt("resultCode") == Constant.LOGIN_FAILED){
+                    if(jsonObject.getString("mode").equals("facebook")){
+                        Profile profile = Profile.getCurrentProfile();
+                        if(profile != null){
+                            Intent intent = new Intent(LoginActivity.this, AddNickname.class);
+                            startActivity(intent);
+                        }
+                    } else {
+                        textError.setVisibility(View.VISIBLE);
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

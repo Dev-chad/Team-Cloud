@@ -49,7 +49,8 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
         try {
             if (mode == MODE_LOGIN) {
                 url = new URL(SERVER_URL + "login.php");
-                body = "id=" + values.get("id") + "&password=" + values.get("password") + "&loginType = " + values.get("loginType");
+                body = "id=" + values.get("id") + "&password=" + values.get("password") + "&loginType=" + values.get("loginType");
+                Log.d(TAG, "body: "+body);
             } else if (mode == MODE_JOIN) {
                 url = new URL(SERVER_URL + "join.php");
                 body = "id=" + values.get("id") + "&password=" + values.get("password") + "&nickname=" + values.get("nickname") + "&name=" + values.get("name") + "&joinType=" + values.get("joinType");
@@ -104,7 +105,7 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
 
             Log.d(TAG, jsonObject.toString());
 
-            if (mode == MODE_LOGIN || mode == MODE_AUTO_LOGIN) {
+            if (mode == MODE_LOGIN) {
                 String sessionInfo = conn.getHeaderField("Set-Cookie");
                 if (sessionInfo != null) {
                     jsonObject.put("sessionInfo", sessionInfo);
