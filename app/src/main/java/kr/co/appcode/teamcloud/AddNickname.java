@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
 
@@ -154,4 +155,11 @@ public class AddNickname extends AppCompatActivity {
         }
     };
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(Profile.getCurrentProfile() != null){
+            LoginManager.getInstance().logOut();
+        }
+    }
 }

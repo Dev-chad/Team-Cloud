@@ -26,7 +26,7 @@
             <LinearLayout
                 android:id="@+id/layout_nav_header"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/nav_header_height"
+                android:layout_height="wrap_content"
                 android:background="@drawable/side_nav_bar"
                 android:gravity="bottom"
                 android:orientation="vertical"
@@ -38,9 +38,10 @@
 
                 <ImageView
                     android:id="@+id/imageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     android:paddingTop="@dimen/nav_header_vertical_spacing"
+                    android:layout_gravity="center"
                     app:srcCompat="@android:drawable/sym_def_app_icon" />
 
                 <TextView
@@ -48,14 +49,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="@dimen/nav_header_vertical_spacing"
-                    android:text="Android Studio"
+                    android:text="팀 이름"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                <ProgressBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:max="100"
+                    android:progress="50"/>
 
                 <TextView
                     android:id="@+id/textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="android.studio@android.com" />
+                    android:text="용량 표시"
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center"/>
 
 
             </LinearLayout>
