@@ -254,10 +254,11 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     User user = new User(jsonObject);
-                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("loginUser", user);
                     startActivity(intent);
 
+                    finish();
                 } else if(jsonObject.getInt("resultCode") == Constant.LOGIN_FAILED){
                     if(jsonObject.getString("mode").equals("facebook")){
                         Profile profile = Profile.getCurrentProfile();

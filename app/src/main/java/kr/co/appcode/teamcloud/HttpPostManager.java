@@ -28,6 +28,8 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
     public static final int MODE_JOIN_FACEBOOK = 6;
     public static final int MODE_REISSUE = 7;
 
+    private boolean isCheckSession;
+
     //endregion
 
     private HashMap<String, String> values;
@@ -45,7 +47,6 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
 
     public void setMode(int mode) {
         this.mode = mode;
-
         try {
             if (mode == MODE_LOGIN) {
                 url = new URL(SERVER_URL + "login.php");
@@ -69,6 +70,10 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
         }
     }
 
+    public void setCheckSession(boolean isCheckSession){
+        this.isCheckSession = isCheckSession;
+    }
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -85,6 +90,9 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            if(isCheckSession){
+                conn.setRequestProperty("Cookie", values.get("sessionInfo"));
+            }
             conn.setDoOutput(true);
             conn.setDoInput(true);
 

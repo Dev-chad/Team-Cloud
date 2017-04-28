@@ -50,13 +50,15 @@
         <activity
             android:name=".JoinActivity"
             android:label="회원가입" />
-        <activity android:name=".HomeActivity">
-
-        </activity>
+        <activity android:name=".HomeActivity" />
         <activity
             android:name=".FoundPasswordActivity"
-            android:label="비밀번호 재발급"></activity>
-        <activity android:name=".AddNickname">
+            android:label="비밀번호 재발급" />
+        <activity android:name=".AddNickname" />
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
     </application>
