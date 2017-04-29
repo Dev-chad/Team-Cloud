@@ -1,33 +1,23 @@
 package kr.co.appcode.teamcloud;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class HomeActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     private static final String TAG = "HomeActivity";
@@ -35,6 +25,9 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
     private User user;
     private Profile profile;
     private ListView teamList;
+    private ProgressBar capacityBar;
+    private TextView textUsedCapacity;
+    private TextView textMaxCapacity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +36,19 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
 
         profile = Profile.getCurrentProfile();
         user = getIntent().getParcelableExtra("loginUser");
-        Toast.makeText(this, user.getName()+"님 환영합니다.", Toast.LENGTH_SHORT).show();
+
+        capacityBar = (ProgressBar)findViewById(R.id.progress_capacity);
+        capacityBar.setMax(user.getMax_capacity());
+        capacityBar.setProgress(user.getUsed_capacity());
+
+        textUsedCapacity = (TextView)findViewById(R.id.text_used_capacity);
+        textUsedCapacity.setText(""+user.getUsed_capacity());
+
+        textMaxCapacity = (TextView)findViewById(R.id.text_max_capacity);
+        textMaxCapacity.setText(""+user.getMax_capacity());
+
         teamList = (ListView)findViewById(R.id.list_team);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        /*ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
 
         for(int i=0; i<10; i++){
             adapter.add("팀 "+(i+1));
@@ -55,14 +58,6 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         teamList.setOnItemClickListener(this);
 
         setListViewHeightBasedOnItems(teamList, 6);
-
-        Button btnGetHeight = (Button)findViewById(R.id.btn_getHeight);
-        btnGetHeight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(HomeActivity.this, ""+teamList.getHeight(), Toast.LENGTH_SHORT).show();
-            }
-        });
 
         final TextView textDetail = (TextView)findViewById(R.id.text_detail);
         textDetail.setOnClickListener(new View.OnClickListener() {
@@ -76,8 +71,15 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                     textDetail.setText("더 보기...");
                 }
             }
-        });
+        });*/
 
+        Button btnCreateTeam = (Button)findViewById(R.id.btn_create_team);
+        btnCreateTeam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override
@@ -146,58 +148,5 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
-    }
-
-    private class HttpPostAsyncTask extends AsyncTask<Void, Void, String> {
-        private Context context;
-        private URL url;
-        private ProgressDialog progressDialog;
-        private String cookie;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            try {
-                url = new URL(Constant.SERVER_URL + "main.php");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-
-            progressDialog = new ProgressDialog(HomeActivity.this);
-            progressDialog.setMessage("잠시 기다려주세요");
-            progressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            try {
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn.setRequestProperty("Cookie", user.getSessionInfo());
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                cookie = conn.getHeaderField("Set-Cookie");
-
-                return br.readLine();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            Log.d(TAG, result);
-            if (cookie != null) {
-                Log.d(TAG, cookie);
-            }
-            progressDialog.dismiss();
-        }
     }
 }

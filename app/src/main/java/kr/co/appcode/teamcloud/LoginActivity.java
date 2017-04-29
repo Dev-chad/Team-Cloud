@@ -263,7 +263,7 @@ public class LoginActivity extends AppCompatActivity {
                     if(jsonObject.getString("mode").equals("facebook")){
                         Profile profile = Profile.getCurrentProfile();
                         if(profile != null){
-                            Intent intent = new Intent(LoginActivity.this, AddNickname.class);
+                            Intent intent = new Intent(LoginActivity.this, AddNicknameActivity.class);
                             startActivity(intent);
                         }
                     } else {

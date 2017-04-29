@@ -20,7 +20,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class AddNickname extends AppCompatActivity {
+public class AddNicknameActivity extends AppCompatActivity {
     private static final String TAG = "AddNickName";
 
     private MaterialEditText editNickname;
@@ -94,7 +94,7 @@ public class AddNickname extends AppCompatActivity {
 
                         values.put("nickname", nickname);
 
-                        httpPostManager = new HttpPostManager(AddNickname.this, values, httpCallBack);
+                        httpPostManager = new HttpPostManager(AddNicknameActivity.this, values, httpCallBack);
                         httpPostManager.setMode(HttpPostManager.MODE_NICKNAME_CHECK);
                         httpPostManager.execute();
 
@@ -119,7 +119,7 @@ public class AddNickname extends AppCompatActivity {
                     values.put("name", profile.getName());
                     values.put("joinType", "facebook");
 
-                    httpPostManager = new HttpPostManager(AddNickname.this, values, httpCallBack);
+                    httpPostManager = new HttpPostManager(AddNicknameActivity.this, values, httpCallBack);
                     httpPostManager.setMode(HttpPostManager.MODE_JOIN);
                     httpPostManager.execute();
                 }
@@ -142,11 +142,11 @@ public class AddNickname extends AppCompatActivity {
                     if (jsonObject.getInt("resultCode") == Constant.SUCCESS) {
                         User user = new User(jsonObject);
 
-                        Intent intent = new Intent(AddNickname.this, HomeActivity.class);
+                        Intent intent = new Intent(AddNicknameActivity.this, HomeActivity.class);
                         intent.putExtra("loginUser", user);
                         startActivity(intent);
                     } else {
-                        Toast.makeText(AddNickname.this, jsonObject.getString("resultCode"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddNicknameActivity.this, jsonObject.getString("resultCode"), Toast.LENGTH_SHORT).show();
                     }
                 }
             } catch (JSONException e) {

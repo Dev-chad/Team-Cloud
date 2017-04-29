@@ -55,13 +55,12 @@
         <activity
             android:name=".FoundPasswordActivity"
             android:label="비밀번호 재발급" />
-        <activity android:name=".AddNickname" />
+        <activity android:name=".AddNicknameActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".CreateTeamActivity"></activity>
     </application>
 
 </manifest>

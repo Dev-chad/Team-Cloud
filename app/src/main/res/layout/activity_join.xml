@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="30dp">
+    android:paddingStart="30dp"
+    android:paddingEnd="30dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
 
     <RelativeLayout
         android:id="@+id/layout_email"
@@ -33,8 +36,8 @@
             android:layout_alignBaseline="@id/edit_email"
             android:layout_alignTop="@id/edit_email"
             android:layout_toEndOf="@id/edit_email"
-            android:theme="@style/ColoredBlueButton"
-            android:text="인증" />
+            android:text="인증"
+            android:theme="@style/ColoredBlueButton" />
     </RelativeLayout>
 
     <LinearLayout
@@ -68,7 +71,7 @@
             android:layout_width="80dp"
             android:layout_height="40dp"
             android:text="완료"
-            android:theme="@style/ColoredBlueButton"/>
+            android:theme="@style/ColoredBlueButton" />
     </LinearLayout>
 
 
@@ -76,27 +79,27 @@
         android:id="@+id/edit_password"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:hint="비밀번호"
         android:inputType="textPassword"
         android:maxLength="20"
-        android:layout_marginTop="5dp"
-        app:met_floatingLabel="highlight"
         app:met_autoValidate="true"
+        app:met_floatingLabel="highlight"
         app:met_helperText="영문, 숫자, 특수문자를 포함한 6~20자의 문자"
-        app:met_helperTextColor="@android:color/holo_green_dark"
-        app:met_helperTextAlwaysShown="true"/>
+        app:met_helperTextAlwaysShown="true"
+        app:met_helperTextColor="@android:color/holo_green_dark" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/edit_check_password"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:hint="비밀번호 확인"
         android:inputType="textPassword"
-        android:layout_marginTop="5dp"
+        android:maxLength="20"
         app:met_floatingLabel="highlight"
         app:met_helperText=""
-        app:met_helperTextAlwaysShown="true"
-        android:maxLength="20"/>
+        app:met_helperTextAlwaysShown="true" />
 
     <RelativeLayout
         android:id="@+id/layout_nickname"
@@ -107,48 +110,49 @@
             android:id="@+id/edit_nickname"
             android:layout_width="220dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:hint="닉네임"
             android:inputType="text"
             android:maxLength="15"
-            android:layout_marginTop="5dp"
-            app:met_floatingLabel="highlight"
             app:met_autoValidate="true"
+            app:met_floatingLabel="highlight"
             app:met_helperText="영문을 포함한 4~15자의 숫자, _, - 가능"
-            app:met_helperTextColor="@android:color/holo_green_dark"
-            app:met_helperTextAlwaysShown="true"/>
+            app:met_helperTextAlwaysShown="true"
+            app:met_helperTextColor="@android:color/holo_green_dark" />
 
         <Button
             android:id="@+id/btn_check_nickname"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/edit_nickname"
             android:layout_alignTop="@id/edit_nickname"
             android:layout_toEndOf="@id/edit_nickname"
-            android:layout_alignBaseline="@id/edit_nickname"
-            android:theme="@style/ColoredBlueButton"
-            android:text="중복확인" />
+            android:text="중복확인"
+            android:theme="@style/ColoredBlueButton" />
     </RelativeLayout>
+
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/edit_name"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:hint="이름"
         android:imeOptions="actionDone"
         android:inputType="text"
-        app:met_floatingLabel="highlight"
-        app:met_autoValidate="true"
         android:maxLength="20"
-        android:layout_marginTop="5dp"
+        app:met_autoValidate="true"
+        app:met_floatingLabel="highlight"
         app:met_helperText="2~20자의 한글 또는 영문만 가능"
-        app:met_helperTextColor="@android:color/holo_green_dark"
-        app:met_helperTextAlwaysShown="true"/>
+        app:met_helperTextAlwaysShown="true"
+        app:met_helperTextColor="@android:color/holo_green_dark" />
 
     <Button
         android:id="@+id/btn_join"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:theme="@style/ColoredBlueButton"
-        android:text="가입" />
+        android:text="가입"
+        android:theme="@style/ColoredBlueButton" />
 
 </LinearLayout>

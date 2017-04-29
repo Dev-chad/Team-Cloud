@@ -51,7 +51,7 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
             if (mode == MODE_LOGIN) {
                 url = new URL(SERVER_URL + "login.php");
                 body = "id=" + values.get("id") + "&password=" + values.get("password") + "&loginType=" + values.get("loginType");
-                Log.d(TAG, "body: "+body);
+                Log.d(TAG, "body: " + body);
             } else if (mode == MODE_JOIN) {
                 url = new URL(SERVER_URL + "join.php");
                 body = "id=" + values.get("id") + "&password=" + values.get("password") + "&nickname=" + values.get("nickname") + "&name=" + values.get("name") + "&joinType=" + values.get("joinType");
@@ -70,7 +70,7 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
         }
     }
 
-    public void setCheckSession(boolean isCheckSession){
+    public void setCheckSession(boolean isCheckSession) {
         this.isCheckSession = isCheckSession;
     }
 
@@ -90,7 +90,7 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            if(isCheckSession){
+            if (isCheckSession) {
                 conn.setRequestProperty("Cookie", values.get("sessionInfo"));
             }
             conn.setDoOutput(true);
