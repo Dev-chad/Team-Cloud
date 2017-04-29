@@ -1,11 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="kr.co.appcode.teamcloud.CreateTeamActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="* 쉽고 빠른 팀 생성을 위해 필수 정보만을 요구합니다.\n   세부 설정은 팀 설정페이지에서 가능합니다." />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/com_facebook_button_background_color_disabled" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:text="팀 이름"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp">
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_team_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_weight="10"
+                android:inputType="text"
+                android:maxLength="20"
+                app:met_autoValidate="true"
+                app:met_helperText="2~20자 -, _ 가능"
+                app:met_helperTextAlwaysShown="true"
+                app:met_helperTextColor="@android:color/holo_green_dark" />
+
+            <Button
+                android:id="@+id/btn_check_team_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/edit_nickname"
+                android:layout_alignTop="@id/edit_nickname"
+                android:layout_toEndOf="@id/edit_nickname"
+                android:layout_weight="3"
+                android:text="중복확인"
+                android:theme="@style/ColoredBlueButton" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="30dp"
+            android:text="용량 설정"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:text="* 단위는 1GB 입니다.."
+            android:textColor="@color/red"
+            android:textSize="11sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:text="* 최소 1GB 이상의 용량을 지정해주세요."
+            android:textColor="@color/red"
+            android:textSize="11sp" />
+
+        <SeekBar
+            android:id="@+id/seekbar_capacity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:max="10"
+            android:progress="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <EditText
+                android:id="@+id/edit_capacity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="10"
+                android:maxLines="1"
+                android:text="1"
+                android:textAlignment="center"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/edit_capacity"
+                android:layout_toEndOf="@id/edit_capacity"
+                android:text="GB / "
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/text_max_capacity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/edit_capacity"
+                android:layout_toEndOf="@id/edit_capacity"
+                android:text="10 GB"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/com_facebook_button_background_color_disabled" />
+
+        <Button
+            android:id="@+id/btn_create_team"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="팀 생성하기"
+            android:theme="@style/ColoredDarkBlueButton" />
+
+    </LinearLayout>
+</ScrollView>
 
 
-</LinearLayout>
