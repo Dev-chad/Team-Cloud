@@ -1,9 +1,11 @@
 package kr.co.appcode.teamcloud;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -47,6 +49,7 @@ public class SearchActivity extends AppCompatActivity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                closingSoftKeyboard();
                 if(editSearch.length() > 0){
                     HashMap<String, String> values = new HashMap<>();
                     values.put("nickname", user.getNickname());
@@ -86,6 +89,8 @@ public class SearchActivity extends AppCompatActivity {
                         adapter.setTeamList(teamList);
                         adapter.notifyDataSetChanged();
                     } else {
+                        adapter.getTeamList().clear();
+                        adapter.notifyDataSetChanged();
                         textNoResult.setVisibility(View.VISIBLE);
                     }
                 }
@@ -95,4 +100,13 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
     };
+
+    private void closingSoftKeyboard() {
+        try{
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

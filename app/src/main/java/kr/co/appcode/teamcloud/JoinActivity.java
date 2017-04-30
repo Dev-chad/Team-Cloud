@@ -423,7 +423,7 @@ public class JoinActivity extends AppCompatActivity {
             Message msg = handler.obtainMessage();
 
             minute = 0;
-            second = 15;
+            second = 20;
             handler.sendEmptyMessage(0);
             msg.what = 1;
             while ((minute > 0 || second > 0) && !isStop) {
@@ -523,8 +523,12 @@ public class JoinActivity extends AppCompatActivity {
     };
 
     private void closingSoftKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        try{
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }
