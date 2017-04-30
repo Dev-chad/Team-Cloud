@@ -31,6 +31,7 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
     public static final int MODE_CREATE_TEAM = 9;
     public static final int MODE_REFRESH_USER = 10;
     public static final int MODE_GET_TEAM_LIST = 11;
+    public static final int MODE_TEAM_SEARCH = 12;
 
     private boolean isCheckSession;
 
@@ -80,6 +81,9 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
             } else if(mode == MODE_GET_TEAM_LIST){
                 url = new URL(SERVER_URL+"getTeamList.php");
                 body = "nickname="+values.get("nickname");
+            } else if(mode == MODE_TEAM_SEARCH){
+                url = new URL(SERVER_URL+"searchTeam.php");
+                body = "teamName="+values.get("teamName")+"&nickname="+values.get("nickname");
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();

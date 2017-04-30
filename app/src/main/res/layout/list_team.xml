@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
+    android:gravity="center_horizontal">
+
+    <ImageView
+        android:id="@+id/image_team"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="5dp"
+        android:contentDescription="team_image"
+        android:src="@mipmap/default_team" />
+
+    <TextView
+        android:id="@+id/text_team_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/image_team"
+        android:layout_alignTop="@id/image_team"
+        android:layout_marginTop="2dp"
+        android:maxLength="20"
+        android:maxLines="1"
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp"
+        android:text="Team name"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/text_const_master"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:text="Master:"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="2dp"
+        android:maxLength="20"
+        android:layout_toEndOf="@id/image_team"
+        android:layout_alignBottom="@id/image_team"
+        android:maxLines="1"/>
+
+    <TextView
+        android:id="@+id/text_master"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingEnd="5dp"
+        android:text="Team name"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:maxLength="20"
+        android:layout_toEndOf="@id/text_const_master"
+        android:layout_alignBaseline="@id/text_const_master"
+        android:maxLines="1"/>
+
+    <Button
+        android:id="@+id/btn_join"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:text="가입신청"
+        android:theme="@style/ColoredBlueButton"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:id="@+id/btn_joined"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:text="소속된 팀"
+        android:theme="@style/ColoredDarkGreenButton"
+        android:layout_alignParentEnd="true"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btn_joining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:text="가입 승인중"
+        android:theme="@style/ColoredDarkGreenButton"
+        android:layout_alignParentEnd="true"
+        android:visibility="gone"/>
+
+</RelativeLayout>
