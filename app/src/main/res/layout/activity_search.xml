@@ -36,8 +36,11 @@
 
     <ListView
         android:id="@+id/list_team"
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:dividerHeight="10dp"
+        android:divider="">
 
     </ListView>
 

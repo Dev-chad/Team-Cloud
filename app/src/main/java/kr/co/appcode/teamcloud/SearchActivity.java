@@ -41,7 +41,7 @@ public class SearchActivity extends AppCompatActivity {
         btnSearch = (ImageButton)findViewById(R.id.btn_search);
         textNoResult = (TextView)findViewById(R.id.text_no_search);
 
-        adapter = new CustomTeamListAdapter(this);
+        adapter = new CustomTeamListAdapter(this, new ArrayList<Team>());
         listTeam.setAdapter(adapter);
 
         btnSearch.setOnClickListener(new View.OnClickListener() {
@@ -51,6 +51,7 @@ public class SearchActivity extends AppCompatActivity {
                     HashMap<String, String> values = new HashMap<>();
                     values.put("nickname", user.getNickname());
                     values.put("teamName", editSearch.getText().toString());
+                    values.put("sessionInfo", user.getSessionInfo());
 
                     HttpPostManager httpPostManager = new HttpPostManager(SearchActivity.this, values, httpCallBack);
                     httpPostManager.setCheckSession(true);

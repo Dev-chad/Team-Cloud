@@ -182,6 +182,10 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
             startActivity(intent);
 
             finish();
+        } else if(id==R.id.menu_search){
+            Intent intent = new Intent(this, SearchActivity.class);
+            intent.putExtra("login_user", user);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
