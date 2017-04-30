@@ -27,6 +27,10 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
     public static final int MODE_NICKNAME_CHECK = 5;
     public static final int MODE_JOIN_FACEBOOK = 6;
     public static final int MODE_REISSUE = 7;
+    public static final int MODE_TEAMNAME_CHECK = 8;
+    public static final int MODE_CREATE_TEAM = 9;
+    public static final int MODE_REFRESH_USER = 10;
+    public static final int MODE_GET_TEAM_LIST = 11;
 
     private boolean isCheckSession;
 
@@ -64,6 +68,18 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
             } else if (mode == MODE_REISSUE) {
                 url = new URL(SERVER_URL + "reissue.php");
                 body = "id=" + values.get("id");
+            } else if(mode == MODE_TEAMNAME_CHECK){
+                url = new URL(SERVER_URL + "duplicateCheck.php");
+                body = "teamName="+values.get("teamName");
+            } else if(mode == MODE_CREATE_TEAM){
+                url = new URL(SERVER_URL+"createTeam.php");
+                body = "teamName="+values.get("teamName")+"&master="+values.get("master")+"&maxCapacity="+values.get("maxCapacity")+"&isPublic="+values.get("isPublic")+"&isAutoJoin="+values.get("isAutoJoin");
+            } else if(mode == MODE_REFRESH_USER){
+                url = new URL(SERVER_URL+"refreshUserData.php");
+                body = "nickname="+values.get("nickname");
+            } else if(mode == MODE_GET_TEAM_LIST){
+                url = new URL(SERVER_URL+"getTeamList.php");
+                body = "nickname="+values.get("nickname");
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();

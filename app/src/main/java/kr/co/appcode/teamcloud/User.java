@@ -10,36 +10,39 @@ import org.json.JSONObject;
  * Created by Chad on 2017-04-21.
  */
 
-public class User implements Parcelable{
+public class User implements Parcelable {
     private String id;
     private String nickname;
     private String name;
     private int credit;
-    private int used_capacity;
-    private int max_capacity;
+    private int usedCapacity;
+    private int availableCapacity;
+    private int maxCapacity;
     private String accountType;
     private String sessionInfo;
 
-    public User(String id, String nickname, String name, int credit, int used_capacity, int max_capacity, String accountType) {
+    public User(String id, String nickname, String name, int credit, int usedCapacity, int maxCapacity, String accountType) {
         this.id = id;
         this.nickname = nickname;
         this.name = name;
         this.credit = credit;
-        this.used_capacity = used_capacity;
-        this.max_capacity = max_capacity;
+        this.usedCapacity = usedCapacity;
+        this.maxCapacity = maxCapacity;
+        this.availableCapacity = maxCapacity - usedCapacity;
         this.accountType = accountType;
     }
 
-    public User(JSONObject jsonObject){
+    public User(JSONObject jsonObject) {
         try {
             id = jsonObject.getString("id");
             nickname = jsonObject.getString("nickname");
             name = jsonObject.getString("name");
             credit = jsonObject.getInt("credit");
-            used_capacity = jsonObject.getInt("usedCapacity");
-            max_capacity = jsonObject.getInt("maxCapacity");
+            usedCapacity = jsonObject.getInt("usedCapacity");
+            maxCapacity = jsonObject.getInt("maxCapacity");
             sessionInfo = jsonObject.getString("sessionInfo");
             accountType = jsonObject.getString("accountType");
+            availableCapacity = maxCapacity - usedCapacity;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -50,10 +53,11 @@ public class User implements Parcelable{
         nickname = in.readString();
         name = in.readString();
         credit = in.readInt();
-        used_capacity = in.readInt();
-        max_capacity = in.readInt();
+        usedCapacity = in.readInt();
+        maxCapacity = in.readInt();
         accountType = in.readString();
         sessionInfo = in.readString();
+        availableCapacity = in.readInt();
     }
 
     @Override
@@ -62,10 +66,11 @@ public class User implements Parcelable{
         dest.writeString(nickname);
         dest.writeString(name);
         dest.writeInt(credit);
-        dest.writeInt(used_capacity);
-        dest.writeInt(max_capacity);
+        dest.writeInt(usedCapacity);
+        dest.writeInt(maxCapacity);
         dest.writeString(accountType);
         dest.writeString(sessionInfo);
+        dest.writeInt(availableCapacity);
     }
 
     @Override
@@ -117,20 +122,20 @@ public class User implements Parcelable{
         this.credit = credit;
     }
 
-    public int getUsed_capacity() {
-        return used_capacity;
+    public int getUsedCapacity() {
+        return usedCapacity;
     }
 
-    public void setUsed_capacity(int used_capacity) {
-        this.used_capacity = used_capacity;
+    public void setUsedCapacity(int usedCapacity) {
+        this.usedCapacity = usedCapacity;
     }
 
-    public int getMax_capacity() {
-        return max_capacity;
+    public int getMaxCapacity() {
+        return maxCapacity;
     }
 
-    public void setMax_capacity(int max_capacity) {
-        this.max_capacity = max_capacity;
+    public void setMaxCapacity(int maxCapacity) {
+        this.maxCapacity = maxCapacity;
     }
 
     public String getAccountType() {
@@ -147,5 +152,13 @@ public class User implements Parcelable{
 
     public void setSessionInfo(String sessionInfo) {
         this.sessionInfo = sessionInfo;
+    }
+
+    public int getAvailableCapacity() {
+        return availableCapacity;
+    }
+
+    public void setAvailableCapacity(int availableCapacity) {
+        this.availableCapacity = availableCapacity;
     }
 }

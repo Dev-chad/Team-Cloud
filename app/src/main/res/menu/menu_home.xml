@@ -7,4 +7,9 @@
         android:orderInCategory="100"
         android:title="로그아웃"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_search"
+        android:title="팀 검색"
+        android:icon=""
+        app:showAsAction="ifRoom"/>
 </menu>

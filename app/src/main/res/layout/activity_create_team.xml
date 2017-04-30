@@ -16,15 +16,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:layout_marginEnd="20dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             android:text="* 쉽고 빠른 팀 생성을 위해 필수 정보만을 요구합니다.\n   세부 설정은 팀 설정페이지에서 가능합니다." />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="2dp"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:background="@color/com_facebook_button_background_color_disabled" />
@@ -50,11 +50,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_weight="10"
                 android:inputType="text"
-                android:maxLength="20"
-                app:met_autoValidate="true"
-                app:met_helperText="2~20자 -, _ 가능"
-                app:met_helperTextAlwaysShown="true"
-                app:met_helperTextColor="@android:color/holo_green_dark" />
+                android:maxLength="20" />
 
             <Button
                 android:id="@+id/btn_check_team_name"
@@ -83,7 +79,7 @@
             android:layout_marginEnd="20dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
-            android:text="* 단위는 1GB 입니다.."
+            android:text="* 단위는 1GB 입니다."
             android:textColor="@color/red"
             android:textSize="11sp" />
 
@@ -120,6 +116,7 @@
                 android:maxLength="10"
                 android:maxLines="1"
                 android:text="1"
+                android:imeOptions="actionDone"
                 android:textAlignment="center"
                 android:textSize="15sp" />
 
@@ -143,16 +140,106 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="2dp"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:background="@color/com_facebook_button_background_color_disabled" />
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp">
+
+            <TextView
+                android:id="@+id/text_const_public"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="팀 공개 여부:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_is_public"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@id/text_const_public"
+                android:text="공개"
+                android:textColor="@color/red"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/text_const_public"
+                android:layout_marginTop="5dp"
+                android:text="* 검색에서 팀이 노출됩니다."
+                android:textSize="11sp" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switch_public"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:checked="true"
+                android:textOff="비공개"
+                android:textOn="공개" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:id="@+id/text_const_join"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="자동 가입 승인:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_is_auto_join"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@id/text_const_join"
+                android:text="켜짐"
+                android:textColor="@color/red"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/text_const_join"
+                android:layout_marginTop="5dp"
+                android:text="* 팀 가입 요청에 대해 관리자의 승인 없이 바로 가입됩니다."
+                android:textSize="11sp" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switch_join"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:checked="true"
+                android:textOff="비공개"
+                android:textOn="공개" />
+        </RelativeLayout>
+
         <Button
             android:id="@+id/btn_create_team"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
             android:text="팀 생성하기"
             android:theme="@style/ColoredDarkBlueButton" />
 
