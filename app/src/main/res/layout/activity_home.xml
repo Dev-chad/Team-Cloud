@@ -7,198 +7,205 @@
     android:fillViewport="true"
     tools:context="kr.co.appcode.teamcloud.HomeActivity">
 
-    <LinearLayout
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp">
-
-        <TextView
-            android:id="@+id/text_nickname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:text="CHADDDDDDDDDDDD"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:layout_gravity="center_horizontal"/>
+        android:id="@+id/swipe_layout">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingEnd="10dp"
-            android:paddingStart="10dp">
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
 
             <TextView
-                android:id="@+id/text_const_storage"
+                android:id="@+id/text_nickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="저장공간정보"
-                android:textColor="@color/cardview_dark_background"
-                android:textStyle="bold" />
-
-            <ProgressBar
-                android:id="@+id/progress_capacity"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
-                android:max="100"
-                android:progress="50" />
+                android:layout_marginBottom="20dp"
+                android:text="CHADDDDDDDDDDDD"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_gravity="center_horizontal"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:gravity="center">
+                android:orientation="vertical"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp">
 
                 <TextView
-                    android:id="@+id/text_used_capacity"
+                    android:id="@+id/text_const_storage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0" />
+                    android:text="저장공간정보"
+                    android:textColor="@color/cardview_dark_background"
+                    android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="GB" />
+                <ProgressBar
+                    android:id="@+id/progress_capacity"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:max="100"
+                    android:progress="50" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=" / " />
+                    android:layout_marginTop="5dp"
+                    android:gravity="center">
 
-                <TextView
-                    android:id="@+id/text_max_capacity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="10" />
+                    <TextView
+                        android:id="@+id/text_used_capacity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="GB" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="GB" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" / " />
+
+                    <TextView
+                        android:id="@+id/text_max_capacity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="GB" />
+                </LinearLayout>
+
             </LinearLayout>
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="15dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="팀을 만들어 보세요" />
+
+                <Button
+                    android:id="@+id/btn_create_team"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:text="팀 만들기"
+                    android:theme="@style/ColoredBlueButton" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/com_facebook_button_background_color_disabled" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp">
+
+                <TextView
+                    android:id="@+id/text_const_team"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="소속된 팀"
+                    android:textColor="@color/cardview_dark_background"
+                    android:textStyle="bold" />
+
+                <GridView
+                    android:id="@+id/grid_teamlist"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_below="@id/text_const_team"
+                    android:layout_marginTop="10dp"
+                    android:numColumns="4"
+                    android:stretchMode="columnWidth"
+                    android:verticalSpacing="10dp">
+
+                </GridView>
+
+                <LinearLayout
+                    android:id="@+id/layout_no_team"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="아직 어느 팀에도 소속되지 않았습니다" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="팀 만들기 및 가입을 통해 팀을 추가해보세요" />
+
+                    <!--<LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <Button
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:text="팀 만들기"
+                            android:theme="@style/ColoredButton"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"/>
+                        <Button
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:text="팀 검색"
+                            android:theme="@style/ColoredBlueButton"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"/>
+                    </LinearLayout>-->
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/com_facebook_button_background_color_disabled" />
+
+            <TextView
+                android:id="@+id/text_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="10dp"
+                android:visibility="gone"
+                android:text="더 보기" />
         </LinearLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="15dp"
-            android:paddingEnd="10dp"
-            android:paddingStart="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:text="팀을 만들어 보세요" />
-
-            <Button
-                android:id="@+id/btn_create_team"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:minHeight="0dp"
-                android:minWidth="0dp"
-                android:text="팀 만들기"
-                android:theme="@style/ColoredBlueButton" />
-
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/com_facebook_button_background_color_disabled" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingEnd="10dp"
-            android:paddingStart="10dp">
-
-            <TextView
-                android:id="@+id/text_const_team"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="소속된 팀"
-                android:textColor="@color/cardview_dark_background"
-                android:textStyle="bold" />
-
-            <GridView
-                android:id="@+id/grid_teamlist"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_below="@id/text_const_team"
-                android:layout_marginTop="10dp"
-                android:numColumns="4"
-                android:stretchMode="columnWidth"
-                android:verticalSpacing="10dp">
-
-            </GridView>
-
-            <LinearLayout
-                android:id="@+id/layout_no_team"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="아직 어느 팀에도 소속되지 않았습니다" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="팀 만들기 및 가입을 통해 팀을 추가해보세요" />
-
-                <!--<LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    <Button
-                        android:layout_width="80dp"
-                        android:layout_height="wrap_content"
-                        android:text="팀 만들기"
-                        android:theme="@style/ColoredButton"
-                        android:minWidth="0dp"
-                        android:minHeight="0dp"/>
-                    <Button
-                        android:layout_width="80dp"
-                        android:layout_height="wrap_content"
-                        android:text="팀 검색"
-                        android:theme="@style/ColoredBlueButton"
-                        android:minWidth="0dp"
-                        android:minHeight="0dp"/>
-                </LinearLayout>-->
-            </LinearLayout>
-
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/com_facebook_button_background_color_disabled" />
-
-        <TextView
-            android:id="@+id/text_detail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="10dp"
-            android:visibility="gone"
-            android:text="더 보기" />
-    </LinearLayout>
 </ScrollView>

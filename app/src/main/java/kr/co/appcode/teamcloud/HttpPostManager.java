@@ -34,7 +34,6 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
     public static final int MODE_TEAM_SEARCH = 12;
 
     private boolean isCheckSession;
-
     //endregion
 
     private HashMap<String, String> values;
@@ -69,21 +68,21 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
             } else if (mode == MODE_REISSUE) {
                 url = new URL(SERVER_URL + "reissue.php");
                 body = "id=" + values.get("id");
-            } else if(mode == MODE_TEAMNAME_CHECK){
+            } else if (mode == MODE_TEAMNAME_CHECK) {
                 url = new URL(SERVER_URL + "duplicateCheck.php");
-                body = "teamName="+values.get("teamName");
-            } else if(mode == MODE_CREATE_TEAM){
-                url = new URL(SERVER_URL+"createTeam.php");
-                body = "teamName="+values.get("teamName")+"&master="+values.get("master")+"&maxCapacity="+values.get("maxCapacity")+"&isPublic="+values.get("isPublic")+"&isAutoJoin="+values.get("isAutoJoin");
-            } else if(mode == MODE_REFRESH_USER){
-                url = new URL(SERVER_URL+"refreshUserData.php");
-                body = "nickname="+values.get("nickname");
-            } else if(mode == MODE_GET_TEAM_LIST){
-                url = new URL(SERVER_URL+"getTeamList.php");
-                body = "nickname="+values.get("nickname");
-            } else if(mode == MODE_TEAM_SEARCH){
-                url = new URL(SERVER_URL+"searchTeam.php");
-                body = "teamName="+values.get("teamName")+"&nickname="+values.get("nickname");
+                body = "teamName=" + values.get("teamName");
+            } else if (mode == MODE_CREATE_TEAM) {
+                url = new URL(SERVER_URL + "createTeam.php");
+                body = "teamName=" + values.get("teamName") + "&master=" + values.get("master") + "&maxCapacity=" + values.get("maxCapacity") + "&isPublic=" + values.get("isPublic") + "&isAutoJoin=" + values.get("isAutoJoin");
+            } else if (mode == MODE_REFRESH_USER) {
+                url = new URL(SERVER_URL + "refreshUserData.php");
+                body = "nickname=" + values.get("nickname");
+            } else if (mode == MODE_GET_TEAM_LIST) {
+                url = new URL(SERVER_URL + "getTeamList.php");
+                body = "nickname=" + values.get("nickname");
+            } else if (mode == MODE_TEAM_SEARCH) {
+                url = new URL(SERVER_URL + "searchTeam.php");
+                body = "teamName=" + values.get("teamName") + "&nickname=" + values.get("nickname");
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -98,8 +97,8 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
     protected void onPreExecute() {
         super.onPreExecute();
 
-        progressDialog.setMessage("잠시 기다려주세요");
-        progressDialog.show();
+        /*progressDialog.setMessage("잠시 기다려주세요");
+        progressDialog.show();*/
 
     }
 
@@ -150,7 +149,7 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
 
     @Override
     protected void onPostExecute(JSONObject result) {
-        progressDialog.dismiss();
+//        progressDialog.dismiss();
         httpCallBack.CallBackResult(result);
     }
 

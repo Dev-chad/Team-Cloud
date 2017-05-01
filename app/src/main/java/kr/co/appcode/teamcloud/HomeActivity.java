@@ -3,18 +3,16 @@ package kr.co.appcode.teamcloud;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,6 +77,28 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                 startActivity(intent);
             }
         });
+
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_layout);
+        swipeRefreshLayout.setColorSchemeResources(
+
+                android.R.color.holo_red_light
+        );
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getUserData();
+                getTeamList();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+        textDetail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void getTeamList() {
@@ -97,7 +117,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         Toast.makeText(this, "" + position, Toast.LENGTH_SHORT).show();
     }
 
-    public void setListViewHeightBasedOnItems(ListView listView, int count) {
+    /*public void setListViewHeightBasedOnItems(ListView listView, int count) {
 
         // Get list adpter of listview;
         ListAdapter listAdapter = listView.getAdapter();
@@ -128,18 +148,11 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         listView.requestLayout();
     }
 
-    public void setGridViewHeightBasedOnItems(GridView gridView) {
+    public void setGridViewHeightBasedOnItems(GridView gridView, int numberOfItems) {
 
         // Get list adpter of listview;
         ListAdapter listAdapter = gridView.getAdapter();
         if (listAdapter == null) return;
-
-        int numberOfItems;
-        if (listAdapter.getCount() <= 4) {
-            numberOfItems = 1;
-        } else {
-            numberOfItems = 2;
-        }
 
         // Get total height of all items.
         int totalItemsHeight = 0;
@@ -157,7 +170,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         params.height = totalItemsHeight + totalDividersHeight;
         gridView.setLayoutParams(params);
         gridView.requestLayout();
-    }
+    }*/
 
 
     @Override
@@ -224,7 +237,6 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
 
                         CustomGridAdapter adapter = new CustomGridAdapter(HomeActivity.this, list);
                         gridTemaList.setAdapter(adapter);
-                        setGridViewHeightBasedOnItems(gridTemaList);
 
                         if(count>8){
                             textDetail.setVisibility(View.VISIBLE);
