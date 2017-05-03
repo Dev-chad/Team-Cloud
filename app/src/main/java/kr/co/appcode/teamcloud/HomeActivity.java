@@ -9,10 +9,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -146,16 +148,24 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         params.height = totalItemsHeight + totalDividersHeight;
         listView.setLayoutParams(params);
         listView.requestLayout();
-    }
+    }*/
 
-    public void setGridViewHeightBasedOnItems(GridView gridView, int numberOfItems) {
-
-        // Get list adpter of listview;
+    public void setGridViewHeightBasedOnItems(GridView gridView) {
         ListAdapter listAdapter = gridView.getAdapter();
+
+        int totalItemsHeight = 0;
+        int numberOfItems;
+        // Get list adpter of listview;
         if (listAdapter == null) return;
 
+        if(listAdapter.getCount() <= 4){
+            numberOfItems = 1;
+        } else {
+            numberOfItems = 2;
+        }
+
         // Get total height of all items.
-        int totalItemsHeight = 0;
+
         for (int itemPos = 0; itemPos < numberOfItems; itemPos++) {
             View item = listAdapter.getView(itemPos, null, gridView);
             item.measure(0, 0);
@@ -170,7 +180,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         params.height = totalItemsHeight + totalDividersHeight;
         gridView.setLayoutParams(params);
         gridView.requestLayout();
-    }*/
+    }
 
 
     @Override
@@ -227,7 +237,14 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                 } else if (mode == HttpPostManager.MODE_GET_TEAM_LIST) {
                     if (resultCode == Constant.SUCCESS) {
                         layoutNoTeam.setVisibility(View.GONE);
-                        int count = jsonObject.getInt("count");
+                        int totalCount = jsonObject.getInt("totalCount");
+                        int count;
+
+                        if(totalCount >= 8){
+                            count = 8;
+                        } else {
+                            count = totalCount;
+                        }
 
                         ArrayList<String> list = new ArrayList<>();
 
@@ -238,11 +255,13 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                         CustomGridAdapter adapter = new CustomGridAdapter(HomeActivity.this, list);
                         gridTemaList.setAdapter(adapter);
 
-                        if(count>8){
+                        if(totalCount>8){
                             textDetail.setVisibility(View.VISIBLE);
                         } else {
                             textDetail.setVisibility(View.GONE);
                         }
+
+                        setGridViewHeightBasedOnItems(gridTemaList);
                     } else {
                         layoutNoTeam.setVisibility(View.VISIBLE);
                     }
