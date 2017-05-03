@@ -8,9 +8,9 @@
     tools:context="kr.co.appcode.teamcloud.HomeActivity">
 
     <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/swipe_layout">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,13 +23,13 @@
                 android:id="@+id/text_nickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="20dp"
+                android:layout_marginTop="10dp"
                 android:text="CHADDDDDDDDDDDD"
-                android:textSize="25sp"
-                android:textStyle="bold"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:layout_gravity="center_horizontal"/>
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -139,7 +139,18 @@
                     android:layout_height="wrap_content"
                     android:text="소속된 팀"
                     android:textColor="@color/cardview_dark_background"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/img_team_setting"
+                    android:layout_width="15dp"
+                    android:layout_height="0dp"
+                    android:layout_alignBottom="@id/text_const_team"
+                    android:layout_alignTop="@id/text_const_team"
+                    android:layout_marginStart="5dp"
+                    android:layout_toEndOf="@id/text_const_team"
+                    android:src="@mipmap/ic_setting" />
 
                 <GridView
                     android:id="@+id/grid_teamlist"
@@ -165,6 +176,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="아직 어느 팀에도 소속되지 않았습니다" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -203,8 +215,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginEnd="10dp"
-                android:visibility="gone"
-                android:text="더 보기" />
+                android:text="더 보기"
+                android:visibility="gone" />
         </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 

@@ -75,9 +75,9 @@ public class FoundPasswordActivity extends AppCompatActivity {
                     HashMap<String, String> values = new HashMap<>();
                     values.put("id", email);
 
-                    HttpPostManager httpPostManager = new HttpPostManager(FoundPasswordActivity.this, values, httpCallBack);
-                    httpPostManager.setMode(HttpPostManager.MODE_REISSUE);
-                    httpPostManager.execute();
+                    HttpConnection httpConnection = new HttpConnection(FoundPasswordActivity.this, values, httpCallBack);
+                    httpConnection.setMode(HttpConnection.MODE_REISSUE);
+                    httpConnection.execute();
                 }
             }
         });

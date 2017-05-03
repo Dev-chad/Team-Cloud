@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView textError;
 
     private CallbackManager callbackManager;
-    private HttpPostManager httpPostManager;
+    private HttpConnection httpConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +60,9 @@ public class LoginActivity extends AppCompatActivity {
             values.put("id", profile.getId());
             values.put("loginType", "facebook");
 
-            httpPostManager = new HttpPostManager(this, values, httpCallBack);
-            httpPostManager.setMode(HttpPostManager.MODE_LOGIN);
-            httpPostManager.execute();
+            httpConnection = new HttpConnection(this, values, httpCallBack);
+            httpConnection.setMode(HttpConnection.MODE_LOGIN);
+            httpConnection.execute();
 
         } else if (sp.contains("id")) {
             HashMap<String, String> values = new HashMap<>();
@@ -73,9 +73,9 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "Saved id: " + sp.getString("id", ""));
             Log.d(TAG, "Saved password: " + sp.getString("password", ""));
 
-            httpPostManager = new HttpPostManager(this, values, httpCallBack);
-            httpPostManager.setMode(HttpPostManager.MODE_LOGIN);
-            httpPostManager.execute();
+            httpConnection = new HttpConnection(this, values, httpCallBack);
+            httpConnection.setMode(HttpConnection.MODE_LOGIN);
+            httpConnection.execute();
         }
 
         callbackManager = CallbackManager.Factory.create();
@@ -159,9 +159,9 @@ public class LoginActivity extends AppCompatActivity {
                     values.put("password", password);
                     values.put("loginType", "normal");
 
-                    httpPostManager = new HttpPostManager(LoginActivity.this, values, httpCallBack);
-                    httpPostManager.setMode(HttpPostManager.MODE_LOGIN);
-                    httpPostManager.execute();
+                    httpConnection = new HttpConnection(LoginActivity.this, values, httpCallBack);
+                    httpConnection.setMode(HttpConnection.MODE_LOGIN);
+                    httpConnection.execute();
                 }
             }
         });
@@ -192,9 +192,9 @@ public class LoginActivity extends AppCompatActivity {
                             values.put("id", object.getString("id"));
                             values.put("loginType", "facebook");
 
-                            httpPostManager = new HttpPostManager(LoginActivity.this, values, httpCallBack);
-                            httpPostManager.setMode(HttpPostManager.MODE_LOGIN);
-                            httpPostManager.execute();
+                            httpConnection = new HttpConnection(LoginActivity.this, values, httpCallBack);
+                            httpConnection.setMode(HttpConnection.MODE_LOGIN);
+                            httpConnection.execute();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ProgressBar;
@@ -38,9 +39,11 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
     private TextView textMaxCapacity;
     private LinearLayout layoutNoTeam;
 
-    private GridView gridTemaList;
+    private GridView gridTeamList;
 
-    private HttpPostManager httpPostManager;
+    private ImageView imgTeamSetting;
+
+    private HttpConnection httpConnection;
     private TextView textDetail;
 
     @Override
@@ -67,8 +70,16 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         textMaxCapacity = (TextView) findViewById(R.id.text_max_capacity);
         textMaxCapacity.setText(String.valueOf(user.getMaxCapacity()));
 
-        gridTemaList = (GridView) findViewById(R.id.grid_teamlist);
-        gridTemaList.setOnItemClickListener(this);
+        gridTeamList = (GridView) findViewById(R.id.grid_teamlist);
+        gridTeamList.setOnItemClickListener(this);
+
+        imgTeamSetting = (ImageView)findViewById(R.id.img_team_setting);
+        imgTeamSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(HomeActivity.this, "Team setting", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         Button btnCreateTeam = (Button) findViewById(R.id.btn_create_team);
         btnCreateTeam.setOnClickListener(new View.OnClickListener() {
@@ -101,6 +112,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
 
             }
         });
+
     }
 
     private void getTeamList() {
@@ -108,10 +120,10 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         values.put("nickname", user.getNickname());
         values.put("sessionInfo", user.getSessionInfo());
 
-        httpPostManager = new HttpPostManager(this, values, httpCallBack);
-        httpPostManager.setMode(HttpPostManager.MODE_GET_TEAM_LIST);
-        httpPostManager.setCheckSession(true);
-        httpPostManager.execute();
+        httpConnection = new HttpConnection(this, values, httpCallBack);
+        httpConnection.setMode(HttpConnection.MODE_GET_TEAM_LIST);
+        httpConnection.setCheckSession(true);
+        httpConnection.execute();
     }
 
     @Override
@@ -226,7 +238,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                 int mode = jsonObject.getInt("mode");
                 int resultCode = jsonObject.getInt("resultCode");
 
-                if (mode == HttpPostManager.MODE_REFRESH_USER) {
+                if (mode == HttpConnection.MODE_REFRESH_USER) {
                     if (resultCode == Constant.SUCCESS) {
                         user.setMaxCapacity(jsonObject.getInt("maxCapacity"));
                         user.setUsedCapacity(jsonObject.getInt("usedCapacity"));
@@ -234,7 +246,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
 
                         refreshActivity();
                     }
-                } else if (mode == HttpPostManager.MODE_GET_TEAM_LIST) {
+                } else if (mode == HttpConnection.MODE_GET_TEAM_LIST) {
                     if (resultCode == Constant.SUCCESS) {
                         layoutNoTeam.setVisibility(View.GONE);
                         int totalCount = jsonObject.getInt("totalCount");
@@ -253,7 +265,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                         }
 
                         CustomGridAdapter adapter = new CustomGridAdapter(HomeActivity.this, list);
-                        gridTemaList.setAdapter(adapter);
+                        gridTeamList.setAdapter(adapter);
 
                         if(totalCount>8){
                             textDetail.setVisibility(View.VISIBLE);
@@ -261,7 +273,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                             textDetail.setVisibility(View.GONE);
                         }
 
-                        setGridViewHeightBasedOnItems(gridTemaList);
+                        setGridViewHeightBasedOnItems(gridTeamList);
                     } else {
                         layoutNoTeam.setVisibility(View.VISIBLE);
                     }
@@ -286,10 +298,10 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         values.put("nickname", user.getNickname());
         values.put("sessionInfo", user.getSessionInfo());
 
-        httpPostManager = new HttpPostManager(this, values, httpCallBack);
-        httpPostManager.setMode(HttpPostManager.MODE_REFRESH_USER);
-        httpPostManager.setCheckSession(true);
-        httpPostManager.execute();
+        httpConnection = new HttpConnection(this, values, httpCallBack);
+        httpConnection.setMode(HttpConnection.MODE_REFRESH_USER);
+        httpConnection.setCheckSession(true);
+        httpConnection.execute();
     }
 
     @Override

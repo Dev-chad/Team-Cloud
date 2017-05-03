@@ -16,9 +16,9 @@ import java.net.URL;
 import java.util.HashMap;
 
 
-public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
+public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
     //region Constant
-    private static final String TAG = "HttpPostManager";
+    private static final String TAG = "HttpConnection";
     private static final String SERVER_URL = "http://appcode.cafe24.com/";
     public static final int MODE_LOGIN = 1;
     public static final int MODE_AUTO_LOGIN = 2;
@@ -32,6 +32,7 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
     public static final int MODE_REFRESH_USER = 10;
     public static final int MODE_GET_TEAM_LIST = 11;
     public static final int MODE_TEAM_SEARCH = 12;
+    public static final int MODE_JOIN_TEAM = 13;
 
     private boolean isCheckSession;
     //endregion
@@ -43,7 +44,7 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
     private int mode;
     private ProgressDialog progressDialog;
 
-    public HttpPostManager(Activity activity, HashMap<String, String> values, HttpCallBack httpCallBack) {
+    public HttpConnection(Activity activity, HashMap<String, String> values, HttpCallBack httpCallBack) {
         this.values = values;
         this.httpCallBack = httpCallBack;
         progressDialog = new ProgressDialog(activity);
@@ -82,7 +83,10 @@ public class HttpPostManager extends AsyncTask<Void, Void, JSONObject> {
                 body = "nickname=" + values.get("nickname");
             } else if (mode == MODE_TEAM_SEARCH) {
                 url = new URL(SERVER_URL + "searchTeam.php");
-                body = "teamName=" + values.get("teamName") + "&nickname=" + values.get("nickname");
+                body = "teamName=" + values.get("teamName") + "&nickname=" + values.get("nickname") + "&start=" +values.get("start");
+            } else if(mode == MODE_JOIN_TEAM){
+                url = new URL(SERVER_URL+"joinTeam.php");
+                body = "nickname="+values.get("nickname")+"&teamName="+values.get("teamName");
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();

@@ -62,7 +62,7 @@ public class JoinActivity extends AppCompatActivity {
     private boolean isCheckedNickname;
     private boolean isSamePassword;
 
-    private HttpPostManager httpPostManager;
+    private HttpConnection httpConnection;
 
     private int authCode;
 
@@ -281,9 +281,9 @@ public class JoinActivity extends AppCompatActivity {
                                             HashMap<String, String> values = new HashMap<>();
                                             values.put("email", email);
 
-                                            httpPostManager = new HttpPostManager(JoinActivity.this, values, httpCallBack);
-                                            httpPostManager.setMode(HttpPostManager.MODE_AUTH_EMAIL);
-                                            httpPostManager.execute();
+                                            httpConnection = new HttpConnection(JoinActivity.this, values, httpCallBack);
+                                            httpConnection.setMode(HttpConnection.MODE_AUTH_EMAIL);
+                                            httpConnection.execute();
                                         }
                                     }).show();
                         } else {
@@ -294,9 +294,9 @@ public class JoinActivity extends AppCompatActivity {
                             values.put("id", email);
                             values.put("authCode", String.valueOf(authCode));
 
-                            httpPostManager = new HttpPostManager(JoinActivity.this, values, httpCallBack);
-                            httpPostManager.setMode(HttpPostManager.MODE_AUTH_EMAIL);
-                            httpPostManager.execute();
+                            httpConnection = new HttpConnection(JoinActivity.this, values, httpCallBack);
+                            httpConnection.setMode(HttpConnection.MODE_AUTH_EMAIL);
+                            httpConnection.execute();
                         }
 
                         if (editAuth.length() > 0) {
@@ -330,9 +330,9 @@ public class JoinActivity extends AppCompatActivity {
                         HashMap<String, String> values = new HashMap<>();
                         values.put("nickname", nickname);
 
-                        httpPostManager = new HttpPostManager(JoinActivity.this, values, httpCallBack);
-                        httpPostManager.setMode(HttpPostManager.MODE_NICKNAME_CHECK);
-                        httpPostManager.execute();
+                        httpConnection = new HttpConnection(JoinActivity.this, values, httpCallBack);
+                        httpConnection.setMode(HttpConnection.MODE_NICKNAME_CHECK);
+                        httpConnection.execute();
                     } else {
                         editNickname.setError("닉네임이 올바르지 않습니다.");
                     }
@@ -400,9 +400,9 @@ public class JoinActivity extends AppCompatActivity {
                     values.put("name", editName.getText().toString());
                     values.put("joinType", "teamcloud");
 
-                    httpPostManager = new HttpPostManager(JoinActivity.this, values, httpCallBack);
-                    httpPostManager.setMode(HttpPostManager.MODE_JOIN);
-                    httpPostManager.execute();
+                    httpConnection = new HttpConnection(JoinActivity.this, values, httpCallBack);
+                    httpConnection.setMode(HttpConnection.MODE_JOIN);
+                    httpConnection.execute();
                 }
             }
         });
@@ -490,7 +490,7 @@ public class JoinActivity extends AppCompatActivity {
                 int mode = jsonObject.getInt("mode");
                 int result = jsonObject.getInt("resultCode");
 
-                if (mode == HttpPostManager.MODE_AUTH_EMAIL) {
+                if (mode == HttpConnection.MODE_AUTH_EMAIL) {
                     if (result == Constant.DUPLICATED) {
                         editEmail.setError("이미 등록된 이메일입니다.");
                     } else {
@@ -502,14 +502,14 @@ public class JoinActivity extends AppCompatActivity {
                         timerThread = new TimerThread();
                         timerThread.start();
                     }
-                } else if (mode == HttpPostManager.MODE_NICKNAME_CHECK) {
+                } else if (mode == HttpConnection.MODE_NICKNAME_CHECK) {
                     if (result == Constant.DUPLICATED) {
                         editNickname.setError("이미 등록된 닉네임입니다.");
                     } else {
                         btnCheckNickname.setText("확인완료");
                         isCheckedNickname = true;
                     }
-                } else if (mode == HttpPostManager.MODE_JOIN) {
+                } else if (mode == HttpConnection.MODE_JOIN) {
                     if (result == Constant.SUCCESS) {
                         Intent intent = new Intent(JoinActivity.this, LoginActivity.class);
                         Toast.makeText(JoinActivity.this, "환영합니다.", Toast.LENGTH_SHORT).show();

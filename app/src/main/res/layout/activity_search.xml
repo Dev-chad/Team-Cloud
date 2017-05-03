@@ -20,6 +20,9 @@
             android:layout_weight="7"
             app:met_clearButton="true"
             android:layout_gravity="center_vertical"
+            android:maxLines="1"
+            android:inputType="text"
+            android:imeOptions="actionDone"
             android:hint="팀 이름 검색"/>
 
         <ImageButton

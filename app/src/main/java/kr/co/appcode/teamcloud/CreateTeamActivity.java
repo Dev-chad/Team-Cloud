@@ -47,7 +47,7 @@ public class CreateTeamActivity extends AppCompatActivity {
     private boolean isCheckTeamName;
     private boolean isSetCapacity = true;
 
-    private HttpPostManager httpPostManager;
+    private HttpConnection httpConnection;
 
     private Profile profile;
     private User user;
@@ -215,13 +215,13 @@ public class CreateTeamActivity extends AppCompatActivity {
                     Snackbar.make(v, "이미 팀 이름 중복확인을 완료하였습니다.", Snackbar.LENGTH_SHORT).show();
                 } else if (editTeamName.length() == 0) {
                     editTeamName.setError("팀 이름을 입력해주세요.");
-                } else if (editTeamName.getError() == null) {
+                } else {
                     HashMap<String, String> values = new HashMap<>();
                     values.put("teamName", editTeamName.getText().toString());
 
-                    httpPostManager = new HttpPostManager(CreateTeamActivity.this, values, httpCallback);
-                    httpPostManager.setMode(HttpPostManager.MODE_TEAMNAME_CHECK);
-                    httpPostManager.execute();
+                    httpConnection = new HttpConnection(CreateTeamActivity.this, values, httpCallback);
+                    httpConnection.setMode(HttpConnection.MODE_TEAMNAME_CHECK);
+                    httpConnection.execute();
                 }
             }
         });
@@ -244,10 +244,10 @@ public class CreateTeamActivity extends AppCompatActivity {
                     values.put("isAutoJoin", String.valueOf(switchJoin.isChecked()));
                     values.put("sessionInfo", user.getSessionInfo());
 
-                    httpPostManager = new HttpPostManager(CreateTeamActivity.this, values, httpCallback);
-                    httpPostManager.setMode(HttpPostManager.MODE_CREATE_TEAM);
-                    httpPostManager.setCheckSession(true);
-                    httpPostManager.execute();
+                    httpConnection = new HttpConnection(CreateTeamActivity.this, values, httpCallback);
+                    httpConnection.setMode(HttpConnection.MODE_CREATE_TEAM);
+                    httpConnection.setCheckSession(true);
+                    httpConnection.execute();
                 }
             }
         });
@@ -260,7 +260,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 int mode = jsonObject.getInt("mode");
                 int resultCode = jsonObject.getInt("resultCode");
 
-                if (mode == HttpPostManager.MODE_TEAMNAME_CHECK) {
+                if (mode == HttpConnection.MODE_TEAMNAME_CHECK) {
                     if (resultCode == Constant.SUCCESS) {
                         isCheckTeamName = true;
                         btnCheckTeamName.setText("확인완료");
@@ -269,7 +269,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                     } else if (resultCode == -1) {
                         Log.d(TAG, "mode: TeamNameCheck desc: Query error");
                     }
-                } else if (mode == HttpPostManager.MODE_CREATE_TEAM) {
+                } else if (mode == HttpConnection.MODE_CREATE_TEAM) {
                     if (resultCode == Constant.SUCCESS) {
                         finish();
                     } else if (resultCode == Constant.DUPLICATED) {

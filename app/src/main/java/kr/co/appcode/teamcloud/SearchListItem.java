@@ -4,12 +4,12 @@ package kr.co.appcode.teamcloud;
  * Created by Chad on 2017-04-30.
  */
 
-public class Team {
+public class SearchListItem {
     private String teamName;
     private String masterName;
     private int level;
 
-    public Team(String teamName, String masterName, int level) {
+    public SearchListItem(String teamName, String masterName, int level) {
         this.teamName = teamName;
         this.masterName = masterName;
         this.level = level;

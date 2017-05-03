@@ -30,7 +30,7 @@ public class AddNicknameActivity extends AppCompatActivity {
 
     private Profile profile;
 
-    private HttpPostManager httpPostManager;
+    private HttpConnection httpConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,9 +94,9 @@ public class AddNicknameActivity extends AppCompatActivity {
 
                         values.put("nickname", nickname);
 
-                        httpPostManager = new HttpPostManager(AddNicknameActivity.this, values, httpCallBack);
-                        httpPostManager.setMode(HttpPostManager.MODE_NICKNAME_CHECK);
-                        httpPostManager.execute();
+                        httpConnection = new HttpConnection(AddNicknameActivity.this, values, httpCallBack);
+                        httpConnection.setMode(HttpConnection.MODE_NICKNAME_CHECK);
+                        httpConnection.execute();
 
                     } else {
                         editNickname.setError("닉네임이 올바르지 않습니다.");
@@ -119,9 +119,9 @@ public class AddNicknameActivity extends AppCompatActivity {
                     values.put("name", profile.getName());
                     values.put("joinType", "facebook");
 
-                    httpPostManager = new HttpPostManager(AddNicknameActivity.this, values, httpCallBack);
-                    httpPostManager.setMode(HttpPostManager.MODE_JOIN);
-                    httpPostManager.execute();
+                    httpConnection = new HttpConnection(AddNicknameActivity.this, values, httpCallBack);
+                    httpConnection.setMode(HttpConnection.MODE_JOIN);
+                    httpConnection.execute();
                 }
             }
         });
@@ -131,14 +131,14 @@ public class AddNicknameActivity extends AppCompatActivity {
         @Override
         public void CallBackResult(JSONObject jsonObject) {
             try {
-                if(jsonObject.getInt("mode") == HttpPostManager.MODE_NICKNAME_CHECK){
+                if(jsonObject.getInt("mode") == HttpConnection.MODE_NICKNAME_CHECK){
                     if (jsonObject.getInt("resultCode") == Constant.DUPLICATED) {
                         editNickname.setError("이미 등록된 닉네임입니다.");
                     } else {
                         btnCheckNickname.setText("확인완료");
                         isCheckedNickname = true;
                     }
-                } else if(jsonObject.getInt("mode") == HttpPostManager.MODE_JOIN) {
+                } else if(jsonObject.getInt("mode") == HttpConnection.MODE_JOIN) {
                     if (jsonObject.getInt("resultCode") == Constant.SUCCESS) {
                         User user = new User(jsonObject);
 
