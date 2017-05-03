@@ -52,7 +52,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_home);
 
         profile = Profile.getCurrentProfile();
-        user = getIntent().getParcelableExtra("loginUser");
+        user = getIntent().getParcelableExtra("login_user");
 
         TextView textNickname = (TextView)findViewById(R.id.text_nickname);
         textNickname.setText(user.getNickname());

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/move_team_page"
+        android:title="팀 페이지로 이동" />
+    <item android:id="@+id/unjoin_team"
+        android:title="팀 탈퇴" />
+    <item android:id="@+id/close"
+        android:title="닫기" />
+
+</menu>

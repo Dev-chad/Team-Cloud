@@ -131,22 +131,35 @@ public class AddNicknameActivity extends AppCompatActivity {
         @Override
         public void CallBackResult(JSONObject jsonObject) {
             try {
-                if(jsonObject.getInt("mode") == HttpConnection.MODE_NICKNAME_CHECK){
-                    if (jsonObject.getInt("resultCode") == Constant.DUPLICATED) {
+                int mode = jsonObject.getInt("mode");
+                int resultCode = jsonObject.getInt("resultCode");
+
+                if(mode == HttpConnection.MODE_NICKNAME_CHECK){
+                    if (resultCode == Constant.DUPLICATED) {
                         editNickname.setError("이미 등록된 닉네임입니다.");
                     } else {
                         btnCheckNickname.setText("확인완료");
                         isCheckedNickname = true;
                     }
-                } else if(jsonObject.getInt("mode") == HttpConnection.MODE_JOIN) {
-                    if (jsonObject.getInt("resultCode") == Constant.SUCCESS) {
+                } else if(mode == HttpConnection.MODE_JOIN) {
+                    if (resultCode == Constant.SUCCESS) {
+                        HashMap<String, String> values = new HashMap<>();
+                        values.put("id", profile.getId());
+                        values.put("loginType", "facebook");
+
+                        httpConnection = new HttpConnection(AddNicknameActivity.this, values, this);
+                        httpConnection.setMode(HttpConnection.MODE_LOGIN);
+                        httpConnection.execute();
+                    } else {
+                        Toast.makeText(AddNicknameActivity.this, jsonObject.getString("resultCode"), Toast.LENGTH_SHORT).show();
+                    }
+                } else if(mode == HttpConnection.MODE_LOGIN){
+                    if(resultCode == Constant.SUCCESS){
                         User user = new User(jsonObject);
 
                         Intent intent = new Intent(AddNicknameActivity.this, HomeActivity.class);
-                        intent.putExtra("loginUser", user);
+                        intent.putExtra("login_user", user);
                         startActivity(intent);
-                    } else {
-                        Toast.makeText(AddNicknameActivity.this, jsonObject.getString("resultCode"), Toast.LENGTH_SHORT).show();
                     }
                 }
             } catch (JSONException e) {

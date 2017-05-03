@@ -2,6 +2,7 @@ package kr.co.appcode.teamcloud;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -38,6 +39,11 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        ActionBar actionBar = getSupportActionBar();
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
 
         user = getIntent().getParcelableExtra("login_user");
         profile = Profile.getCurrentProfile();
@@ -104,6 +110,12 @@ public class SearchActivity extends AppCompatActivity {
                 }
             }
         });
+
+       /* listTeam.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            }
+        });*/
     }
 
     public HttpCallBack httpCallBack = new HttpCallBack() {
@@ -143,6 +155,14 @@ public class SearchActivity extends AppCompatActivity {
                     } else {
 
                     }
+                } else if(mode == HttpConnection.MODE_JOIN_CANCEL){
+                    if(resultCode == Constant.SUCCESS){
+                        adapter.getSearchListItemList().get(adapter.getCurrentPos()).setLevel(-1);
+
+                        adapter.notifyDataSetChanged();
+                    } else {
+
+                    }
                 }
                 Log.d(TAG, jsonObject.toString());
             } catch (Exception e) {
@@ -159,5 +179,14 @@ public class SearchActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

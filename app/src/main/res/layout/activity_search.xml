@@ -6,34 +6,32 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="kr.co.appcode.teamcloud.SearchActivity"
+    android:background="#ffffff"
     android:padding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:gravity="center">
 
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/edit_search"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="7"
+            android:layout_height="match_parent"
             app:met_clearButton="true"
-            android:layout_gravity="center_vertical"
             android:maxLines="1"
+            android:maxLength="20"
             android:inputType="text"
+            android:layout_weight="10"
             android:imeOptions="actionDone"
             android:hint="팀 이름 검색"/>
 
         <ImageButton
             android:id="@+id/btn_search"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_search"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
+            android:layout_height="45dp"
+            android:src="@mipmap/ic_search"
             android:layout_weight="2"
-            android:layout_gravity="center_vertical"
             android:theme="@style/ColoredBlueButton"/>
     </LinearLayout>
 
@@ -52,6 +50,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginTop="50dp"
         android:text="검색된 결과가 없습니다."
         android:visibility="gone"/>
 

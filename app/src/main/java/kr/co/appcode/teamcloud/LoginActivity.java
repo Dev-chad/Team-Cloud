@@ -244,7 +244,7 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 Log.d(TAG, jsonObject.toString());
                 if (jsonObject.getInt("resultCode") == Constant.SUCCESS) {
-                    if (jsonObject.getString("mode").equals("normal")) {
+                    if (jsonObject.getString("loginType").equals("normal")) {
                         SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
                         SharedPreferences.Editor spEditor = sp.edit();
                         spEditor.putString("id", jsonObject.getString("id"));
@@ -255,12 +255,12 @@ public class LoginActivity extends AppCompatActivity {
 
                     User user = new User(jsonObject);
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    intent.putExtra("loginUser", user);
+                    intent.putExtra("login_user", user);
                     startActivity(intent);
 
                     finish();
                 } else if(jsonObject.getInt("resultCode") == Constant.LOGIN_FAILED){
-                    if(jsonObject.getString("mode").equals("facebook")){
+                    if(jsonObject.getString("loginType").equals("facebook")){
                         Profile profile = Profile.getCurrentProfile();
                         if(profile != null){
                             Intent intent = new Intent(LoginActivity.this, AddNicknameActivity.class);
