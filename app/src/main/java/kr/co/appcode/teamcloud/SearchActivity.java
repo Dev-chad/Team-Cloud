@@ -91,7 +91,7 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount != 0) {
+                if (totalItemCount != 0 && firstVisibleItem + visibleItemCount == totalItemCount) {
                     if (!searchFlag) {
                         if (adapter.getMax() > adapter.getCount()) {
                             HashMap<String, String> values = new HashMap<>();
@@ -155,8 +155,8 @@ public class SearchActivity extends AppCompatActivity {
                     } else {
 
                     }
-                } else if(mode == HttpConnection.MODE_JOIN_CANCEL){
-                    if(resultCode == Constant.SUCCESS){
+                } else if (mode == HttpConnection.MODE_JOIN_CANCEL) {
+                    if (resultCode == Constant.SUCCESS) {
                         adapter.getSearchListItemList().get(adapter.getCurrentPos()).setLevel(-1);
 
                         adapter.notifyDataSetChanged();
