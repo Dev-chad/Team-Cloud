@@ -11,22 +11,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.FrameLayout;
 
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 
-public class MainActivity extends AppCompatActivity
+public class TeamPageActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private Profile profile;
     private User user;
 
+    private FrameLayout frameContent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_team_page);
+
+        setTitle("테스트팀");
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -39,12 +43,17 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        profile = Profile.getCurrentProfile();
+        /*profile = Profile.getCurrentProfile();
         user = getIntent().getParcelableExtra("loginUser");
-        Toast.makeText(this, user.getName()+"님 환영합니다.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, user.getName()+"님 환영합니다.", Toast.LENGTH_SHORT).show();*/
 
-        TextView textId = (TextView)findViewById(R.id.text_nickname);
-        textId.setText(user.getNickname());
+        /*TextView textId = (TextView) findViewById(R.id.text_nickname);
+        textId.setText(user.getNickname());*/
+
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frame_content, new HomeFragment())
+                .commit();
 
     }
 

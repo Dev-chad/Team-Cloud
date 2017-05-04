@@ -128,7 +128,8 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(this, "" + position, Toast.LENGTH_SHORT).show();
+//        Intent intent = new Intent(this, TeamPageActivity.class);
+
     }
 
     /*public void setListViewHeightBasedOnItems(ListView listView, int count) {

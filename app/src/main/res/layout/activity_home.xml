@@ -182,24 +182,6 @@
                         android:layout_height="wrap_content"
                         android:text="팀 만들기 및 가입을 통해 팀을 추가해보세요" />
 
-                    <!--<LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                        <Button
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:text="팀 만들기"
-                            android:theme="@style/ColoredButton"
-                            android:minWidth="0dp"
-                            android:minHeight="0dp"/>
-                        <Button
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:text="팀 검색"
-                            android:theme="@style/ColoredBlueButton"
-                            android:minWidth="0dp"
-                            android:minHeight="0dp"/>
-                    </LinearLayout>-->
                 </LinearLayout>
 
             </RelativeLayout>
