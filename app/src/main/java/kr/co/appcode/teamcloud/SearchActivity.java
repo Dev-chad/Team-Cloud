@@ -28,7 +28,7 @@ public class SearchActivity extends AppCompatActivity {
     private ImageButton btnSearch;
 
     private TextView textNoResult;
-    private CustomTeamListAdapter adapter;
+    private TeamListAdapter adapter;
 
     private User user;
     private Profile profile;
@@ -53,7 +53,7 @@ public class SearchActivity extends AppCompatActivity {
         btnSearch = (ImageButton) findViewById(R.id.btn_search);
         textNoResult = (TextView) findViewById(R.id.text_no_search);
 
-        adapter = new CustomTeamListAdapter(this, new ArrayList<SearchListItem>(), 0, user);
+        adapter = new TeamListAdapter(this, new ArrayList<SearchListItem>(), 0, user);
         listTeam.setAdapter(adapter);
 
         btnSearch.setOnClickListener(new View.OnClickListener() {

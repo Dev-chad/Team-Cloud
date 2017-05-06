@@ -128,8 +128,10 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        Intent intent = new Intent(this, TeamPageActivity.class);
-
+        Intent intent = new Intent(this, TeamPageActivity.class);
+        intent.putExtra("teamName", (String)gridTeamList.getItemAtPosition(position));
+        intent.putExtra("login_user", user);
+        startActivity(intent);
     }
 
     /*public void setListViewHeightBasedOnItems(ListView listView, int count) {

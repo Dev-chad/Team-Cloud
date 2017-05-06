@@ -34,6 +34,7 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
     public static final int MODE_TEAM_SEARCH = 12;
     public static final int MODE_JOIN_TEAM = 13;
     public static final int MODE_JOIN_CANCEL= 14;
+    public static final int MODE_TEAM_HOME = 15;
 
     private boolean isCheckSession;
     //endregion
@@ -90,6 +91,9 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
                 body = "nickname="+values.get("nickname")+"&teamName="+values.get("teamName");
             } else if(mode == MODE_JOIN_CANCEL){
                 url = new URL(SERVER_URL+"joinCancel.php");
+                body = "nickname="+values.get("nickname")+"&teamName="+values.get("teamName");
+            } else if(mode == MODE_TEAM_HOME){
+                url = new URL(SERVER_URL+"home.php");
                 body = "nickname="+values.get("nickname")+"&teamName="+values.get("teamName");
             }
         } catch (MalformedURLException e) {

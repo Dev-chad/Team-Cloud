@@ -21,7 +21,8 @@ import java.util.HashMap;
  * Created by Chad on 2017-04-30.
  */
 
-public class CustomTeamListAdapter extends BaseAdapter {
+public class TeamListAdapter extends BaseAdapter {
+
 
     private SearchActivity context;
     private User user;
@@ -31,7 +32,7 @@ public class CustomTeamListAdapter extends BaseAdapter {
 
     ViewHolder holder;
 
-    public CustomTeamListAdapter(SearchActivity context, ArrayList<SearchListItem> searchListItemList, int max, User user) {
+    public TeamListAdapter(SearchActivity context, ArrayList<SearchListItem> searchListItemList, int max, User user) {
         this.context = context;
         this.searchListItemList = searchListItemList;
         this.max = max;

@@ -20,18 +20,20 @@ public class TeamPageActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private Profile profile;
-    private User user;
 
     private FrameLayout frameContent;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team_page);
 
-        setTitle("테스트팀");
+        user = getIntent().getParcelableExtra("login_user");
+        String teamName = getIntent().getStringExtra("teamName");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(teamName);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -43,16 +45,17 @@ public class TeamPageActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        /*profile = Profile.getCurrentProfile();
-        user = getIntent().getParcelableExtra("loginUser");
-        Toast.makeText(this, user.getName()+"님 환영합니다.", Toast.LENGTH_SHORT).show();*/
 
-        /*TextView textId = (TextView) findViewById(R.id.text_nickname);
-        textId.setText(user.getNickname());*/
+        HomeFragment homeFragment = new HomeFragment();
 
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("login_user", user);
+        bundle.putString("teamName", teamName);
+
+        homeFragment.setArguments(bundle);
         getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.frame_content, new HomeFragment())
+                .add(R.id.frame_content, homeFragment)
                 .commit();
 
     }
@@ -106,19 +109,6 @@ public class TeamPageActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
