@@ -54,11 +54,11 @@
                     android:textAlignment="center"
                     android:textStyle="bold" />
 
-                <ImageView
+<!--                <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:src="@mipmap/ic_noti"
-                    android:layout_alignParentEnd="true"/>
+                    android:layout_alignParentEnd="true"/>-->
 
             </RelativeLayout>
 
@@ -68,14 +68,16 @@
                 android:layout_below="@id/text_nickname"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
-                android:text="팀 디렉토리"
+                android:text="팀 게시판"
                 android:textAlignment="center"
                 android:textStyle="bold" />
 
             <ListView
-                android:id="@+id/list_menu"
+                android:id="@+id/list_board"
                 android:layout_width="match_parent"
-                android:layout_height="50dp">
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp">
 
             </ListView>
 
@@ -162,7 +164,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="오피스" />
+                        android:text="문서" />
                 </LinearLayout>
 
             </LinearLayout>
