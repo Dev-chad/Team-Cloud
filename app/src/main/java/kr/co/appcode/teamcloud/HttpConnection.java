@@ -98,7 +98,7 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
                 body = "nickname="+values.get("nickname")+"&teamName="+values.get("teamName");
             } else if(mode == MODE_GET_BOARD){
                 url = new URL(SERVER_URL + "getBoard.php");
-                body = "teamName="+values.get("teamName");
+                body = "teamName="+values.get("teamName")+"&nickname="+values.get("nickname");
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();

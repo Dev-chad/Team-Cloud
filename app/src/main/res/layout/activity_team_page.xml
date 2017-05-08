@@ -43,6 +43,7 @@
                     android:layout_height="wrap_content"
                     android:text="닉네임이다"
                     android:textAlignment="center"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -86,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/text_nickname"
                 android:layout_marginStart="5dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:text="파일 타입"
                 android:textAlignment="center"
                 android:textStyle="bold" />

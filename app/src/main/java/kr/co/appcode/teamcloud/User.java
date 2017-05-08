@@ -20,6 +20,7 @@ public class User implements Parcelable {
     private int maxCapacity;
     private String accountType;
     private String sessionInfo;
+    private int level;
 
     public User(String id, String nickname, String name, int credit, int usedCapacity, int maxCapacity, String accountType) {
         this.id = id;
@@ -58,6 +59,7 @@ public class User implements Parcelable {
         accountType = in.readString();
         sessionInfo = in.readString();
         availableCapacity = in.readInt();
+        level = in.readInt();
     }
 
     @Override
@@ -71,6 +73,7 @@ public class User implements Parcelable {
         dest.writeString(accountType);
         dest.writeString(sessionInfo);
         dest.writeInt(availableCapacity);
+        dest.writeInt(level);
     }
 
     @Override
@@ -89,6 +92,14 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
     public String getId() {
         return id;
