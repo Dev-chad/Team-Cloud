@@ -211,7 +211,7 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
                 if (mode == HttpConnection.MODE_TEAM_HOME) {
                     if (resultCode == Constant.SUCCESS) {
                         setCapacity(jsonObject.getDouble("usedCapacity"), jsonObject.getInt("maxCapacity"));
-
+                        textMaxCapacity.setText(String.valueOf(jsonObject.getInt("maxCapacity")+"GB"));
                     }
                 }
 

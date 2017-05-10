@@ -43,6 +43,7 @@ public class TeamPageActivity extends AppCompatActivity
     private TextView textLevel;
 
     private String teamName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,9 +64,9 @@ public class TeamPageActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        textNickname = (TextView)findViewById(R.id.text_nickname);
+        textNickname = (TextView) findViewById(R.id.text_nickname);
         textNickname.setText(user.getNickname());
-        textLevel = (TextView)findViewById(R.id.text_level);
+        textLevel = (TextView) findViewById(R.id.text_level);
 
         HomeFragment homeFragment = new HomeFragment();
 
@@ -157,11 +158,11 @@ public class TeamPageActivity extends AppCompatActivity
                         setListViewHeightBasedOnItems(listBoard, boardListAdapter.getCount());
 
                         user.setLevel(jsonObject.getInt("level"));
-                        if(user.getLevel() == 1){
+                        if (user.getLevel() == 1) {
                             textLevel.setText("일반 멤버");
-                        } else if(user.getLevel() == 2){
+                        } else if (user.getLevel() == 2) {
                             textLevel.setText("관리자 멤버");
-                        } else if(user.getLevel() == 3){
+                        } else if (user.getLevel() == 3) {
                             textLevel.setText("마스터 멤버");
                         }
 
