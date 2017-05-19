@@ -26,7 +26,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="20dp"
                 android:layout_marginTop="10dp"
-                android:text="CHADDDDDDDDDDDD"
+                android:text="사용자 닉네임"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="25sp"
                 android:textStyle="bold" />
@@ -102,6 +102,7 @@
                 android:paddingStart="10dp">
 
                 <TextView
+                    android:id="@+id/text_message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"

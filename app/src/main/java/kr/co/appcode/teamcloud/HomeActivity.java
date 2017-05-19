@@ -34,17 +34,21 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private User user;
     private Profile profile;
+
     private ProgressBar capacityBar;
+
     private TextView textUsedCapacity;
     private TextView textMaxCapacity;
+    private TextView textDetail;
+    private TextView textMessage;
+
     private LinearLayout layoutNoTeam;
 
     private GridView gridTeamList;
 
-    private ImageView imgTeamSetting;
-
     private HttpConnection httpConnection;
-    private TextView textDetail;
+
+    private Button btnCreateTeam;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,10 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
 
         profile = Profile.getCurrentProfile();
         user = getIntent().getParcelableExtra("login_user");
+
+        ImageView imgTeamSetting;
+
+        textMessage = (TextView)findViewById(R.id.text_message);
 
         TextView textNickname = (TextView)findViewById(R.id.text_nickname);
         textNickname.setText(user.getNickname());
@@ -81,13 +89,17 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
-        Button btnCreateTeam = (Button) findViewById(R.id.btn_create_team);
+        btnCreateTeam = (Button) findViewById(R.id.btn_create_team);
         btnCreateTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(HomeActivity.this, CreateTeamActivity.class);
-                intent.putExtra("login_user", user);
-                startActivity(intent);
+                if(btnCreateTeam.getText().equals("팀 만들기")){
+                    Intent intent = new Intent(HomeActivity.this, CreateTeamActivity.class);
+                    intent.putExtra("login_user", user);
+                    startActivity(intent);
+                } else {
+
+                }
             }
         });
 
@@ -294,6 +306,14 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         capacityBar.setProgress(user.getUsedCapacity());
         textUsedCapacity.setText(String.valueOf(user.getUsedCapacity()));
         textMaxCapacity.setText(String.valueOf(user.getMaxCapacity()));
+
+        if(user.getUsedCapacity() < user.getMaxCapacity()){
+            textMessage.setText("팀을 만들어 보세요");
+            btnCreateTeam.setText("팀 만들기");
+        } else {
+            textMessage.setText("사용가능한 용량이 없습니다");
+            btnCreateTeam.setText("용량 구매하기");
+        }
     }
 
     private void getUserData() {
