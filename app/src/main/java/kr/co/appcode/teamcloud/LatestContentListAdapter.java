@@ -23,7 +23,6 @@ public class LatestContentListAdapter extends BaseAdapter {
     public LatestContentListAdapter(HomeFragment fragment, ArrayList<LatestContentItem> latestContentList) {
         this.fragment = fragment;
         this.latestContentList = latestContentList;
-
     }
 
     public ArrayList<LatestContentItem> getLatestContentList() {

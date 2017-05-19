@@ -1,6 +1,5 @@
 package kr.co.appcode.teamcloud;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,8 +39,14 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
     private TextView teamName;
     private TextView textUsedCapacity;
     private TextView textMaxCapacity;
+    private TextView textNoLatestContents;
+    private TextView textNoLatestFile;
 
     private int viewMode = MODE_GRID;
+
+    private LatestContentListAdapter latestContentListAdapter;
+    private LatestFileGridAdapter latestFileGridAdapter;
+    private LatestFileListAdapter latestFileListAdapter;
 
     private User user;
     private Profile profile;
@@ -73,19 +78,20 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
         teamName = (TextView) view.findViewById(R.id.text_team_name);
         textUsedCapacity = (TextView) view.findViewById(R.id.text_used_capacity);
         textMaxCapacity = (TextView) view.findViewById(R.id.text_max_capacity);
+        textNoLatestContents =(TextView) view.findViewById(R.id.text_no_latest_content);
+        textNoLatestFile = (TextView) view.findViewById(R.id.text_no_latest_file);
 
         progressBar = (ProgressBar) view.findViewById(R.id.progress_capacity);
-
-        LatestContentListAdapter adapterContent = new LatestContentListAdapter(this, new ArrayList<LatestContentItem>());
+        latestContentListAdapter = new LatestContentListAdapter(this, new ArrayList<LatestContentItem>());
 
         ArrayList<LatestFileItem> fileList = new ArrayList<>();
 
-        LatestFileListAdapter fileListAdapter = new LatestFileListAdapter(this, fileList);
-        LatestFileGridAdapter fileGridAdapter = new LatestFileGridAdapter(this, fileList);
+        latestFileListAdapter = new LatestFileListAdapter(this, fileList);
+        latestFileGridAdapter = new LatestFileGridAdapter(this, fileList);
 
-        listLatestContent.setAdapter(adapterContent);
-        listLatestFile.setAdapter(fileListAdapter);
-        gridLatestFile.setAdapter(fileGridAdapter);
+        listLatestContent.setAdapter(latestContentListAdapter);
+        listLatestFile.setAdapter(latestFileListAdapter);
+        gridLatestFile.setAdapter(latestFileGridAdapter);
 
         imageGrid.setOnClickListener(this);
         imageList.setOnClickListener(this);
@@ -166,7 +172,6 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
         gridView.requestLayout();
     }
 
-
     @Override
     public void onClick(View v) {
 
@@ -189,18 +194,6 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
         }
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-    }
-
     public HttpCallBack httpCallBack = new HttpCallBack() {
         @Override
         public void CallBackResult(JSONObject jsonObject) {
@@ -212,14 +205,60 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
                     if (resultCode == Constant.SUCCESS) {
                         setCapacity(jsonObject.getDouble("usedCapacity"), jsonObject.getInt("maxCapacity"));
                         textMaxCapacity.setText(String.valueOf(jsonObject.getInt("maxCapacity")+"GB"));
+
+                        int contentCount = jsonObject.getInt("contentCount");
+                        int fileCount = jsonObject.getInt("fileCount");
+
+                        if(contentCount > 0){
+                            if(textNoLatestContents.getVisibility() == View.VISIBLE){
+                                textNoLatestContents.setVisibility(View.GONE);
+                            }
+
+                            latestContentListAdapter.getLatestContentList().clear();
+                            for(int i=0; i<contentCount; i++){
+                                LatestContentItem contentItem = new LatestContentItem(jsonObject.getInt(i+"_content_idx"), jsonObject.getString(i+"_content_title"), jsonObject.getString(i+"_content_writer"), jsonObject.getString(i+"_content_date"));
+                                latestContentListAdapter.add(contentItem);
+                            }
+
+                            latestContentListAdapter.notifyDataSetChanged();
+                            setListViewHeightBasedOnItems(listLatestContent, latestContentListAdapter.getCount());
+
+                            if(fileCount > 0){
+                                if(textNoLatestFile.getVisibility() == View.VISIBLE){
+                                    textNoLatestFile.setVisibility(View.GONE);
+                                }
+
+                                for(int i=0; i<fileCount; i++){
+                                    LatestFileItem fileItem = new LatestFileItem(jsonObject.getInt(i+"_file_idx"), jsonObject.getString(i+"_file_name"), jsonObject.getString(i+"_file_type"), jsonObject.getString(i+"_file_writer"), jsonObject.getDouble(i+"_file_size"), jsonObject.getString(i+"_file_date"));
+                                    latestFileGridAdapter.add(fileItem);
+                                }
+
+                                latestFileGridAdapter.notifyDataSetChanged();
+                                latestFileListAdapter.notifyDataSetChanged();
+
+                                setGridViewHeightBasedOnItems(gridLatestFile);
+                                setListViewHeightBasedOnItems(listLatestFile, listLatestFile.getCount());
+                            } else {
+                                if(textNoLatestFile.getVisibility() == View.GONE){
+                                    textNoLatestFile.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        } else {
+                            if(textNoLatestContents.getVisibility() == View.GONE){
+                                textNoLatestContents.setVisibility(View.VISIBLE);
+                            }
+
+                            if(textNoLatestFile.getVisibility() == View.GONE){
+                                textNoLatestFile.setVisibility(View.VISIBLE);
+                            }
+                        }
                     }
                 }
 
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
             Log.d(TAG, jsonObject.toString());
-
         }
     };
 

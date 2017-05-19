@@ -5,25 +5,28 @@ package kr.co.appcode.teamcloud;
  */
 
 public class LatestFileItem {
+    private int idx;
     private String name;
     private String type;
-    private String extension;
     private String writer;
     private String date;
     private double size;
 
-    public LatestFileItem(String name, String type, String extension, String writer, String date) {
+    public LatestFileItem(int idx, String name, String type, String writer, double size, String date) {
+        this.idx = idx;
         this.name = name;
         this.type = type;
-        this.extension = extension;
         this.writer = writer;
         this.date = date;
+        this.size = size;
     }
 
-    public LatestFileItem(String name, String date, double size) {
-        this.name = name;
-        this.date = date;
-        this.size = size;
+    public int getIdx() {
+        return idx;
+    }
+
+    public void setIdx(int idx) {
+        this.idx = idx;
     }
 
     public String getName() {
@@ -40,14 +43,6 @@ public class LatestFileItem {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getExtension() {
-        return extension;
-    }
-
-    public void setExtension(String extension) {
-        this.extension = extension;
     }
 
     public String getWriter() {

@@ -5,14 +5,24 @@ package kr.co.appcode.teamcloud;
  */
 
 public class LatestContentItem {
+    private int idx;
     private String title;
     private String writer;
     private String date;
 
-    public LatestContentItem(String title, String writer, String date) {
+    public LatestContentItem(int idx, String title, String writer, String date) {
+        this.idx = idx;
         this.title = title;
         this.writer = writer;
         this.date = date;
+    }
+
+    public int getIdx() {
+        return idx;
+    }
+
+    public void setIdx(int idx) {
+        this.idx = idx;
     }
 
     public String getTitle() {
