@@ -49,6 +49,7 @@ public class TeamSettingActivity extends AppCompatActivity {
     private TextView textTeamName;
 
     private String teamName;
+    private User user;
 
     boolean isPublic;
     boolean isAutoJoin;
@@ -67,6 +68,7 @@ public class TeamSettingActivity extends AppCompatActivity {
         actionBar.setHomeButtonEnabled(true);
 
         teamName = getIntent().getStringExtra("teamName");
+        user = getIntent().getParcelableExtra("loginUser");
 
         imageTeamMark = (ImageView) findViewById(R.id.image_team_mark);
 
@@ -111,7 +113,10 @@ public class TeamSettingActivity extends AppCompatActivity {
         layoutManageMemeber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(TeamSettingActivity.this, MemberManageActivity.class);
+                intent.putExtra("teamName", teamName);
+                intent.putExtra("loginUser", user);
+                startActivity(intent);
             }
         });
 

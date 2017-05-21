@@ -71,12 +71,11 @@
             android:label="팀 검색" />
         <activity
             android:name=".TeamSettingActivity"
-            android:label="팀 설정">
-
-        </activity>
+            android:label="팀 설정"></activity>
         <activity
             android:name=".ChangeTeamNameActivity"
-            android:label="팀 이름 변경"></activity>
+            android:label="팀 이름 변경" />
+        <activity android:name=".MemberManageActivity"></activity>
     </application>
 
 </manifest>

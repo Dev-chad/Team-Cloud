@@ -74,6 +74,7 @@ public class TeamPageActivity extends AppCompatActivity
             public void onClick(View v) {
                 Intent intent = new Intent(TeamPageActivity.this, TeamSettingActivity.class);
                 intent.putExtra("teamName", teamName);
+                intent.putExtra("loginUser", user);
                 startActivity(intent);
             }
         });
