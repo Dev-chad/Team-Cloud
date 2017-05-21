@@ -60,13 +60,13 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
 
         ImageView imgTeamSetting;
 
-        textMessage = (TextView)findViewById(R.id.text_message);
+        textMessage = (TextView) findViewById(R.id.text_message);
 
-        TextView textNickname = (TextView)findViewById(R.id.text_nickname);
+        TextView textNickname = (TextView) findViewById(R.id.text_nickname);
         textNickname.setText(user.getNickname());
-        textDetail = (TextView)findViewById(R.id.text_detail);
+        textDetail = (TextView) findViewById(R.id.text_detail);
 
-        layoutNoTeam = (LinearLayout)findViewById(R.id.layout_no_team);
+        layoutNoTeam = (LinearLayout) findViewById(R.id.layout_no_team);
 
         capacityBar = (ProgressBar) findViewById(R.id.progress_capacity);
         capacityBar.setMax(user.getMaxCapacity());
@@ -81,7 +81,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         gridTeamList = (GridView) findViewById(R.id.grid_teamlist);
         gridTeamList.setOnItemClickListener(this);
 
-        imgTeamSetting = (ImageView)findViewById(R.id.img_team_setting);
+        imgTeamSetting = (ImageView) findViewById(R.id.img_team_setting);
         imgTeamSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,7 +93,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         btnCreateTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(btnCreateTeam.getText().equals("팀 만들기")){
+                if (btnCreateTeam.getText().equals("팀 만들기")) {
                     Intent intent = new Intent(HomeActivity.this, CreateTeamActivity.class);
                     intent.putExtra("login_user", user);
                     startActivity(intent);
@@ -103,9 +103,8 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
-        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_layout);
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
         swipeRefreshLayout.setColorSchemeResources(
-
                 android.R.color.holo_red_light
         );
 
@@ -141,7 +140,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent(this, TeamPageActivity.class);
-        intent.putExtra("teamName", (String)gridTeamList.getItemAtPosition(position));
+        intent.putExtra("teamName", (String) gridTeamList.getItemAtPosition(position));
         intent.putExtra("login_user", user);
         startActivity(intent);
     }
@@ -185,7 +184,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         // Get list adpter of listview;
         if (listAdapter == null) return;
 
-        if(listAdapter.getCount() <= 4){
+        if (listAdapter.getCount() <= 4) {
             numberOfItems = 1;
         } else {
             numberOfItems = 2;
@@ -232,7 +231,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
             startActivity(intent);
 
             finish();
-        } else if(id==R.id.menu_search){
+        } else if (id == R.id.menu_search) {
             Intent intent = new Intent(this, SearchActivity.class);
             intent.putExtra("login_user", user);
             startActivity(intent);
@@ -267,7 +266,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                         int totalCount = jsonObject.getInt("totalCount");
                         int count;
 
-                        if(totalCount >= 8){
+                        if (totalCount >= 8) {
                             count = 8;
                         } else {
                             count = totalCount;
@@ -282,7 +281,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                         CustomGridAdapter adapter = new CustomGridAdapter(HomeActivity.this, list);
                         gridTeamList.setAdapter(adapter);
 
-                        if(totalCount>8){
+                        if (totalCount > 8) {
                             textDetail.setVisibility(View.VISIBLE);
                         } else {
                             textDetail.setVisibility(View.GONE);
@@ -307,7 +306,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         textUsedCapacity.setText(String.valueOf(user.getUsedCapacity()));
         textMaxCapacity.setText(String.valueOf(user.getMaxCapacity()));
 
-        if(user.getUsedCapacity() < user.getMaxCapacity()){
+        if (user.getUsedCapacity() < user.getMaxCapacity()) {
             textMessage.setText("팀을 만들어 보세요");
             btnCreateTeam.setText("팀 만들기");
         } else {
