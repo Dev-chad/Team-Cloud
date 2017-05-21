@@ -225,26 +225,6 @@
             android:layout_marginTop="10dp"
             android:background="@color/com_facebook_button_background_color_disabled" />
 
-        <!--<LinearLayout
-            android:id="@+id/layout_no_team"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="아직 어느 팀에도 소속되지 않았습니다" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="팀 만들기 및 가입을 통해 팀을 추가해보세요" />
-
-        </LinearLayout>-->
-
     </LinearLayout>
 
 </ScrollView>

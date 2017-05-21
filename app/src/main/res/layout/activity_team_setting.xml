@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#d9d9d9"
+    android:padding="10dp"
+    tools:context="kr.co.appcode.teamcloud.TeamSettingActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:paddingBottom="10dp">
+
+            <TextView
+                android:id="@+id/text_const_team_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="5dp"
+                android:text="기본 정보 설정"
+                android:textColor="#000"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/image_team_mark"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_below="@id/text_const_team_info"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:src="@mipmap/default_team" />
+
+            <Button
+                android:id="@+id/btn_team_mark_change"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/image_team_mark"
+                android:layout_centerHorizontal="true"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:text="팀 마크 변경"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_changeTeamName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:background="#fff"
+            android:paddingBottom="10dp"
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/text_team_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="팀 이름"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_team_name"
+                android:text="팀 이름 변경" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text=">"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:background="#fff"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
+
+            <RelativeLayout
+                android:id="@+id/layout_public_setting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp">
+
+                <TextView
+                    android:id="@+id/text_const_public"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:text="팀 공개 여부:"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/text_is_public"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/text_const_public"
+                    android:text="공개"
+                    android:textColor="@color/red"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/text_const_public"
+                    android:layout_marginTop="5dp"
+                    android:text="* 검색에서 팀이 노출됩니다."
+                    android:textSize="11sp" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/switch_public"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:checked="true"
+                    android:textOff="비공개"
+                    android:textOn="공개" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layout_join_setting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout_public_setting"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp">
+
+                <TextView
+                    android:id="@+id/text_const_join"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:text="자동 가입 승인:"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/text_is_auto_join"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/text_const_join"
+                    android:text="켜짐"
+                    android:textColor="@color/red"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/text_const_join"
+                    android:layout_marginTop="5dp"
+                    android:text="* 팀 가입 요청에 대해 관리자의 승인 없이 바로 가입됩니다."
+                    android:textSize="11sp" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/switch_join"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:checked="true"
+                    android:textOff="비공개"
+                    android:textOn="공개" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="#fff"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:text="멤버 관리"
+                android:textColor="#000"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:id="@+id/layout_manage_member"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:background="#fff"
+                android:paddingBottom="10dp"
+                android:paddingEnd="20dp"
+                android:paddingStart="20dp"
+                android:paddingTop="10dp">
+
+                <TextView
+                    android:id="@+id/text_team_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="전체 멤버 관리"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text=">"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:background="#fff"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="관리자 권한 설정"
+                android:textStyle="bold" />
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/text_const_manage_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="- 멤버 관리:"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/text_is_manage_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/text_const_manage_member"
+                    android:text="켜짐"
+                    android:textColor="@color/red"
+                    android:textStyle="bold" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/switch_manage_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:checked="true"
+                    android:textOff="꺼짐"
+                    android:textOn="켜짐" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/text_const_manage_board"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="- 게시판 관리:"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/text_is_manage_board"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/text_const_manage_board"
+                    android:text="켜짐"
+                    android:textColor="@color/red"
+                    android:textStyle="bold" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/switch_manage_board"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:checked="true"
+                    android:textOff="꺼짐"
+                    android:textOn="켜짐" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/text_const_manage_contents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="- 게시물 관리:"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/text_is_manage_contents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/text_const_manage_contents"
+                    android:text="켜짐"
+                    android:textColor="@color/red"
+                    android:textStyle="bold" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/switch_manage_contents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:checked="true"
+                    android:textOff="꺼짐"
+                    android:textOn="켜짐" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="#fff"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:text="게시판 관리"
+                android:textColor="#000"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:id="@+id/layout_manage_board"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:background="#fff"
+                android:paddingBottom="10dp"
+                android:paddingEnd="20dp"
+                android:paddingStart="20dp"
+                android:paddingTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="게시판 추가 및 삭제"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text=">"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_dissolution"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:background="#fff"
+            android:paddingBottom="10dp"
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="팀 해체"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text=">"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>

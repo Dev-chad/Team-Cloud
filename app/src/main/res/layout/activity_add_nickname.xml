@@ -8,7 +8,7 @@
     android:paddingBottom="10dp"
     android:paddingStart="30dp"
     android:paddingEnd="30dp"
-    tools:context="kr.co.appcode.teamcloud.FoundPasswordActivity">
+    tools:context="kr.co.appcode.teamcloud.AddNicknameActivity">
 
     <LinearLayout
         android:id="@+id/layout_editForm"

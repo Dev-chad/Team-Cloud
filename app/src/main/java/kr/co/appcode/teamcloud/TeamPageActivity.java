@@ -1,7 +1,6 @@
 package kr.co.appcode.teamcloud;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -9,17 +8,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.facebook.Profile;
-import com.facebook.login.LoginManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,6 +39,8 @@ public class TeamPageActivity extends AppCompatActivity
 
     private TextView textNickname;
     private TextView textLevel;
+
+    private Button btnSetting;
 
     private String teamName;
 
@@ -68,6 +68,16 @@ public class TeamPageActivity extends AppCompatActivity
         textNickname.setText(user.getNickname());
         textLevel = (TextView) findViewById(R.id.text_level);
 
+        btnSetting = (Button) findViewById(R.id.btn_setting);
+        btnSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TeamPageActivity.this, TeamSettingActivity.class);
+                intent.putExtra("teamName", teamName);
+                startActivity(intent);
+            }
+        });
+
         HomeFragment homeFragment = new HomeFragment();
 
         listBoard = (ListView) findViewById(R.id.list_board);
@@ -89,39 +99,6 @@ public class TeamPageActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.menu_logout) {
-            if (profile != null) {
-                LoginManager.getInstance().logOut();
-            } else {
-                SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
-                SharedPreferences.Editor spEditor = sp.edit();
-
-                spEditor.remove("id")
-                        .remove("password")
-                        .remove("type");
-
-                spEditor.apply();
-            }
-
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -160,10 +137,20 @@ public class TeamPageActivity extends AppCompatActivity
                         user.setLevel(jsonObject.getInt("level"));
                         if (user.getLevel() == 1) {
                             textLevel.setText("일반 멤버");
+                            if (btnSetting.getVisibility() == View.VISIBLE) {
+                                btnSetting.setVisibility(View.GONE);
+                            }
                         } else if (user.getLevel() == 2) {
                             textLevel.setText("관리자 멤버");
+                            if (btnSetting.getVisibility() == View.GONE) {
+                                btnSetting.setVisibility(View.VISIBLE);
+                            }
                         } else if (user.getLevel() == 3) {
                             textLevel.setText("마스터 멤버");
+
+                            if (btnSetting.getVisibility() == View.GONE) {
+                                btnSetting.setVisibility(View.VISIBLE);
+                            }
                         }
 
                         HomeFragment homeFragment = new HomeFragment();

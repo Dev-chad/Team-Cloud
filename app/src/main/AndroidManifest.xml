@@ -53,9 +53,7 @@
             android:label="회원가입" />
         <activity
             android:name=".HomeActivity"
-            android:label="홈">
-
-        </activity>
+            android:label="홈" />
         <activity
             android:name=".FoundPasswordActivity"
             android:label="비밀번호 재발급" />
@@ -63,18 +61,22 @@
         <activity
             android:name=".TeamPageActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CreateTeamActivity"
             android:label="팀 생성"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".SearchActivity"
-            android:label="팀 검색">
+            android:label="팀 검색" />
+        <activity
+            android:name=".TeamSettingActivity"
+            android:label="팀 설정">
 
         </activity>
+        <activity
+            android:name=".ChangeTeamNameActivity"
+            android:label="팀 이름 변경"></activity>
     </application>
 
 </manifest>

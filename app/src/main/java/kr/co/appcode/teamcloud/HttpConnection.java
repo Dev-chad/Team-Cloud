@@ -53,6 +53,17 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
         progressDialog = new ProgressDialog(activity);
     }
 
+    public HttpConnection(Activity activity, String body, String url, HttpCallBack httpCallBack) {
+        try {
+            this.body = body;
+            this.url = new URL(SERVER_URL + url);
+            this.httpCallBack = httpCallBack;
+            progressDialog = new ProgressDialog(activity);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setMode(int mode) {
         this.mode = mode;
         try {
@@ -100,6 +111,18 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
                 url = new URL(SERVER_URL + "getBoard.php");
                 body = "teamName="+values.get("teamName")+"&nickname="+values.get("nickname");
             }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setBody(String body){
+        this.body = body;
+    }
+
+    public void setUrl(String url){
+        try {
+            this.url = new URL(SERVER_URL + url);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
