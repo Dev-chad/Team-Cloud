@@ -33,12 +33,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
-    //region Constant
     private static final String TAG = "LoginActivity";
-    private static final int LOGIN_ERROR = 2;
-    private static final int LOGIN_EMPTY_ID = 3;
-    private static final int LOGIN_EMPTY_PASSWORD = 4;
-    //endregion
 
     private MaterialEditText editEmail;
     private MaterialEditText editPassword;
@@ -48,45 +43,19 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private HttpConnection httpConnection;
 
+    private Profile profile;
+
+    private SharedPreferences sp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
-        Profile profile = Profile.getCurrentProfile();
-        if (profile != null) {
-            HashMap<String, String> values = new HashMap<>();
-            values.put("id", profile.getId());
-            values.put("loginType", "facebook");
-
-            httpConnection = new HttpConnection(this, values, httpCallBack);
-            httpConnection.setMode(HttpConnection.MODE_LOGIN);
-            httpConnection.execute();
-
-        } else if (sp.contains("id")) {
-            HashMap<String, String> values = new HashMap<>();
-            values.put("id", sp.getString("id", ""));
-            values.put("password", sp.getString("password", ""));
-            values.put("loginType", "auto");
-
-            Log.d(TAG, "Saved id: " + sp.getString("id", ""));
-            Log.d(TAG, "Saved password: " + sp.getString("password", ""));
-
-            httpConnection = new HttpConnection(this, values, httpCallBack);
-            httpConnection.setMode(HttpConnection.MODE_LOGIN);
-            httpConnection.execute();
-        }
-
         callbackManager = CallbackManager.Factory.create();
 
         editEmail = (MaterialEditText) findViewById(R.id.edit_email);
         editEmail.addValidator(new RegexpValidator("이메일 형식이 올바르지 않습니다", "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$"));
-        editPassword = (MaterialEditText) findViewById(R.id.edit_password);
-        editPassword.addValidator(new RegexpValidator("비밀번호 형식이 올바르지 않습니다", "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{6,20}$"));
-
-        textError = (TextView) findViewById(R.id.text_error);
-
         editEmail.addTextChangedListener(new TextWatcher() {
             //region Unused method
             @Override
@@ -112,6 +81,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        editPassword = (MaterialEditText) findViewById(R.id.edit_password);
+        editPassword.addValidator(new RegexpValidator("비밀번호 형식이 올바르지 않습니다", "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{6,20}$"));
         editPassword.addTextChangedListener(new TextWatcher() {
             //region Unused method
             @Override
@@ -136,6 +107,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
 
         Button btnLogin = (Button) findViewById(R.id.btn_login);
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -183,17 +155,11 @@ public class LoginActivity extends AppCompatActivity {
                 final GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
-                        Log.d(TAG, "onCompleted");
-                        Log.d(TAG, object.toString());
-
                         try {
-                            HashMap<String, String> values = new HashMap<>();
+                            profile = Profile.getCurrentProfile();
+                            String body = "id=" + object.getString("id") + "&loginType=facebook";
 
-                            values.put("id", object.getString("id"));
-                            values.put("loginType", "facebook");
-
-                            httpConnection = new HttpConnection(LoginActivity.this, values, httpCallBack);
-                            httpConnection.setMode(HttpConnection.MODE_LOGIN);
+                            httpConnection = new HttpConnection(LoginActivity.this, body, "login.php", httpCallBack);
                             httpConnection.execute();
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -221,6 +187,8 @@ public class LoginActivity extends AppCompatActivity {
 
         });
 
+        textError = (TextView) findViewById(R.id.text_error);
+
         TextView textForgotPassword = (TextView) findViewById(R.id.text_forgotPassword);
         textForgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -229,40 +197,61 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        sp = getSharedPreferences("login_info", MODE_PRIVATE);
+        profile = Profile.getCurrentProfile();
+
+        if (profile != null) {
+            String body = "id=" + profile.getId() + "&loginType=facebook";
+
+            httpConnection = new HttpConnection(this, body, "login.php", httpCallBack);
+            httpConnection.execute();
+        } else if (sp.contains("id")) {
+            String body = "id=" + sp.getString("id", "") + "&password=" + sp.getString("password", "") + "&loginType=auto";
+
+            httpConnection = new HttpConnection(this, body, "login.php", httpCallBack);
+            httpConnection.execute();
+        }
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (editPassword.length() > 0) {
+            editPassword.setText("");
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult");
     }
 
     private HttpCallBack httpCallBack = new HttpCallBack() {
         @Override
-        public void CallBackResult(JSONObject jsonObject) {
+        public void CallBackResult(JSONObject jsonResult) {
             try {
-                Log.d(TAG, jsonObject.toString());
-                if (jsonObject.getInt("resultCode") == Constant.SUCCESS) {
-                    if (jsonObject.getString("loginType").equals("normal")) {
-                        SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
+                int resultCode = jsonResult.getInt("resultCode");
+
+                if (resultCode == Constant.SUCCESS) {
+                    if (jsonResult.getString("loginType").equals("normal")) {
                         SharedPreferences.Editor spEditor = sp.edit();
-                        spEditor.putString("id", jsonObject.getString("id"));
+                        spEditor.putString("id", jsonResult.getString("id"));
                         spEditor.putString("password", md5(editPassword.getText().toString()));
 
                         spEditor.apply();
                     }
-
-                    User user = new User(jsonObject);
+                    User user = new User(jsonResult);
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                     intent.putExtra("login_user", user);
                     startActivity(intent);
 
                     finish();
-                } else if(jsonObject.getInt("resultCode") == Constant.LOGIN_FAILED){
-                    if(jsonObject.getString("loginType").equals("facebook")){
-                        Profile profile = Profile.getCurrentProfile();
-                        if(profile != null){
+                } else if (resultCode == Constant.FAILED) {
+                    if (jsonResult.getString("loginType").equals("facebook")) {
+                        if (profile != null) {
                             Intent intent = new Intent(LoginActivity.this, AddNicknameActivity.class);
                             startActivity(intent);
                         }
@@ -282,14 +271,6 @@ public class LoginActivity extends AppCompatActivity {
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         } catch (NullPointerException e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (editPassword.length() > 0) {
-            editPassword.setText("");
         }
     }
 
