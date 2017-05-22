@@ -293,7 +293,7 @@ public class CreateTeamActivity extends AppCompatActivity {
         try {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
 
