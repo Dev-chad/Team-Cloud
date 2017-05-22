@@ -21,9 +21,6 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
     public static final int MODE_LOGIN = 1;
     public static final int MODE_JOIN = 3;
     public static final int MODE_NICKNAME_CHECK = 5;
-    public static final int MODE_REISSUE = 7;
-    public static final int MODE_TEAMNAME_CHECK = 8;
-    public static final int MODE_CREATE_TEAM = 9;
     public static final int MODE_REFRESH_USER = 10;
     public static final int MODE_GET_TEAM_LIST = 11;
     public static final int MODE_TEAM_SEARCH = 12;

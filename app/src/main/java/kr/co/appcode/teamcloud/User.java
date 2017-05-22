@@ -11,6 +11,7 @@ import org.json.JSONObject;
  */
 
 public class User implements Parcelable {
+    private String idx;
     private String id;
     private String nickname;
     private String name;
@@ -35,6 +36,7 @@ public class User implements Parcelable {
 
     public User(JSONObject jsonObject) {
         try {
+            idx = jsonObject.getString("idx");
             id = jsonObject.getString("id");
             nickname = jsonObject.getString("nickname");
             name = jsonObject.getString("name");
@@ -50,6 +52,7 @@ public class User implements Parcelable {
     }
 
     protected User(Parcel in) {
+        idx = in.readString();
         id = in.readString();
         nickname = in.readString();
         name = in.readString();
@@ -64,6 +67,7 @@ public class User implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(idx);
         dest.writeString(id);
         dest.writeString(nickname);
         dest.writeString(name);

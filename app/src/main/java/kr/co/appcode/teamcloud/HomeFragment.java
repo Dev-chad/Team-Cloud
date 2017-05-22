@@ -19,7 +19,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 public class HomeFragment extends android.app.Fragment implements View.OnClickListener {
     private static final String TAG = "HomeFragment";
     private static final int MODE_LIST = 1;
@@ -78,7 +77,7 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
         teamName = (TextView) view.findViewById(R.id.text_team_name);
         textUsedCapacity = (TextView) view.findViewById(R.id.text_used_capacity);
         textMaxCapacity = (TextView) view.findViewById(R.id.text_max_capacity);
-        textNoLatestContents =(TextView) view.findViewById(R.id.text_no_latest_content);
+        textNoLatestContents = (TextView) view.findViewById(R.id.text_no_latest_content);
         textNoLatestFile = (TextView) view.findViewById(R.id.text_no_latest_file);
 
         progressBar = (ProgressBar) view.findViewById(R.id.progress_capacity);
@@ -204,32 +203,32 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
                 if (mode == HttpConnection.MODE_TEAM_HOME) {
                     if (resultCode == Constant.SUCCESS) {
                         setCapacity(jsonObject.getDouble("usedCapacity"), jsonObject.getInt("maxCapacity"));
-                        textMaxCapacity.setText(String.valueOf(jsonObject.getInt("maxCapacity")+"GB"));
+                        textMaxCapacity.setText(String.valueOf(jsonObject.getInt("maxCapacity") + "GB"));
 
                         int contentCount = jsonObject.getInt("contentCount");
                         int fileCount = jsonObject.getInt("fileCount");
 
-                        if(contentCount > 0){
-                            if(textNoLatestContents.getVisibility() == View.VISIBLE){
+                        if (contentCount > 0) {
+                            if (textNoLatestContents.getVisibility() == View.VISIBLE) {
                                 textNoLatestContents.setVisibility(View.GONE);
                             }
 
                             latestContentListAdapter.getLatestContentList().clear();
-                            for(int i=0; i<contentCount; i++){
-                                LatestContentItem contentItem = new LatestContentItem(jsonObject.getInt(i+"_content_idx"), jsonObject.getString(i+"_content_title"), jsonObject.getString(i+"_content_writer"), jsonObject.getString(i+"_content_date"));
+                            for (int i = 0; i < contentCount; i++) {
+                                LatestContentItem contentItem = new LatestContentItem(jsonObject.getInt(i + "_content_idx"), jsonObject.getString(i + "_content_title"), jsonObject.getString(i + "_content_writer"), jsonObject.getString(i + "_content_date"));
                                 latestContentListAdapter.add(contentItem);
                             }
 
                             latestContentListAdapter.notifyDataSetChanged();
                             setListViewHeightBasedOnItems(listLatestContent, latestContentListAdapter.getCount());
 
-                            if(fileCount > 0){
-                                if(textNoLatestFile.getVisibility() == View.VISIBLE){
+                            if (fileCount > 0) {
+                                if (textNoLatestFile.getVisibility() == View.VISIBLE) {
                                     textNoLatestFile.setVisibility(View.GONE);
                                 }
 
-                                for(int i=0; i<fileCount; i++){
-                                    LatestFileItem fileItem = new LatestFileItem(jsonObject.getInt(i+"_file_idx"), jsonObject.getString(i+"_file_name"), jsonObject.getString(i+"_file_type"), jsonObject.getString(i+"_file_writer"), jsonObject.getDouble(i+"_file_size"), jsonObject.getString(i+"_file_date"));
+                                for (int i = 0; i < fileCount; i++) {
+                                    LatestFileItem fileItem = new LatestFileItem(jsonObject.getInt(i + "_file_idx"), jsonObject.getString(i + "_file_name"), jsonObject.getString(i + "_file_type"), jsonObject.getString(i + "_file_writer"), jsonObject.getDouble(i + "_file_size"), jsonObject.getString(i + "_file_date"));
                                     latestFileGridAdapter.add(fileItem);
                                 }
 
@@ -239,16 +238,16 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
                                 setGridViewHeightBasedOnItems(gridLatestFile);
                                 setListViewHeightBasedOnItems(listLatestFile, listLatestFile.getCount());
                             } else {
-                                if(textNoLatestFile.getVisibility() == View.GONE){
+                                if (textNoLatestFile.getVisibility() == View.GONE) {
                                     textNoLatestFile.setVisibility(View.VISIBLE);
                                 }
                             }
                         } else {
-                            if(textNoLatestContents.getVisibility() == View.GONE){
+                            if (textNoLatestContents.getVisibility() == View.GONE) {
                                 textNoLatestContents.setVisibility(View.VISIBLE);
                             }
 
-                            if(textNoLatestFile.getVisibility() == View.GONE){
+                            if (textNoLatestFile.getVisibility() == View.GONE) {
                                 textNoLatestFile.setVisibility(View.VISIBLE);
                             }
                         }
@@ -289,15 +288,15 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
             unit = "TB";
         }
 
-        while(min > 0 && min < 1024){
+        while (min > 0 && min < 1024) {
             min *= 10;
             max *= 10;
         }
 
         progressBar.setMax(max);
-        progressBar.setProgress((int)min);
+        progressBar.setProgress((int) min);
 
-        if(String.format("%.1f", result).contains(".0")){
+        if (String.format("%.1f", result).contains(".0")) {
             textUsedCapacity.setText(String.format("%d%s", Math.round(result), unit));
         } else {
             textUsedCapacity.setText(String.format("%.1f%s", result, unit));

@@ -94,7 +94,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                     intent.putExtra("login_user", user);
                     startActivity(intent);
                 } else {
-
+                    //TODO: 저장공간 구매 페이지로 이동
                 }
             }
         });
@@ -116,7 +116,6 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
 
         httpConnection = new HttpConnection(this, body, , httpCallBack);
         httpConnection.setMode(HttpConnection.MODE_GET_TEAM_LIST);
-        httpConnection.setCheckSession(true);
         httpConnection.execute();
     }
 
@@ -264,19 +263,11 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                         CustomGridAdapter adapter = new CustomGridAdapter(HomeActivity.this, list);
                         gridTeamList.setAdapter(adapter);
 
-                        if (totalCount > 8) {
-                            textDetail.setVisibility(View.VISIBLE);
-                        } else {
-                            textDetail.setVisibility(View.GONE);
-                        }
-
                         setGridViewHeightBasedOnItems(gridTeamList);
                     } else {
                         layoutNoTeam.setVisibility(View.VISIBLE);
                     }
                 }
-
-                Log.d(TAG, "mode: " + mode + "  resultcode: " + resultCode);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -299,13 +290,10 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private void getUserData() {
-        HashMap<String, String> values = new HashMap<>();
-        values.put("nickname", user.getNickname());
-        values.put("sessionInfo", user.getSessionInfo());
+        String body = "nickname="+user.getNickname();
 
-        httpConnection = new HttpConnection(this, values, httpCallBack);
+        httpConnection = new HttpConnection(this, body, "getUser.php", httpCallBack);
         httpConnection.setMode(HttpConnection.MODE_REFRESH_USER);
-        httpConnection.setCheckSession(true);
         httpConnection.execute();
     }
 
