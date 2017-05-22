@@ -3,7 +3,6 @@ package kr.co.appcode.teamcloud;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -17,15 +16,11 @@ import java.util.HashMap;
 
 
 public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
-    //region Constant
     private static final String TAG = "HttpConnection";
     private static final String SERVER_URL = "http://appcode.cafe24.com/";
     public static final int MODE_LOGIN = 1;
-    public static final int MODE_AUTO_LOGIN = 2;
     public static final int MODE_JOIN = 3;
-    public static final int MODE_AUTH_EMAIL = 4;
     public static final int MODE_NICKNAME_CHECK = 5;
-    public static final int MODE_JOIN_FACEBOOK = 6;
     public static final int MODE_REISSUE = 7;
     public static final int MODE_TEAMNAME_CHECK = 8;
     public static final int MODE_CREATE_TEAM = 9;
@@ -37,9 +32,6 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
     public static final int MODE_TEAM_HOME = 15;
     public static final int MODE_GET_BOARD = 16;
 
-    private boolean isCheckSession;
-    //endregion
-
     private HashMap<String, String> values;
     private URL url;
     private String body;
@@ -47,11 +39,11 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
     private int mode;
     private ProgressDialog progressDialog;
 
-    public HttpConnection(Activity activity, HashMap<String, String> values, HttpCallBack httpCallBack) {
+/*    public HttpConnection(Activity activity, HashMap<String, String> values, HttpCallBack httpCallBack) {
         this.values = values;
         this.httpCallBack = httpCallBack;
         progressDialog = new ProgressDialog(activity);
-    }
+    }*/
 
     public HttpConnection(Activity activity, String body, String url, HttpCallBack httpCallBack) {
         try {
@@ -67,29 +59,7 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
     public void setMode(int mode) {
         this.mode = mode;
         try {
-            if (mode == MODE_LOGIN) {
-                url = new URL(SERVER_URL + "login.php");
-                body = "id=" + values.get("id") + "&password=" + values.get("password") + "&loginType=" + values.get("loginType");
-                Log.d(TAG, "body: " + body);
-            } else if (mode == MODE_JOIN) {
-                url = new URL(SERVER_URL + "join.php");
-                body = "id=" + values.get("id") + "&password=" + values.get("password") + "&nickname=" + values.get("nickname") + "&name=" + values.get("name") + "&joinType=" + values.get("joinType");
-            } else if (mode == MODE_AUTH_EMAIL) {
-                url = new URL(SERVER_URL + "emailAuth.php");
-                body = "id=" + values.get("id") + "&authCode=" + values.get("authCode");
-            } else if (mode == MODE_NICKNAME_CHECK) {
-                url = new URL(SERVER_URL + "duplicateCheck.php");
-                body = "nickname=" + values.get("nickname");
-            } else if (mode == MODE_REISSUE) {
-                url = new URL(SERVER_URL + "reissue.php");
-                body = "id=" + values.get("id");
-            } else if (mode == MODE_TEAMNAME_CHECK) {
-                url = new URL(SERVER_URL + "duplicateCheck.php");
-                body = "teamName=" + values.get("teamName");
-            } else if (mode == MODE_CREATE_TEAM) {
-                url = new URL(SERVER_URL + "createTeam.php");
-                body = "teamName=" + values.get("teamName") + "&master=" + values.get("master") + "&maxCapacity=" + values.get("maxCapacity") + "&isPublic=" + values.get("isPublic") + "&isAutoJoin=" + values.get("isAutoJoin");
-            } else if (mode == MODE_REFRESH_USER) {
+            if (mode == MODE_REFRESH_USER) {
                 url = new URL(SERVER_URL + "refreshUserData.php");
                 body = "nickname=" + values.get("nickname");
             } else if (mode == MODE_GET_TEAM_LIST) {
@@ -116,22 +86,6 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
         }
     }
 
-    public void setBody(String body){
-        this.body = body;
-    }
-
-    public void setUrl(String url){
-        try {
-            this.url = new URL(SERVER_URL + url);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setCheckSession(boolean isCheckSession) {
-        this.isCheckSession = isCheckSession;
-    }
-
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -148,9 +102,6 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            if (isCheckSession) {
-                conn.setRequestProperty("Cookie", values.get("sessionInfo"));
-            }
             conn.setDoOutput(true);
             conn.setDoInput(true);
 
@@ -167,18 +118,7 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
                 sb.append(json).append("\n");
             }
 
-            JSONObject jsonObject = new JSONObject(sb.toString());
-
-            Log.d(TAG, jsonObject.toString());
-
-            if (mode == MODE_LOGIN) {
-                String sessionInfo = conn.getHeaderField("Set-Cookie");
-                if (sessionInfo != null) {
-                    jsonObject.put("sessionInfo", sessionInfo);
-                }
-            }
-
-            return jsonObject;
+            return new JSONObject(sb.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -25,10 +25,10 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-
 public class CreateTeamActivity extends AppCompatActivity {
     private static final String TAG = "CreateTeamActivity";
+    private static final int MODE_CHECK_TEAM_NAME = 2;
+    private static final int MODE_CREATE_TEAM = 3;
 
     private MaterialEditText editTeamName;
     private EditText editCapacity;
@@ -172,11 +172,9 @@ public class CreateTeamActivity extends AppCompatActivity {
                 } else if (editTeamName.length() == 0) {
                     editTeamName.setError("팀 이름을 입력해주세요.");
                 } else {
-                    HashMap<String, String> values = new HashMap<>();
-                    values.put("teamName", editTeamName.getText().toString());
+                    String body = "teamName="+editTeamName.getText().toString();
 
-                    httpConnection = new HttpConnection(CreateTeamActivity.this, values, httpCallback);
-                    httpConnection.setMode(HttpConnection.MODE_TEAMNAME_CHECK);
+                    httpConnection = new HttpConnection(CreateTeamActivity.this, body, "duplicateCheck.php", httpCallback);
                     httpConnection.execute();
                 }
             }
@@ -193,17 +191,9 @@ public class CreateTeamActivity extends AppCompatActivity {
                 } else if (!isSetCapacity) {
                     Snackbar.make(v, "용량 설정 값이 올바르지 않습니다.", Snackbar.LENGTH_LONG).show();
                 } else {
-                    HashMap<String, String> values = new HashMap<>();
-                    values.put("teamName", editTeamName.getText().toString());
-                    values.put("master", user.getNickname());
-                    values.put("maxCapacity", editCapacity.getText().toString());
-                    values.put("isPublic", String.valueOf(switchPublic.isChecked()));
-                    values.put("isAutoJoin", String.valueOf(switchJoin.isChecked()));
-                    values.put("sessionInfo", user.getSessionInfo());
+                    String body = "teamName="+editTeamName.getText().toString()+"&master="+user.getNickname()+"&maxCapacity="+editCapacity.getText().toString()+"&isPublic="+String.valueOf(switchPublic.isChecked())+"&isAutoJoin="+String.valueOf(switchJoin.isChecked());
 
-                    httpConnection = new HttpConnection(CreateTeamActivity.this, values, httpCallback);
-                    httpConnection.setMode(HttpConnection.MODE_CREATE_TEAM);
-                    httpConnection.setCheckSession(true);
+                    httpConnection = new HttpConnection(CreateTeamActivity.this, body, "createTeam.php", httpCallback);
                     httpConnection.execute();
                 }
             }
@@ -252,16 +242,16 @@ public class CreateTeamActivity extends AppCompatActivity {
                 int mode = jsonObject.getInt("mode");
                 int resultCode = jsonObject.getInt("resultCode");
 
-                if (mode == HttpConnection.MODE_TEAMNAME_CHECK) {
+                if (mode == MODE_CHECK_TEAM_NAME) {
                     if (resultCode == Constant.SUCCESS) {
                         isCheckTeamName = true;
                         btnCheckTeamName.setText("확인완료");
                     } else if (resultCode == Constant.DUPLICATED) {
                         editTeamName.setError("이미 사용중인 팀 이름 입니다.");
-                    } else if (resultCode == -1) {
+                    } else if (resultCode == Constant.FAILED) {
                         Log.d(TAG, "mode: TeamNameCheck desc: Query error");
                     }
-                } else if (mode == HttpConnection.MODE_CREATE_TEAM) {
+                } else if (mode == MODE_CREATE_TEAM) {
                     if (resultCode == Constant.SUCCESS) {
                         finish();
                     } else if (resultCode == Constant.DUPLICATED) {
@@ -271,11 +261,8 @@ public class CreateTeamActivity extends AppCompatActivity {
                         Log.d(TAG, "mode: CreateTeam desc: Query error");
                     }
                 }
-
-                Log.d(TAG, "mode: " + mode + "  resultcode: " + resultCode);
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.d(TAG, "jsonObject is null");
             }
         }
     };

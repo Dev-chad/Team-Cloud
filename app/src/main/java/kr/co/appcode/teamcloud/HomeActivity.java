@@ -39,7 +39,6 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private TextView textUsedCapacity;
     private TextView textMaxCapacity;
-    private TextView textDetail;
     private TextView textMessage;
 
     private LinearLayout layoutNoTeam;
@@ -58,15 +57,12 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         profile = Profile.getCurrentProfile();
         user = getIntent().getParcelableExtra("login_user");
 
-        ImageView imgTeamSetting;
+        layoutNoTeam = (LinearLayout) findViewById(R.id.layout_no_team);
 
         textMessage = (TextView) findViewById(R.id.text_message);
 
         TextView textNickname = (TextView) findViewById(R.id.text_nickname);
         textNickname.setText(user.getNickname());
-        textDetail = (TextView) findViewById(R.id.text_detail);
-
-        layoutNoTeam = (LinearLayout) findViewById(R.id.layout_no_team);
 
         capacityBar = (ProgressBar) findViewById(R.id.progress_capacity);
         capacityBar.setMax(user.getMaxCapacity());
@@ -81,7 +77,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         gridTeamList = (GridView) findViewById(R.id.grid_teamlist);
         gridTeamList.setOnItemClickListener(this);
 
-        imgTeamSetting = (ImageView) findViewById(R.id.img_team_setting);
+        ImageView imgTeamSetting = (ImageView) findViewById(R.id.img_team_setting);
         imgTeamSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,10 +100,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         });
 
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
-        swipeRefreshLayout.setColorSchemeResources(
-                android.R.color.holo_red_light
-        );
-
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_red_light);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -116,22 +109,12 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
-
-        textDetail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
     }
 
     private void getTeamList() {
-        HashMap<String, String> values = new HashMap<>();
-        values.put("nickname", user.getNickname());
-        values.put("sessionInfo", user.getSessionInfo());
+        String body = "nickname="+user.getNickname();
 
-        httpConnection = new HttpConnection(this, values, httpCallBack);
+        httpConnection = new HttpConnection(this, body, , httpCallBack);
         httpConnection.setMode(HttpConnection.MODE_GET_TEAM_LIST);
         httpConnection.setCheckSession(true);
         httpConnection.execute();

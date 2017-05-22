@@ -358,7 +358,6 @@ public class JoinActivity extends AppCompatActivity {
                     editName.setError("이름이 올바르지 않습니다.");
                 } else {
                     String body = "id="+editEmail.getText().toString()+"&password="+editPassword.getText().toString()+"&nickname="+editNickname.getText().toString()+"&name="+editName.getText().toString();
-;
                     httpConnection = new HttpConnection(JoinActivity.this, body, "join.php", httpCallBack);
                     httpConnection.execute();
                 }
