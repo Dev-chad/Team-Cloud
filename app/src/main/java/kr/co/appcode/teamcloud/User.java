@@ -176,4 +176,21 @@ public class User implements Parcelable {
     public void setAvailableCapacity(int availableCapacity) {
         this.availableCapacity = availableCapacity;
     }
+
+    public void update(JSONObject jsonObject) {
+        try {
+            idx = jsonObject.getString("idx");
+            id = jsonObject.getString("id");
+            nickname = jsonObject.getString("nickname");
+            name = jsonObject.getString("name");
+            credit = jsonObject.getInt("credit");
+            usedCapacity = jsonObject.getInt("usedCapacity");
+            maxCapacity = jsonObject.getInt("maxCapacity");
+            sessionInfo = jsonObject.getString("sessionInfo");
+            accountType = jsonObject.getString("accountType");
+            availableCapacity = maxCapacity - usedCapacity;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }

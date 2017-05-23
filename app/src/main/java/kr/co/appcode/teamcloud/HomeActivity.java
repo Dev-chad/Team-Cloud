@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,10 +26,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class HomeActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private static final String TAG = "HomeActivity";
+    private static final int MODE_GET_USER = 1;
+    private static final int MODE_GET_TEAM_LIST = 2;
 
     private User user;
     private Profile profile;
@@ -104,92 +104,20 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getUserData();
+                getUser();
                 getTeamList();
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
     }
 
-    private void getTeamList() {
-        String body = "nickname="+user.getNickname();
-
-        httpConnection = new HttpConnection(this, body, , httpCallBack);
-        httpConnection.setMode(HttpConnection.MODE_GET_TEAM_LIST);
-        httpConnection.execute();
-    }
-
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(this, TeamPageActivity.class);
-        intent.putExtra("teamName", (String) gridTeamList.getItemAtPosition(position));
-        intent.putExtra("login_user", user);
-        startActivity(intent);
+    protected void onResume() {
+        super.onResume();
+
+        getUser();
+        getTeamList();
     }
-
-    /*public void setListViewHeightBasedOnItems(ListView listView, int count) {
-
-        // Get list adpter of listview;
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null) return;
-
-        int numberOfItems;
-        if (count == 0) {
-            numberOfItems = listAdapter.getCount();
-        } else {
-            numberOfItems = count;
-        }
-
-        // Get total height of all items.
-        int totalItemsHeight = 0;
-        for (int itemPos = 0; itemPos < numberOfItems; itemPos++) {
-            View item = listAdapter.getView(itemPos, null, listView);
-            item.measure(0, 0);
-            totalItemsHeight += item.getMeasuredHeight();
-        }
-
-        // Get total height of all item dividers.
-        int totalDividersHeight = listView.getDividerHeight() * (numberOfItems - 1);
-
-        // Set list height.
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalItemsHeight + totalDividersHeight;
-        listView.setLayoutParams(params);
-        listView.requestLayout();
-    }*/
-
-    public void setGridViewHeightBasedOnItems(GridView gridView) {
-        ListAdapter listAdapter = gridView.getAdapter();
-
-        int totalItemsHeight = 0;
-        int numberOfItems;
-        // Get list adpter of listview;
-        if (listAdapter == null) return;
-
-        if (listAdapter.getCount() <= 4) {
-            numberOfItems = 1;
-        } else {
-            numberOfItems = 2;
-        }
-
-        // Get total height of all items.
-
-        for (int itemPos = 0; itemPos < numberOfItems; itemPos++) {
-            View item = listAdapter.getView(itemPos, null, gridView);
-            item.measure(0, 0);
-            totalItemsHeight += item.getMeasuredHeight();
-        }
-
-        // Get total height of all item dividers.
-        int totalDividersHeight = gridView.getVerticalSpacing() * (numberOfItems - 1);
-
-        // Set list height.
-        ViewGroup.LayoutParams params = gridView.getLayoutParams();
-        params.height = totalItemsHeight + totalDividersHeight;
-        gridView.setLayoutParams(params);
-        gridView.requestLayout();
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -227,6 +155,90 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
         return true;
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent intent = new Intent(this, TeamPageActivity.class);
+        intent.putExtra("teamName", (String) gridTeamList.getItemAtPosition(position));
+        intent.putExtra("login_user", user);
+        startActivity(intent);
+    }
+
+    private void getUser() {
+        String body = "nickname="+user.getNickname();
+
+        httpConnection = new HttpConnection(this, body, "getUser.php", httpCallBack);
+        httpConnection.execute();
+    }
+
+    private void getTeamList() {
+        String body = "nickname="+user.getNickname();
+
+        httpConnection = new HttpConnection(this, body, "getTeamList.php", httpCallBack);
+        httpConnection.execute();
+    }
+
+    public void setGridViewHeightBasedOnItems(GridView gridView) {
+        ListAdapter listAdapter = gridView.getAdapter();
+
+        int totalItemsHeight = 0;
+        int numberOfItems;
+        // Get list adpter of listview;
+        if (listAdapter == null) return;
+
+        if (listAdapter.getCount() <= 4) {
+            numberOfItems = 1;
+        } else {
+            numberOfItems = 2;
+        }
+
+        // Get total height of all items.
+        for (int itemPos = 0; itemPos < numberOfItems; itemPos++) {
+            View item = listAdapter.getView(itemPos, null, gridView);
+            item.measure(0, 0);
+            totalItemsHeight += item.getMeasuredHeight();
+        }
+
+        // Get total height of all item dividers.
+        int totalDividersHeight = gridView.getVerticalSpacing() * (numberOfItems - 1);
+
+        // Set list height.
+        ViewGroup.LayoutParams params = gridView.getLayoutParams();
+        params.height = totalItemsHeight + totalDividersHeight;
+        gridView.setLayoutParams(params);
+        gridView.requestLayout();
+    }
+
+    /*public void setListViewHeightBasedOnItems(ListView listView, int count) {
+
+        // Get list adpter of listview;
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) return;
+
+        int numberOfItems;
+        if (count == 0) {
+            numberOfItems = listAdapter.getCount();
+        } else {
+            numberOfItems = count;
+        }
+
+        // Get total height of all items.
+        int totalItemsHeight = 0;
+        for (int itemPos = 0; itemPos < numberOfItems; itemPos++) {
+            View item = listAdapter.getView(itemPos, null, listView);
+            item.measure(0, 0);
+            totalItemsHeight += item.getMeasuredHeight();
+        }
+
+        // Get total height of all item dividers.
+        int totalDividersHeight = listView.getDividerHeight() * (numberOfItems - 1);
+
+        // Set list height.
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalItemsHeight + totalDividersHeight;
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+    }*/
+
     private HttpCallBack httpCallBack = new HttpCallBack() {
         @Override
         public void CallBackResult(JSONObject jsonObject) {
@@ -234,15 +246,24 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                 int mode = jsonObject.getInt("mode");
                 int resultCode = jsonObject.getInt("resultCode");
 
-                if (mode == HttpConnection.MODE_REFRESH_USER) {
+                if (mode == MODE_GET_USER) {
                     if (resultCode == Constant.SUCCESS) {
-                        user.setMaxCapacity(jsonObject.getInt("maxCapacity"));
-                        user.setUsedCapacity(jsonObject.getInt("usedCapacity"));
-                        user.setAvailableCapacity(jsonObject.getInt("maxCapacity") - jsonObject.getInt("usedCapacity"));
+                        user.update(jsonObject);
 
-                        refreshActivity();
+                        capacityBar.setMax(user.getMaxCapacity());
+                        capacityBar.setProgress(user.getUsedCapacity());
+                        textUsedCapacity.setText(String.valueOf(user.getUsedCapacity()));
+                        textMaxCapacity.setText(String.valueOf(user.getMaxCapacity()));
+
+                        if (user.getUsedCapacity() < user.getMaxCapacity()) {
+                            textMessage.setText("팀을 만들어 보세요");
+                            btnCreateTeam.setText("팀 만들기");
+                        } else {
+                            textMessage.setText("사용가능한 용량이 없습니다");
+                            btnCreateTeam.setText("용량 구매하기");
+                        }
                     }
-                } else if (mode == HttpConnection.MODE_GET_TEAM_LIST) {
+                } else if (mode == MODE_GET_TEAM_LIST) {
                     if (resultCode == Constant.SUCCESS) {
                         layoutNoTeam.setVisibility(View.GONE);
                         int totalCount = jsonObject.getInt("totalCount");
@@ -273,35 +294,4 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
     };
-
-    public void refreshActivity() {
-        capacityBar.setMax(user.getMaxCapacity());
-        capacityBar.setProgress(user.getUsedCapacity());
-        textUsedCapacity.setText(String.valueOf(user.getUsedCapacity()));
-        textMaxCapacity.setText(String.valueOf(user.getMaxCapacity()));
-
-        if (user.getUsedCapacity() < user.getMaxCapacity()) {
-            textMessage.setText("팀을 만들어 보세요");
-            btnCreateTeam.setText("팀 만들기");
-        } else {
-            textMessage.setText("사용가능한 용량이 없습니다");
-            btnCreateTeam.setText("용량 구매하기");
-        }
-    }
-
-    private void getUserData() {
-        String body = "nickname="+user.getNickname();
-
-        httpConnection = new HttpConnection(this, body, "getUser.php", httpCallBack);
-        httpConnection.setMode(HttpConnection.MODE_REFRESH_USER);
-        httpConnection.execute();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        getUserData();
-        getTeamList();
-    }
 }

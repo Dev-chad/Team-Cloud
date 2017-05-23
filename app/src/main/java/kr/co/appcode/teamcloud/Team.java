@@ -3,60 +3,49 @@ package kr.co.appcode.teamcloud;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by Chad on 2017-05-21.
  */
 
 public class Team implements Parcelable{
-    private int idx;
+    private String idx;
     private String name;
+    private String master;
+    private double usedCapacity;
+    private int maxCapacity;
+    private boolean isPulic;
+    private boolean isAutoJoin;
+    private boolean isAdminManageMember;
+    private boolean isAdminManageBoard;
+    private boolean isAdminManageContents;
+    private String teamMarkUrl;
 
-    public Team(int idx, String name) {
+    public Team(String idx, String name, String master, double usedCapacity, int maxCapacity, boolean isPulic, boolean isAutoJoin, boolean isAdminManageMember, boolean isAdminManageBoard, boolean isAdminManageContents, String teamMarkUrl) {
         this.idx = idx;
         this.name = name;
+        this.master = master;
+        this.usedCapacity = usedCapacity;
+        this.maxCapacity = maxCapacity;
+        this.isPulic = isPulic;
+        this.isAutoJoin = isAutoJoin;
+        this.isAdminManageMember = isAdminManageMember;
+        this.isAdminManageBoard = isAdminManageBoard;
+        this.isAdminManageContents = isAdminManageContents;
+        this.teamMarkUrl = teamMarkUrl;
     }
 
-    protected Team(Parcel in) {
-        idx = in.readInt();
-        name = in.readString();
-    }
+    private Team(JSONObject jsonObject){
+        try {
+            idx = jsonObject.getString("idx");
+            name = jsonObject.getString("name");
+            master = jsonObject.getString("master");
+            usedCapacity = jsonObject.getDouble("usedCapacity");
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(idx);
-        dest.writeString(name);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<Team> CREATOR = new Creator<Team>() {
-        @Override
-        public Team createFromParcel(Parcel in) {
-            return new Team(in);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-
-        @Override
-        public Team[] newArray(int size) {
-            return new Team[size];
-        }
-    };
-
-    public int getIdx() {
-        return idx;
-    }
-
-    public void setIdx(int idx) {
-        this.idx = idx;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }
