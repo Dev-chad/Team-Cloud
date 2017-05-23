@@ -13,38 +13,38 @@ import java.util.ArrayList;
  * Created by Chad on 2017-04-30.
  */
 
-public class LatestContentListAdapter extends BaseAdapter {
+public class ContentListAdapter extends BaseAdapter {
 
     private HomeFragment fragment;
-    private ArrayList<LatestContentItem> latestContentList;
+    private ArrayList<Content> contentList;
 
     ViewHolder holder;
 
-    public LatestContentListAdapter(HomeFragment fragment, ArrayList<LatestContentItem> latestContentList) {
+    public ContentListAdapter(HomeFragment fragment, ArrayList<Content> contentLists) {
         this.fragment = fragment;
-        this.latestContentList = latestContentList;
+        this.contentList = contentLists;
     }
 
-    public ArrayList<LatestContentItem> getLatestContentList() {
-        return latestContentList;
+    public ArrayList<Content> getLatestContentList() {
+        return contentList;
     }
 
-    public void setLatestContentList(ArrayList<LatestContentItem> latestContentList) {
-        this.latestContentList = latestContentList;
+    public void setContentList(ArrayList<Content> contentList) {
+        this.contentList = contentList;
     }
 
-    public void add(LatestContentItem item) {
-        latestContentList.add(item);
+    public void add(Content item) {
+        contentList.add(item);
     }
 
     @Override
     public int getCount() {
-        return latestContentList.size();
+        return contentList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return latestContentList.get(position);
+        return contentList.get(position);
     }
 
     @Override
@@ -70,11 +70,11 @@ public class LatestContentListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        LatestContentItem currentItem = latestContentList.get(position);
+        Content content = contentList.get(position);
 
-        holder.textContentTitle.setText(currentItem.getTitle());
-        holder.textWriter.setText(currentItem.getWriter());
-        holder.textDate.setText(currentItem.getDate());
+        holder.textContentTitle.setText(content.getTitle());
+        holder.textWriter.setText(content.getWriter());
+        holder.textDate.setText(content.getWriteDate());
 
         return convertView;
     }

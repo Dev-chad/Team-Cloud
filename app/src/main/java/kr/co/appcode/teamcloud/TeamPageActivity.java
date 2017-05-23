@@ -8,11 +8,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,7 +23,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class TeamPageActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -32,7 +31,6 @@ public class TeamPageActivity extends AppCompatActivity
 
     private Profile profile;
 
-    private FrameLayout frameContent;
     private User user;
 
     private ListView listBoard;
@@ -42,7 +40,7 @@ public class TeamPageActivity extends AppCompatActivity
 
     private Button btnSetting;
 
-    private String teamName;
+    private Team team;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +48,10 @@ public class TeamPageActivity extends AppCompatActivity
         setContentView(R.layout.activity_team_page);
 
         user = getIntent().getParcelableExtra("login_user");
-        teamName = getIntent().getStringExtra("teamName");
+        team = getIntent().getParcelableExtra("team");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(teamName);
+        toolbar.setTitle(team.getName());
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -73,22 +71,17 @@ public class TeamPageActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(TeamPageActivity.this, TeamSettingActivity.class);
-                intent.putExtra("teamName", teamName);
-                intent.putExtra("loginUser", user);
+                intent.putExtra("team", team);
+                intent.putExtra("login_user", user);
                 startActivity(intent);
             }
         });
 
-        HomeFragment homeFragment = new HomeFragment();
-
         listBoard = (ListView) findViewById(R.id.list_board);
 
-        HashMap<String, String> values = new HashMap<>();
-        values.put("teamName", teamName);
-        values.put("nickname", user.getNickname());
+        String body = "teamIdx=" + team.getIdx() + "&nickname=" + user.getNickname();
 
-        HttpConnection httpConnection = new HttpConnection(this, values, httpCallBack);
-        httpConnection.setMode(HttpConnection.MODE_GET_BOARD);
+        HttpConnection httpConnection = new HttpConnection(this, body, "getBoard.php", httpCallBack);
         httpConnection.execute();
     }
 
@@ -102,80 +95,17 @@ public class TeamPageActivity extends AppCompatActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    HttpCallBack httpCallBack = new HttpCallBack() {
-        @Override
-        public void CallBackResult(JSONObject jsonObject) {
-            try {
-
-                int mode = jsonObject.getInt("mode");
-                int resultCode = jsonObject.getInt("resultCode");
-
-                if (mode == HttpConnection.MODE_GET_BOARD) {
-                    if (resultCode == Constant.SUCCESS) {
-                        int count = jsonObject.getInt("count");
-                        BoardListAdapter boardListAdapter = new BoardListAdapter(TeamPageActivity.this, new ArrayList<Board>());
-
-                        for (int i = 0; i < count; i++) {
-                            Board board = new Board(jsonObject.getString(i + "_name"), jsonObject.getInt(i + "_write_auth"), jsonObject.getInt(i + "_read_auth"));
-                            boardListAdapter.add(board);
-                        }
-
-                        listBoard.setAdapter(boardListAdapter);
-                        setListViewHeightBasedOnItems(listBoard, boardListAdapter.getCount());
-
-                        user.setLevel(jsonObject.getInt("level"));
-                        if (user.getLevel() == 1) {
-                            textLevel.setText("일반 멤버");
-                            if (btnSetting.getVisibility() == View.VISIBLE) {
-                                btnSetting.setVisibility(View.GONE);
-                            }
-                        } else if (user.getLevel() == 2) {
-                            textLevel.setText("관리자 멤버");
-                            if (btnSetting.getVisibility() == View.GONE) {
-                                btnSetting.setVisibility(View.VISIBLE);
-                            }
-                        } else if (user.getLevel() == 3) {
-                            textLevel.setText("마스터 멤버");
-
-                            if (btnSetting.getVisibility() == View.GONE) {
-                                btnSetting.setVisibility(View.VISIBLE);
-                            }
-                        }
-
-                        HomeFragment homeFragment = new HomeFragment();
-
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable("login_user", user);
-                        bundle.putString("teamName", teamName);
-
-                        homeFragment.setArguments(bundle);
-                        getFragmentManager()
-                                .beginTransaction()
-                                .add(R.id.frame_content, homeFragment)
-                                .commit();
-                    }
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
     public void setListViewHeightBasedOnItems(ListView listView, int count) {
-
         // Get list adpter of listview;
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null) return;
@@ -204,4 +134,66 @@ public class TeamPageActivity extends AppCompatActivity
         listView.setLayoutParams(params);
         listView.requestLayout();
     }
+
+    HttpCallBack httpCallBack = new HttpCallBack() {
+        @Override
+        public void CallBackResult(JSONObject jsonObject) {
+            try {
+                int resultCode = jsonObject.getInt("resultCode");
+
+                if (resultCode == Constant.SUCCESS) {
+                    if(!team.getName().equals(jsonObject.getString("teamName"))){
+                        team.setName(jsonObject.getString("teamName"));
+                    }
+
+                    int count = jsonObject.getInt("count");
+                    BoardListAdapter boardListAdapter = new BoardListAdapter(TeamPageActivity.this, new ArrayList<Board>());
+
+                    for (int i = 0; i < count; i++) {
+                        Board board = new Board(jsonObject.getString(i + "_name"), jsonObject.getInt(i + "_write_auth"), jsonObject.getInt(i + "_read_auth"));
+                        boardListAdapter.add(board);
+                    }
+
+                    listBoard.setAdapter(boardListAdapter);
+                    setListViewHeightBasedOnItems(listBoard, boardListAdapter.getCount());
+
+                    user.setLevel(jsonObject.getInt("level"));
+                    if (user.getLevel() == 1) {
+                        textLevel.setText("일반 멤버");
+                        if (btnSetting.getVisibility() == View.VISIBLE) {
+                            btnSetting.setVisibility(View.GONE);
+                        }
+                    } else if (user.getLevel() == 2) {
+                        textLevel.setText("관리자 멤버");
+                        if (btnSetting.getVisibility() == View.GONE) {
+                            btnSetting.setVisibility(View.VISIBLE);
+                        }
+                    } else if (user.getLevel() == 3) {
+                        textLevel.setText("마스터 멤버");
+
+                        if (btnSetting.getVisibility() == View.GONE) {
+                            btnSetting.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    HomeFragment homeFragment = new HomeFragment();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("login_user", user);
+                    bundle.putParcelable("team", team);
+
+                    homeFragment.setArguments(bundle);
+                    getFragmentManager()
+                            .beginTransaction()
+                            .add(R.id.frame_content, homeFragment)
+                            .commit();
+                }
+                Log.d(TAG, jsonObject.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+
 }

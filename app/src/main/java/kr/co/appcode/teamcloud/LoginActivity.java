@@ -30,7 +30,6 @@ import org.json.JSONObject;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -126,13 +125,9 @@ public class LoginActivity extends AppCompatActivity {
                 } else if (password.length() == 0) {
                     editPassword.setError("비밀번호를 입력해주세요");
                 } else if (editPassword.validate()) {
-                    HashMap<String, String> values = new HashMap<>();
-                    values.put("id", email);
-                    values.put("password", password);
-                    values.put("loginType", "normal");
+                    String body = "id="+email+"&password="+password+"&loginType=normal";
 
-                    httpConnection = new HttpConnection(LoginActivity.this, values, httpCallBack);
-                    httpConnection.setMode(HttpConnection.MODE_LOGIN);
+                    httpConnection = new HttpConnection(LoginActivity.this, body, "login.php", httpCallBack);
                     httpConnection.execute();
                 }
             }

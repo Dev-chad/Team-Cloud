@@ -17,7 +17,6 @@ import com.facebook.Profile;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class HomeFragment extends android.app.Fragment implements View.OnClickListener {
     private static final String TAG = "HomeFragment";
@@ -35,7 +34,7 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
 
     private ProgressBar progressBar;
 
-    private TextView teamName;
+    private TextView textTeamName;
     private TextView textUsedCapacity;
     private TextView textMaxCapacity;
     private TextView textNoLatestContents;
@@ -43,12 +42,13 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
 
     private int viewMode = MODE_GRID;
 
-    private LatestContentListAdapter latestContentListAdapter;
-    private LatestFileGridAdapter latestFileGridAdapter;
-    private LatestFileListAdapter latestFileListAdapter;
+    private ContentListAdapter contentListAdapter;
+    private FileGridAdapter fileGridAdapter;
+    private FileListAdapter fileListAdapter;
 
     private User user;
     private Profile profile;
+    private Team team;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -60,6 +60,8 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         user = getArguments().getParcelable("login_user");
+        team = getArguments().getParcelable("team");
+
         if (user != null) {
             if (user.getAccountType().equals("facebook")) {
                 profile = Profile.getCurrentProfile();
@@ -74,38 +76,62 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
         imageGrid = (ImageView) view.findViewById(R.id.image_grid);
         imageList = (ImageView) view.findViewById(R.id.image_list);
 
-        teamName = (TextView) view.findViewById(R.id.text_team_name);
+        textTeamName = (TextView) view.findViewById(R.id.text_team_name);
         textUsedCapacity = (TextView) view.findViewById(R.id.text_used_capacity);
         textMaxCapacity = (TextView) view.findViewById(R.id.text_max_capacity);
         textNoLatestContents = (TextView) view.findViewById(R.id.text_no_latest_content);
         textNoLatestFile = (TextView) view.findViewById(R.id.text_no_latest_file);
 
         progressBar = (ProgressBar) view.findViewById(R.id.progress_capacity);
-        latestContentListAdapter = new LatestContentListAdapter(this, new ArrayList<LatestContentItem>());
+        contentListAdapter = new ContentListAdapter(this, new ArrayList<Content>());
 
-        ArrayList<LatestFileItem> fileList = new ArrayList<>();
+        ArrayList<Content> fileList = new ArrayList<>();
 
-        latestFileListAdapter = new LatestFileListAdapter(this, fileList);
-        latestFileGridAdapter = new LatestFileGridAdapter(this, fileList);
+        fileListAdapter = new FileListAdapter(this, fileList);
+        fileGridAdapter = new FileGridAdapter(this, fileList);
 
-        listLatestContent.setAdapter(latestContentListAdapter);
-        listLatestFile.setAdapter(latestFileListAdapter);
-        gridLatestFile.setAdapter(latestFileGridAdapter);
+        listLatestContent.setAdapter(contentListAdapter);
+        listLatestFile.setAdapter(fileListAdapter);
+        gridLatestFile.setAdapter(fileGridAdapter);
 
         imageGrid.setOnClickListener(this);
         imageList.setOnClickListener(this);
 
-        teamName.setText(getArguments().getString("teamName"));
-
-        HashMap<String, String> values = new HashMap<>();
-        values.put("nickname", user.getNickname());
-        values.put("teamName", teamName.getText().toString());
-
-        HttpConnection httpConnection = new HttpConnection(getActivity(), values, httpCallBack);
-        httpConnection.setMode(HttpConnection.MODE_TEAM_HOME);
-        httpConnection.execute();
+        textTeamName.setText(team.getName());
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        String body = "nickname=" + user.getNickname() + "&teamIdx=" + team.getIdx();
+
+        HttpConnection httpConnection = new HttpConnection(getActivity(), body, "getTeamHome.php", httpCallBack);
+        httpConnection.execute();
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        int id = v.getId();
+
+        if (id == R.id.image_grid || id == R.id.image_list) {
+            if (viewMode == MODE_LIST) {
+                imageList.setAlpha(0.2f);
+                imageGrid.setAlpha(1.0f);
+                viewMode = MODE_GRID;
+                listLatestFile.setVisibility(View.GONE);
+                gridLatestFile.setVisibility(View.VISIBLE);
+            } else {
+                imageList.setAlpha(1.0f);
+                imageGrid.setAlpha(0.2f);
+                viewMode = MODE_LIST;
+                listLatestFile.setVisibility(View.VISIBLE);
+                gridLatestFile.setVisibility(View.GONE);
+            }
+        }
     }
 
     public void setListViewHeightBasedOnItems(ListView listView, int count) {
@@ -171,96 +197,6 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
         gridView.requestLayout();
     }
 
-    @Override
-    public void onClick(View v) {
-
-        int id = v.getId();
-
-        if (id == R.id.image_grid || id == R.id.image_list) {
-            if (viewMode == MODE_LIST) {
-                imageList.setAlpha(0.2f);
-                imageGrid.setAlpha(1.0f);
-                viewMode = MODE_GRID;
-                listLatestFile.setVisibility(View.GONE);
-                gridLatestFile.setVisibility(View.VISIBLE);
-            } else {
-                imageList.setAlpha(1.0f);
-                imageGrid.setAlpha(0.2f);
-                viewMode = MODE_LIST;
-                listLatestFile.setVisibility(View.VISIBLE);
-                gridLatestFile.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    public HttpCallBack httpCallBack = new HttpCallBack() {
-        @Override
-        public void CallBackResult(JSONObject jsonObject) {
-            try {
-                int mode = jsonObject.getInt("mode");
-                int resultCode = jsonObject.getInt("resultCode");
-
-                if (mode == HttpConnection.MODE_TEAM_HOME) {
-                    if (resultCode == Constant.SUCCESS) {
-                        setCapacity(jsonObject.getDouble("usedCapacity"), jsonObject.getInt("maxCapacity"));
-                        textMaxCapacity.setText(String.valueOf(jsonObject.getInt("maxCapacity") + "GB"));
-
-                        int contentCount = jsonObject.getInt("contentCount");
-                        int fileCount = jsonObject.getInt("fileCount");
-
-                        if (contentCount > 0) {
-                            if (textNoLatestContents.getVisibility() == View.VISIBLE) {
-                                textNoLatestContents.setVisibility(View.GONE);
-                            }
-
-                            latestContentListAdapter.getLatestContentList().clear();
-                            for (int i = 0; i < contentCount; i++) {
-                                LatestContentItem contentItem = new LatestContentItem(jsonObject.getInt(i + "_content_idx"), jsonObject.getString(i + "_content_title"), jsonObject.getString(i + "_content_writer"), jsonObject.getString(i + "_content_date"));
-                                latestContentListAdapter.add(contentItem);
-                            }
-
-                            latestContentListAdapter.notifyDataSetChanged();
-                            setListViewHeightBasedOnItems(listLatestContent, latestContentListAdapter.getCount());
-
-                            if (fileCount > 0) {
-                                if (textNoLatestFile.getVisibility() == View.VISIBLE) {
-                                    textNoLatestFile.setVisibility(View.GONE);
-                                }
-
-                                for (int i = 0; i < fileCount; i++) {
-                                    LatestFileItem fileItem = new LatestFileItem(jsonObject.getInt(i + "_file_idx"), jsonObject.getString(i + "_file_name"), jsonObject.getString(i + "_file_type"), jsonObject.getString(i + "_file_writer"), jsonObject.getDouble(i + "_file_size"), jsonObject.getString(i + "_file_date"));
-                                    latestFileGridAdapter.add(fileItem);
-                                }
-
-                                latestFileGridAdapter.notifyDataSetChanged();
-                                latestFileListAdapter.notifyDataSetChanged();
-
-                                setGridViewHeightBasedOnItems(gridLatestFile);
-                                setListViewHeightBasedOnItems(listLatestFile, listLatestFile.getCount());
-                            } else {
-                                if (textNoLatestFile.getVisibility() == View.GONE) {
-                                    textNoLatestFile.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        } else {
-                            if (textNoLatestContents.getVisibility() == View.GONE) {
-                                textNoLatestContents.setVisibility(View.VISIBLE);
-                            }
-
-                            if (textNoLatestFile.getVisibility() == View.GONE) {
-                                textNoLatestFile.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    }
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Log.d(TAG, jsonObject.toString());
-        }
-    };
-
     public void setCapacity(double min, int max) {
         String unit = "";
         double result = 0;
@@ -302,4 +238,77 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
             textUsedCapacity.setText(String.format("%.1f%s", result, unit));
         }
     }
+
+    public HttpCallBack httpCallBack = new HttpCallBack() {
+        @Override
+        public void CallBackResult(JSONObject jsonObject) {
+            try {
+                int resultCode = jsonObject.getInt("resultCode");
+
+                if (resultCode == Constant.SUCCESS) {
+                    team.setMaxCapacity(jsonObject.getInt("maxCapacity"));
+                    team.setUsedCapacity(jsonObject.getDouble("usedCapacity"));
+                    team.setName(jsonObject.getString("teamName"));
+
+                    setCapacity(team.getUsedCapacity(), team.getMaxCapacity());
+                    textMaxCapacity.setText(String.valueOf(team.getMaxCapacity() + "GB"));
+                    textTeamName.setText(team.getName());
+
+                    int contentCount = jsonObject.getInt("contentCount");
+                    int fileCount = jsonObject.getInt("fileCount");
+
+                    if (contentCount > 0) {
+                        if (textNoLatestContents.getVisibility() == View.VISIBLE) {
+                            textNoLatestContents.setVisibility(View.GONE);
+                        }
+
+                        contentListAdapter.getLatestContentList().clear();
+                        for (int i = 0; i < contentCount; i++) {
+                            Content content = new Content(jsonObject.getString(i + "_idx"), jsonObject.getString(i + "_writer"), jsonObject.getString(i + "_title"), jsonObject.getString(i + "_desc"), jsonObject.getString(i + "_date"), jsonObject.getInt(i + "_readAuth"), jsonObject.getInt(i + "_ver"));
+                            contentListAdapter.add(content);
+
+                            if (jsonObject.has(i + "_fileName")) {
+                                content.setFileName(jsonObject.getString(i + "_fileName"));
+                                content.setFileUrl(jsonObject.getString(i + "_fileUrl"));
+                                content.setFileType(jsonObject.getString(i + "_fileType"));
+                                content.setFileSize(jsonObject.getDouble(i + "_fileSize"));
+                                fileGridAdapter.add(content);
+
+                            }
+                        }
+
+                        contentListAdapter.notifyDataSetChanged();
+                        setListViewHeightBasedOnItems(listLatestContent, contentListAdapter.getCount());
+
+                        if (fileCount > 0) {
+                            if (textNoLatestFile.getVisibility() == View.VISIBLE) {
+                                textNoLatestFile.setVisibility(View.GONE);
+                            }
+
+                            fileGridAdapter.notifyDataSetChanged();
+                            fileListAdapter.notifyDataSetChanged();
+
+                            setGridViewHeightBasedOnItems(gridLatestFile);
+                            setListViewHeightBasedOnItems(listLatestFile, listLatestFile.getCount());
+                        } else {
+                            if (textNoLatestFile.getVisibility() == View.GONE) {
+                                textNoLatestFile.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    } else {
+                        if (textNoLatestContents.getVisibility() == View.GONE) {
+                            textNoLatestContents.setVisibility(View.VISIBLE);
+                        }
+
+                        if (textNoLatestFile.getVisibility() == View.GONE) {
+                            textNoLatestFile.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Log.d(TAG, jsonObject.toString());
+        }
+    };
 }

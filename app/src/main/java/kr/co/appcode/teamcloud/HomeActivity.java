@@ -158,20 +158,20 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent(this, TeamPageActivity.class);
-        intent.putExtra("teamName", (String) gridTeamList.getItemAtPosition(position));
+        intent.putExtra("team", (Team)gridTeamList.getItemAtPosition(position));
         intent.putExtra("login_user", user);
         startActivity(intent);
     }
 
     private void getUser() {
-        String body = "nickname="+user.getNickname();
+        String body = "nickname=" + user.getNickname();
 
         httpConnection = new HttpConnection(this, body, "getUser.php", httpCallBack);
         httpConnection.execute();
     }
 
     private void getTeamList() {
-        String body = "nickname="+user.getNickname();
+        String body = "nickname=" + user.getNickname();
 
         httpConnection = new HttpConnection(this, body, "getTeamList.php", httpCallBack);
         httpConnection.execute();
@@ -267,21 +267,15 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                     if (resultCode == Constant.SUCCESS) {
                         layoutNoTeam.setVisibility(View.GONE);
                         int totalCount = jsonObject.getInt("totalCount");
-                        int count;
 
-                        if (totalCount >= 8) {
-                            count = 8;
-                        } else {
-                            count = totalCount;
+                        ArrayList<Team> teamList = new ArrayList<>();
+
+                        for (int i = 0; i < totalCount; i++) {
+                            Team team = new Team(jsonObject.getString(i + "_idx"), jsonObject.getString(i + "_name"), jsonObject.getString(i + "_master"), jsonObject.getDouble(i + "_usedCapacity"), jsonObject.getInt(i + "_maxCapacity"), jsonObject.getInt(i + "_isPublic"), jsonObject.getInt(i + "_isAutoJoin"), jsonObject.getInt(i + "_isAdminManageMember"), jsonObject.getInt(i + "_isAdminManageBoard"), jsonObject.getInt(i + "_isAdminManageContents"), jsonObject.getString(i + "_teamMarkUrl"));
+                            teamList.add(team);
                         }
 
-                        ArrayList<String> list = new ArrayList<>();
-
-                        for (int i = 1; i <= count; i++) {
-                            list.add(jsonObject.getString(String.valueOf(i)));
-                        }
-
-                        CustomGridAdapter adapter = new CustomGridAdapter(HomeActivity.this, list);
+                        TeamGridAdapter adapter = new TeamGridAdapter(HomeActivity.this, teamList);
                         gridTeamList.setAdapter(adapter);
 
                         setGridViewHeightBasedOnItems(gridTeamList);

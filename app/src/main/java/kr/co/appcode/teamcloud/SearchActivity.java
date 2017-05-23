@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
@@ -18,10 +17,12 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
+    private static final int MODE_SEARCH_TEAM = 1;
+    private static final int MODE_JOIN_TEAM = 2;
+    private static final int MODE_LEAVE_TEAM = 3;
 
     private ListView listTeam;
     private MaterialEditText editSearch;
@@ -34,6 +35,7 @@ public class SearchActivity extends AppCompatActivity {
     private Profile profile;
 
     private boolean searchFlag;
+    private String targetTeamName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,41 +50,12 @@ public class SearchActivity extends AppCompatActivity {
         user = getIntent().getParcelableExtra("login_user");
         profile = Profile.getCurrentProfile();
 
-        listTeam = (ListView) findViewById(R.id.list_team);
         editSearch = (MaterialEditText) findViewById(R.id.edit_search);
-        btnSearch = (ImageButton) findViewById(R.id.btn_search);
         textNoResult = (TextView) findViewById(R.id.text_no_search);
 
-        adapter = new TeamListAdapter(this, new ArrayList<SearchListItem>(), 0, user);
+        adapter = new TeamListAdapter(this, new ArrayList<Team>(), 0, user);
+        listTeam = (ListView) findViewById(R.id.list_team);
         listTeam.setAdapter(adapter);
-
-        btnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                closingSoftKeyboard();
-                if (editSearch.length() > 0) {
-                    if (adapter.getCount() > 0) {
-                        adapter.getSearchListItemList().clear();
-                        adapter.notifyDataSetChanged();
-                        adapter.setMax(0);
-                    }
-                    HashMap<String, String> values = new HashMap<>();
-                    values.put("nickname", user.getNickname());
-                    values.put("teamName", editSearch.getText().toString());
-                    values.put("start", String.valueOf(adapter.getCount()));
-                    values.put("sessionInfo", user.getSessionInfo());
-
-                    HttpConnection httpConnection = new HttpConnection(SearchActivity.this, values, httpCallBack);
-                    httpConnection.setCheckSession(true);
-                    httpConnection.setMode(HttpConnection.MODE_TEAM_SEARCH);
-                    httpConnection.execute();
-
-                } else {
-                    editSearch.setError("팀 이름을 입력해주세요.");
-                }
-            }
-        });
-
         listTeam.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -94,15 +67,9 @@ public class SearchActivity extends AppCompatActivity {
                 if (totalItemCount != 0 && firstVisibleItem + visibleItemCount == totalItemCount) {
                     if (!searchFlag) {
                         if (adapter.getMax() > adapter.getCount()) {
-                            HashMap<String, String> values = new HashMap<>();
-                            values.put("nickname", user.getNickname());
-                            values.put("teamName", editSearch.getText().toString());
-                            values.put("start", String.valueOf(adapter.getCount()));
-                            values.put("sessionInfo", user.getSessionInfo());
+                            String body = "nickname=" + user.getNickname() + "&teamName=" + targetTeamName + "&start=" + String.valueOf(adapter.getCount());
 
-                            HttpConnection httpConnection = new HttpConnection(SearchActivity.this, values, httpCallBack);
-                            httpConnection.setCheckSession(true);
-                            httpConnection.setMode(HttpConnection.MODE_TEAM_SEARCH);
+                            HttpConnection httpConnection = new HttpConnection(SearchActivity.this, body, "searchTeam.php", httpCallBack);
                             httpConnection.execute();
                             searchFlag = true;
                         }
@@ -111,74 +78,28 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-       /* listTeam.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        btnSearch = (ImageButton) findViewById(R.id.btn_search);
+        btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            }
-        });*/
-    }
-
-    public HttpCallBack httpCallBack = new HttpCallBack() {
-        @Override
-        public void CallBackResult(JSONObject jsonObject) {
-            try {
-                int mode = jsonObject.getInt("mode");
-                int resultCode = jsonObject.getInt("resultCode");
-
-                if (mode == HttpConnection.MODE_TEAM_SEARCH) {
-                    textNoResult.setVisibility(View.GONE);
-                    if (resultCode == Constant.SUCCESS) {
-                        ArrayList<SearchListItem> searchListItemList = new ArrayList<>();
-
-                        int count = jsonObject.getInt("count");
-
-                        for (int i = 1; i <= count; i++) {
-                            searchListItemList.add(new SearchListItem(jsonObject.getString(i + "_teamName"), jsonObject.getString(i + "_master"), jsonObject.getInt(i + "_level")));
-                        }
-
-                        adapter.addTeamList(searchListItemList);
-                        adapter.setMax(jsonObject.getInt("totalCount"));
+            public void onClick(View v) {
+                closingSoftKeyboard();
+                if (editSearch.length() > 0) {
+                    if (adapter.getCount() > 0) {
+                        adapter.getTeamList().clear();
                         adapter.notifyDataSetChanged();
-
-                        searchFlag = false;
-                    } else {
-                        adapter.getSearchListItemList().clear();
-                        adapter.notifyDataSetChanged();
-                        textNoResult.setVisibility(View.VISIBLE);
+                        adapter.setMax(0);
                     }
-                } else if (mode == HttpConnection.MODE_JOIN_TEAM) {
-                    if (resultCode == Constant.SUCCESS) {
+                    targetTeamName = editSearch.getText().toString();
 
-                        adapter.getSearchListItemList().get(adapter.getCurrentPos()).setLevel(jsonObject.getInt("level"));
+                    String body = "nickname=" + user.getNickname() + "&teamName=" + targetTeamName + "&start=" + String.valueOf(adapter.getCount());
 
-                        adapter.notifyDataSetChanged();
-                    } else {
-
-                    }
-                } else if (mode == HttpConnection.MODE_JOIN_CANCEL) {
-                    if (resultCode == Constant.SUCCESS) {
-                        adapter.getSearchListItemList().get(adapter.getCurrentPos()).setLevel(-1);
-
-                        adapter.notifyDataSetChanged();
-                    } else {
-
-                    }
+                    HttpConnection httpConnection = new HttpConnection(SearchActivity.this, body, "searchTeam.php", httpCallBack);
+                    httpConnection.execute();
+                } else {
+                    editSearch.setError("팀 이름을 입력해주세요.");
                 }
-                Log.d(TAG, jsonObject.toString());
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        }
-    };
-
-
-    private void closingSoftKeyboard() {
-        try {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
@@ -189,4 +110,67 @@ public class SearchActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void closingSoftKeyboard() {
+        try {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public HttpCallBack httpCallBack = new HttpCallBack() {
+        @Override
+        public void CallBackResult(JSONObject jsonObject) {
+            try {
+                int mode = jsonObject.getInt("mode");
+                int resultCode = jsonObject.getInt("resultCode");
+
+                if (mode == MODE_SEARCH_TEAM) {
+                    textNoResult.setVisibility(View.GONE);
+                    if (resultCode == Constant.SUCCESS) {
+                        ArrayList<Team> teamList = new ArrayList<>();
+
+                        int count = jsonObject.getInt("count");
+
+                        for (int i = 0; i < count; i++) {
+                            Team team = new Team();
+                            team.setName(jsonObject.getString(i + "_teamName"));
+                            team.setMaster(jsonObject.getString(i + "_master"));
+                            team.setLevel(jsonObject.getInt(i + "_level"));
+
+                            teamList.add(team);
+                        }
+
+                        adapter.addTeamList(teamList);
+                        adapter.setMax(jsonObject.getInt("totalCount"));
+                        adapter.notifyDataSetChanged();
+
+                        searchFlag = false;
+                    } else {
+                        adapter.getTeamList().clear();
+                        adapter.notifyDataSetChanged();
+                        textNoResult.setVisibility(View.VISIBLE);
+                    }
+                } else if (mode == MODE_JOIN_TEAM) {
+                    if (resultCode == Constant.SUCCESS) {
+                        ((Team) adapter.getItem(adapter.getCurrentPos())).setLevel(jsonObject.getInt("level"));
+                        adapter.notifyDataSetChanged();
+                    } else {
+
+                    }
+                } else if (mode == MODE_LEAVE_TEAM) {
+                    if (resultCode == Constant.SUCCESS) {
+                        ((Team) adapter.getItem(adapter.getCurrentPos())).setLevel(-1);
+                        adapter.notifyDataSetChanged();
+                    } else {
+
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
 }

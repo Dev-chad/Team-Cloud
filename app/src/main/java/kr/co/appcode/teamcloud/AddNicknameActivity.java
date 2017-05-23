@@ -18,10 +18,10 @@ import com.rengwuxian.materialedittext.validation.RegexpValidator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-
 public class AddNicknameActivity extends AppCompatActivity {
     private static final String TAG = "AddNickName";
+    private static final int MODE_CHECK_NICKNAME = 2;
+    private static final int MODE_JOIN = 3;
 
     private MaterialEditText editNickname;
 
@@ -90,12 +90,9 @@ public class AddNicknameActivity extends AppCompatActivity {
                     if (editNickname.length() == 0) {
                         editNickname.setError("닉네임을 입력해주세요.");
                     } else if (editNickname.validate()) {
-                        HashMap<String, String> values = new HashMap<>();
+                        String body = "nickname="+nickname;
 
-                        values.put("nickname", nickname);
-
-                        httpConnection = new HttpConnection(AddNicknameActivity.this, values, httpCallBack);
-                        httpConnection.setMode(HttpConnection.MODE_NICKNAME_CHECK);
+                        httpConnection = new HttpConnection(AddNicknameActivity.this, body, "duplicateCheck.php", httpCallBack);
                         httpConnection.execute();
 
                     } else {
@@ -112,15 +109,9 @@ public class AddNicknameActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (isCheckedNickname){
-                    HashMap<String, String> values = new HashMap<>();
+                    String body = "id="+profile.getId()+"&nickname="+editNickname.getText().toString()+"&name="+profile.getName()+"&joinType=facebook";
 
-                    values.put("id", profile.getId());
-                    values.put("nickname", editNickname.getText().toString());
-                    values.put("name", profile.getName());
-                    values.put("joinType", "facebook");
-
-                    httpConnection = new HttpConnection(AddNicknameActivity.this, values, httpCallBack);
-                    httpConnection.setMode(HttpConnection.MODE_JOIN);
+                    httpConnection = new HttpConnection(AddNicknameActivity.this, body, "join.php", httpCallBack);
                     httpConnection.execute();
                 }
             }
@@ -134,21 +125,18 @@ public class AddNicknameActivity extends AppCompatActivity {
                 int mode = jsonObject.getInt("mode");
                 int resultCode = jsonObject.getInt("resultCode");
 
-                if(mode == HttpConnection.MODE_NICKNAME_CHECK){
+                if(mode == MODE_CHECK_NICKNAME){
                     if (resultCode == Constant.DUPLICATED) {
                         editNickname.setError("이미 등록된 닉네임입니다.");
                     } else {
                         btnCheckNickname.setText("확인완료");
                         isCheckedNickname = true;
                     }
-                } else if(mode == HttpConnection.MODE_JOIN) {
+                } else if(mode == MODE_JOIN) {
                     if (resultCode == Constant.SUCCESS) {
-                        HashMap<String, String> values = new HashMap<>();
-                        values.put("id", profile.getId());
-                        values.put("loginType", "facebook");
+                        String body = "id="+profile.getId()+"&loginType=facebook";
 
-                        httpConnection = new HttpConnection(AddNicknameActivity.this, values, this);
-                        httpConnection.setMode(HttpConnection.MODE_LOGIN);
+                        httpConnection = new HttpConnection(AddNicknameActivity.this, body, "login.php", this);
                         httpConnection.execute();
                     } else {
                         Toast.makeText(AddNicknameActivity.this, jsonObject.getString("resultCode"), Toast.LENGTH_SHORT).show();

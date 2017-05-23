@@ -438,9 +438,7 @@ public class JoinActivity extends AppCompatActivity {
                 int result = jsonObject.getInt("resultCode");
 
                 if (mode == MODE_AUTH_EMAIL) {
-                    if (result == Constant.DUPLICATED) {
-                        editEmail.setError("이미 등록된 이메일입니다.");
-                    } else {
+                    if(result == Constant.SUCCESS){
                         Snackbar.make(btnCheckEmail, "이메일을 발송했습니다. 인증번호를 확인해주세요.", Snackbar.LENGTH_SHORT).show();
                         if (timerThread.isAlive()) {
                             timerThread.setStop();
@@ -448,6 +446,11 @@ public class JoinActivity extends AppCompatActivity {
                         }
                         timerThread = new TimerThread();
                         timerThread.start();
+                    } else if (result == Constant.DUPLICATED) {
+                        editEmail.setError("이미 등록된 이메일입니다.");
+                    } else {
+                        Snackbar.make(btnCheckEmail, "이멜 발송 불가", Snackbar.LENGTH_SHORT).show();
+
                     }
                 } else if (mode == MODE_CHECK_NICKNAME) {
                     if (result == Constant.DUPLICATED) {

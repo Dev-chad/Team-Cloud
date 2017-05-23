@@ -20,7 +20,6 @@ public class User implements Parcelable {
     private int availableCapacity;
     private int maxCapacity;
     private String accountType;
-    private String sessionInfo;
     private int level;
 
     public User(String id, String nickname, String name, int credit, int usedCapacity, int maxCapacity, String accountType) {
@@ -43,7 +42,6 @@ public class User implements Parcelable {
             credit = jsonObject.getInt("credit");
             usedCapacity = jsonObject.getInt("usedCapacity");
             maxCapacity = jsonObject.getInt("maxCapacity");
-            sessionInfo = jsonObject.getString("sessionInfo");
             accountType = jsonObject.getString("accountType");
             availableCapacity = maxCapacity - usedCapacity;
         } catch (JSONException e) {
@@ -60,7 +58,6 @@ public class User implements Parcelable {
         usedCapacity = in.readInt();
         maxCapacity = in.readInt();
         accountType = in.readString();
-        sessionInfo = in.readString();
         availableCapacity = in.readInt();
         level = in.readInt();
     }
@@ -75,7 +72,6 @@ public class User implements Parcelable {
         dest.writeInt(usedCapacity);
         dest.writeInt(maxCapacity);
         dest.writeString(accountType);
-        dest.writeString(sessionInfo);
         dest.writeInt(availableCapacity);
         dest.writeInt(level);
     }
@@ -161,14 +157,6 @@ public class User implements Parcelable {
         this.accountType = accountType;
     }
 
-    public String getSessionInfo() {
-        return sessionInfo;
-    }
-
-    public void setSessionInfo(String sessionInfo) {
-        this.sessionInfo = sessionInfo;
-    }
-
     public int getAvailableCapacity() {
         return availableCapacity;
     }
@@ -186,7 +174,6 @@ public class User implements Parcelable {
             credit = jsonObject.getInt("credit");
             usedCapacity = jsonObject.getInt("usedCapacity");
             maxCapacity = jsonObject.getInt("maxCapacity");
-            sessionInfo = jsonObject.getString("sessionInfo");
             accountType = jsonObject.getString("accountType");
             availableCapacity = maxCapacity - usedCapacity;
         } catch (JSONException e) {

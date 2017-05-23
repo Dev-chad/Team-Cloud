@@ -15,7 +15,6 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by Chad on 2017-04-30.
@@ -26,33 +25,33 @@ public class TeamListAdapter extends BaseAdapter {
 
     private SearchActivity context;
     private User user;
-    private ArrayList<SearchListItem> searchListItemList;
+    private ArrayList<Team> teamList;
     private int max;
     private int currentPos;
 
-    ViewHolder holder;
+    private ViewHolder holder;
 
-    public TeamListAdapter(SearchActivity context, ArrayList<SearchListItem> searchListItemList, int max, User user) {
+    public TeamListAdapter(SearchActivity context, ArrayList<Team> teamList, int max, User user) {
         this.context = context;
-        this.searchListItemList = searchListItemList;
+        this.teamList = teamList;
         this.max = max;
         this.user = user;
     }
 
-    public ArrayList<SearchListItem> getSearchListItemList() {
-        return searchListItemList;
+    public ArrayList<Team> getTeamList() {
+        return teamList;
     }
 
-    public void setSearchListItemList(ArrayList<SearchListItem> searchListItemList) {
-        this.searchListItemList = searchListItemList;
+    public void setTeamList(ArrayList<Team> teamList) {
+        this.teamList = teamList;
     }
 
-    public void addTeam(SearchListItem searchListItem) {
-        searchListItemList.add(searchListItem);
+    public void addTeam(Team searchListItem) {
+        teamList.add(searchListItem);
     }
 
-    public void addTeamList(ArrayList<SearchListItem> searchListItemList) {
-        this.searchListItemList.addAll(searchListItemList);
+    public void addTeamList(ArrayList<Team> searchListItemList) {
+        this.teamList.addAll(searchListItemList);
     }
 
     public void setMax(int max) {
@@ -73,12 +72,12 @@ public class TeamListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return searchListItemList.size();
+        return teamList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return searchListItemList.get(position);
+        return teamList.get(position);
     }
 
     @Override
@@ -106,17 +105,17 @@ public class TeamListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        SearchListItem currentSearchListItem = searchListItemList.get(position);
+        final Team team = teamList.get(position);
 
         holder.imageTeam.setImageResource(R.mipmap.default_team);
-        holder.textTeamName.setText(currentSearchListItem.getTeamName());
-        holder.textMasterName.setText(currentSearchListItem.getMasterName());
+        holder.textTeamName.setText(team.getName());
+        holder.textMasterName.setText(team.getMaster());
 
         holder.btnJoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                final String teamName = searchListItemList.get(position).getTeamName();
+                final String teamName = teamList.get(position).getName();
 
                 AlertDialog.Builder checkDialog = new AlertDialog.Builder(context);
 
@@ -127,16 +126,10 @@ public class TeamListAdapter extends BaseAdapter {
                 checkDialog.setPositiveButton("가입하기", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        HashMap<String, String> values = new HashMap<>();
-                        values.put("nickname", user.getNickname());
-                        values.put("teamName", searchListItemList.get(position).getTeamName());
-                        values.put("sessionInfo", user.getSessionInfo());
-
                         currentPos = position;
+                        String body = "nickname="+user.getNickname()+"&teamIdx="+team.getIdx();
 
-                        HttpConnection httpConnection = new HttpConnection(context, values, context.httpCallBack);
-                        httpConnection.setCheckSession(true);
-                        httpConnection.setMode(HttpConnection.MODE_JOIN_TEAM);
+                        HttpConnection httpConnection = new HttpConnection(context, body, "joinTeam.php", context.httpCallBack);
                         httpConnection.execute();
 
                         dialog.dismiss();
@@ -165,7 +158,7 @@ public class TeamListAdapter extends BaseAdapter {
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        final String teamName = searchListItemList.get(position).getTeamName();
+                        final String teamName = teamList.get(position).getName();
 
                         if (item.getItemId() == R.id.join_cancel) {
                             AlertDialog.Builder checkDialog = new AlertDialog.Builder(context);
@@ -177,17 +170,10 @@ public class TeamListAdapter extends BaseAdapter {
                             checkDialog.setPositiveButton("취소하기", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    HashMap<String, String> values = new HashMap<>();
-                                    values.put("nickname", user.getNickname());
-                                    values.put("teamName", teamName);
-                                    values.put("sessionInfo", user.getSessionInfo());
-
                                     currentPos = position;
+                                    String body = "nickname="+user.getNickname()+"&teamIdx="+team.getIdx();
 
-                                    HttpConnection httpConnection = new HttpConnection(context, values, context.httpCallBack);
-                                    httpConnection.setCheckSession(true);
-                                    httpConnection.setMode(HttpConnection.MODE_JOIN_CANCEL);
-
+                                    HttpConnection httpConnection = new HttpConnection(context, body, "leaveTeam.php", context.httpCallBack);
                                     httpConnection.execute();
 
                                     dialog.dismiss();
@@ -222,14 +208,14 @@ public class TeamListAdapter extends BaseAdapter {
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        final String teamName = searchListItemList.get(position).getTeamName();
+                        final String teamName = teamList.get(position).getName();
 
                         int id = item.getItemId();
 
                         if (id == R.id.move_team_page) {
 
                         } else if (id == R.id.unjoin_team) {
-                            if (searchListItemList.get(position).getMasterName().equals(user.getNickname())) {
+                            if (teamList.get(position).getMaster().equals(user.getNickname())) {
                                 AlertDialog.Builder checkDialog = new AlertDialog.Builder(context);
 
                                 checkDialog
@@ -254,17 +240,10 @@ public class TeamListAdapter extends BaseAdapter {
                                 checkDialog.setPositiveButton("탈퇴하기", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        HashMap<String, String> values = new HashMap<>();
-                                        values.put("nickname", user.getNickname());
-                                        values.put("teamName", teamName);
-                                        values.put("sessionInfo", user.getSessionInfo());
-
                                         currentPos = position;
+                                        String body = "nickname="+user.getNickname()+"&teamIdx="+team.getIdx();
 
-                                        HttpConnection httpConnection = new HttpConnection(context, values, context.httpCallBack);
-                                        httpConnection.setCheckSession(true);
-                                        httpConnection.setMode(HttpConnection.MODE_JOIN_CANCEL);
-
+                                        HttpConnection httpConnection = new HttpConnection(context, body, "leaveTeam.php", context.httpCallBack);
                                         httpConnection.execute();
 
                                         dialog.dismiss();
@@ -288,11 +267,12 @@ public class TeamListAdapter extends BaseAdapter {
                 popupMenu.show();
             }
         });
-        if (currentSearchListItem.getLevel() == -1) {
+
+        if (team.getLevel() == -1) {
             holder.btnJoin.setVisibility(View.VISIBLE);
             holder.btnJoined.setVisibility(View.GONE);
             holder.btnJoining.setVisibility(View.GONE);
-        } else if (currentSearchListItem.getLevel() == 0) {
+        } else if (team.getLevel() == 0) {
             holder.btnJoin.setVisibility(View.GONE);
             holder.btnJoined.setVisibility(View.GONE);
             holder.btnJoining.setVisibility(View.VISIBLE);

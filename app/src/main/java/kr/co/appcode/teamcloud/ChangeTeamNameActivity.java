@@ -17,8 +17,8 @@ import org.json.JSONObject;
 
 public class ChangeTeamNameActivity extends AppCompatActivity {
     private static final String TAG = "ChangeTeamNameActivity";
-    private static final int MODE_SAVE = 2;
-    private static final int MODE_CHECK_TEAM_NAME = 8;
+    private static final int MODE_SAVE = 1;
+    private static final int MODE_CHECK_TEAM_NAME = 2;
 
     private MaterialEditText editTeamName;
     private Button btnCheckTeamName;
@@ -36,9 +36,8 @@ public class ChangeTeamNameActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
-        final String originTeamName = getIntent().getStringExtra("teamName");
+        final Team team = getIntent().getParcelableExtra("team");
 
-        editTeamName = (MaterialEditText) findViewById(R.id.edit_team_name);
         btnCheckTeamName = (Button) findViewById(R.id.btn_check_team_name);
         btnCheckTeamName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,7 +49,8 @@ public class ChangeTeamNameActivity extends AppCompatActivity {
                 } else if (editTeamName.getText().toString().toCharArray()[0] == ' ' || editTeamName.getText().toString().toCharArray()[editTeamName.length() - 1] == ' ') {
                     editTeamName.setError("팀 이름의 시작과 끝은 공백이 허용되지 않습니다.");
                 } else {
-                    HttpConnection httpConnection = new HttpConnection(ChangeTeamNameActivity.this, "teamName="+editTeamName.getText().toString(), "duplicateCheck.php", httpCallBack);
+                    String body = "teamName=" + editTeamName.getText().toString();
+                    HttpConnection httpConnection = new HttpConnection(ChangeTeamNameActivity.this, body, "duplicateCheck.php", httpCallBack);
                     httpConnection.execute();
                 }
             }
@@ -62,13 +62,16 @@ public class ChangeTeamNameActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!isCheckTeamName) {
                     editTeamName.setError("팀 이름 중복확인을 해주세요.");
-                } else{
-                    HttpConnection httpConnection = new HttpConnection(ChangeTeamNameActivity.this, "modifiedTeamName="+editTeamName.getText().toString()+"&teamName="+originTeamName, "saveTeamSetting.php", httpCallBack);
+                } else {
+                    String body = "modifiedTeamName=" + editTeamName.getText().toString() + "&teamIdx=" + team.getIdx();
+                    HttpConnection httpConnection = new HttpConnection(ChangeTeamNameActivity.this, body, "saveTeamSetting.php", httpCallBack);
                     httpConnection.execute();
                 }
             }
         });
 
+        editTeamName = (MaterialEditText) findViewById(R.id.edit_team_name);
+        editTeamName.setText(team.getName());
         editTeamName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -98,7 +101,6 @@ public class ChangeTeamNameActivity extends AppCompatActivity {
             }
         });
 
-        editTeamName.setText(originTeamName);
     }
 
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
@@ -114,21 +116,21 @@ public class ChangeTeamNameActivity extends AppCompatActivity {
                 int mode = jsonObject.getInt("mode");
 
                 if (resultCode == Constant.SUCCESS) {
-                    if(mode == MODE_CHECK_TEAM_NAME){
+                    if (mode == MODE_CHECK_TEAM_NAME) {
                         isCheckTeamName = true;
                         btnCheckTeamName.setText("확인완료");
                         editTeamName.setHelperText("사용 가능한 팀 이름입니다.");
-                        if(editTeamName.getError() != null){
+                        if (editTeamName.getError() != null) {
                             editTeamName.setError(null);
                         }
-                    } else if(mode == MODE_SAVE){
+                    } else if (mode == MODE_SAVE) {
                         Toast.makeText(ChangeTeamNameActivity.this, "팀 이름이 변경되었습니다.", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 } else {
-                    if(mode == MODE_CHECK_TEAM_NAME){
+                    if (mode == MODE_CHECK_TEAM_NAME) {
                         editTeamName.setError("이미 사용중인 팀 이름입니다.");
-                    } else if(mode == MODE_SAVE){
+                    } else if (mode == MODE_SAVE) {
                         Toast.makeText(ChangeTeamNameActivity.this, "팀 이름 변경에 실패하였습니다.", Toast.LENGTH_SHORT).show();
                     }
                 }

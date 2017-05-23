@@ -8,7 +8,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +22,7 @@ import org.json.JSONObject;
 
 public class TeamSettingActivity extends AppCompatActivity {
     private static final String TAG = "TeamSettingActivity";
-    private static final int MODE_GET_TEAM_INFO = 1;
+    private static final int MODE_GET_TEAM = 1;
     private static final int MODE_SAVE = 2;
 
     private ImageView imageTeamMark;
@@ -48,7 +47,7 @@ public class TeamSettingActivity extends AppCompatActivity {
     private TextView textIsManageContents;
     private TextView textTeamName;
 
-    private String teamName;
+    private Team team;
     private User user;
 
     boolean isPublic;
@@ -67,33 +66,12 @@ public class TeamSettingActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
-        teamName = getIntent().getStringExtra("teamName");
-        user = getIntent().getParcelableExtra("loginUser");
+        team = getIntent().getParcelableExtra("team");
+        user = getIntent().getParcelableExtra("login_user");
 
         imageTeamMark = (ImageView) findViewById(R.id.image_team_mark);
 
         btnChangeTeamMark = (Button) findViewById(R.id.btn_team_mark_change);
-
-        layoutChangeTeamName = (RelativeLayout) findViewById(R.id.layout_changeTeamName);
-        layoutManageMemeber = (RelativeLayout) findViewById(R.id.layout_manage_member);
-        layoutManageBoard = (RelativeLayout) findViewById(R.id.layout_manage_board);
-        layoutDissolution = (RelativeLayout) findViewById(R.id.layout_dissolution);
-
-        switchPublicTeam = (SwitchCompat) findViewById(R.id.switch_public);
-        switchAutoJoin = (SwitchCompat) findViewById(R.id.switch_join);
-        switchManageMember = (SwitchCompat) findViewById(R.id.switch_manage_member);
-        switchManageBoard = (SwitchCompat) findViewById(R.id.switch_manage_board);
-        switchManageContents = (SwitchCompat) findViewById(R.id.switch_manage_contents);
-
-        textIsPublic = (TextView) findViewById(R.id.text_is_public);
-        textIsJoin = (TextView) findViewById(R.id.text_is_auto_join);
-        textIsManageMember = (TextView) findViewById(R.id.text_is_manage_member);
-        textIsManageBoard = (TextView) findViewById(R.id.text_is_manage_board);
-        textIsManageContents = (TextView) findViewById(R.id.text_is_manage_contents);
-        textTeamName = (TextView) findViewById(R.id.text_team_name);
-
-        textTeamName.setText(teamName);
-
         btnChangeTeamMark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,25 +79,28 @@ public class TeamSettingActivity extends AppCompatActivity {
             }
         });
 
+        layoutChangeTeamName = (RelativeLayout) findViewById(R.id.layout_changeTeamName);
         layoutChangeTeamName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(TeamSettingActivity.this, ChangeTeamNameActivity.class);
-                intent.putExtra("teamName", teamName);
+                intent.putExtra("team", team);
                 startActivity(intent);
             }
         });
 
+        layoutManageMemeber = (RelativeLayout) findViewById(R.id.layout_manage_member);
         layoutManageMemeber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(TeamSettingActivity.this, MemberManageActivity.class);
-                intent.putExtra("teamName", teamName);
-                intent.putExtra("loginUser", user);
+                intent.putExtra("team", team);
+                intent.putExtra("login_user", user);
                 startActivity(intent);
             }
         });
 
+        layoutManageBoard = (RelativeLayout) findViewById(R.id.layout_manage_board);
         layoutManageBoard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,6 +108,7 @@ public class TeamSettingActivity extends AppCompatActivity {
             }
         });
 
+        layoutDissolution = (RelativeLayout) findViewById(R.id.layout_dissolution);
         layoutDissolution.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,6 +116,7 @@ public class TeamSettingActivity extends AppCompatActivity {
             }
         });
 
+        switchPublicTeam = (SwitchCompat) findViewById(R.id.switch_public);
         switchPublicTeam.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -147,6 +130,7 @@ public class TeamSettingActivity extends AppCompatActivity {
             }
         });
 
+        switchAutoJoin = (SwitchCompat) findViewById(R.id.switch_join);
         switchAutoJoin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -160,6 +144,7 @@ public class TeamSettingActivity extends AppCompatActivity {
             }
         });
 
+        switchManageMember = (SwitchCompat) findViewById(R.id.switch_manage_member);
         switchManageMember.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -173,6 +158,7 @@ public class TeamSettingActivity extends AppCompatActivity {
             }
         });
 
+        switchManageBoard = (SwitchCompat) findViewById(R.id.switch_manage_board);
         switchManageBoard.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -186,6 +172,7 @@ public class TeamSettingActivity extends AppCompatActivity {
             }
         });
 
+        switchManageContents = (SwitchCompat) findViewById(R.id.switch_manage_contents);
         switchManageContents.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -199,71 +186,25 @@ public class TeamSettingActivity extends AppCompatActivity {
             }
         });
 
-        HttpConnection httpConnection = new HttpConnection(this, "teamName=" + teamName, "getTeamInfo.php", httpCallBack);
-        httpConnection.execute();
+        textIsPublic = (TextView) findViewById(R.id.text_is_public);
+        textIsJoin = (TextView) findViewById(R.id.text_is_auto_join);
+        textIsManageMember = (TextView) findViewById(R.id.text_is_manage_member);
+        textIsManageBoard = (TextView) findViewById(R.id.text_is_manage_board);
+        textIsManageContents = (TextView) findViewById(R.id.text_is_manage_contents);
+        textTeamName = (TextView) findViewById(R.id.text_team_name);
+
+        textTeamName.setText(team.getName());
     }
 
-    HttpCallBack httpCallBack = new HttpCallBack() {
-        @Override
-        public void CallBackResult(JSONObject jsonObject) {
-            try {
-                int resultCode = jsonObject.getInt("resultCode");
-                int mode = jsonObject.getInt("mode");
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-                if (resultCode == Constant.SUCCESS) {
-                    if (mode == MODE_GET_TEAM_INFO) {
-                        if (jsonObject.getInt("isPublic") == 1) {
-                            switchPublicTeam.setChecked(true);
-                            isPublic = true;
-                        } else {
-                            switchPublicTeam.setChecked(false);
-                            isPublic = false;
-                        }
+        String body = "teamIdx="+team.getIdx();
 
-                        if (jsonObject.getInt("isAutoJoin") == 1) {
-                            switchAutoJoin.setChecked(true);
-                            isAutoJoin = true;
-                        } else {
-                            switchAutoJoin.setChecked(false);
-                            isAutoJoin = false;
-                        }
-
-                        if (jsonObject.getInt("isManageMember") == 1) {
-                            switchManageMember.setChecked(true);
-                            isManageMember = true;
-                        } else {
-                            switchManageMember.setChecked(false);
-                            isManageMember = false;
-                        }
-
-                        if (jsonObject.getInt("isManageBoard") == 1) {
-                            switchManageBoard.setChecked(true);
-                            isManageBoard = true;
-                        } else {
-                            switchManageBoard.setChecked(false);
-                            isManageBoard = false;
-                        }
-
-                        if (jsonObject.getInt("isManageContents") == 1) {
-                            switchManageContents.setChecked(true);
-                            isManageContents = true;
-                        } else {
-                            switchManageContents.setChecked(false);
-                            isManageContents = false;
-                        }
-                    } else if (mode == MODE_SAVE) {
-                        Toast.makeText(TeamSettingActivity.this, "변경사항을 저장하였습니다.", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                } else {
-                    finish();
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                finish();
-            }
-        }
-    };
+        HttpConnection httpConnection = new HttpConnection(this, body, "getTeam.php", httpCallBack);
+        httpConnection.execute();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -300,9 +241,8 @@ public class TeamSettingActivity extends AppCompatActivity {
                     body += "isManageContents=" + switchManageContents.isChecked() + "&";
                 }
 
-                body += "teamName=" + teamName;
+                body += "teamIdx=" + team.getIdx();
 
-                Log.d(TAG, body);
                 HttpConnection httpConnection = new HttpConnection(this, body, "saveTeamSetting.php", httpCallBack);
                 httpConnection.execute();
 
@@ -345,4 +285,87 @@ public class TeamSettingActivity extends AppCompatActivity {
             checkDialog.show();
         }
     }
+
+    HttpCallBack httpCallBack = new HttpCallBack() {
+        @Override
+        public void CallBackResult(JSONObject jsonObject) {
+            try {
+                int resultCode = jsonObject.getInt("resultCode");
+                int mode = jsonObject.getInt("mode");
+
+                if (resultCode == Constant.SUCCESS) {
+                    if (mode == MODE_GET_TEAM) {
+                        team.update(jsonObject);
+
+                        textTeamName.setText(team.getName());
+
+                        isPublic = team.isPublic();
+                        switchPublicTeam.setChecked(isPublic);
+
+                        isAutoJoin = team.isAutoJoin();
+                        switchAutoJoin.setChecked(isAutoJoin);
+
+                        isManageMember = team.isAdminManageMember();
+                        switchManageMember.setChecked(isManageMember);
+
+                        isManageBoard = team.isAdminManageBoard();
+                        switchManageBoard.setChecked(isManageBoard);
+
+                        isManageContents = team.isAdminManageContents();
+                        switchManageContents.setChecked(isManageContents);
+
+                        /*if (jsonObject.getInt("isPublic") == 1) {
+                            switchPublicTeam.setChecked(true);
+                            isPublic = true;
+                        } else {
+                            switchPublicTeam.setChecked(false);
+                            isPublic = false;
+                        }
+
+                        if (jsonObject.getInt("isAutoJoin") == 1) {
+                            switchAutoJoin.setChecked(true);
+                            isAutoJoin = true;
+                        } else {
+                            switchAutoJoin.setChecked(false);
+                            isAutoJoin = false;
+                        }
+
+                        if (jsonObject.getInt("isManageMember") == 1) {
+                            switchManageMember.setChecked(true);
+                            isManageMember = true;
+                        } else {
+                            switchManageMember.setChecked(false);
+                            isManageMember = false;
+                        }
+
+                        if (jsonObject.getInt("isManageBoard") == 1) {
+                            switchManageBoard.setChecked(true);
+                            isManageBoard = true;
+                        } else {
+                            switchManageBoard.setChecked(false);
+                            isManageBoard = false;
+                        }
+
+                        if (jsonObject.getInt("isManageContents") == 1) {
+                            switchManageContents.setChecked(true);
+                            isManageContents = true;
+                        } else {
+                            switchManageContents.setChecked(false);
+                            isManageContents = false;
+                        }*/
+                    } else if (mode == MODE_SAVE) {
+                        Toast.makeText(TeamSettingActivity.this, "변경사항을 저장하였습니다.", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                } else {
+                    finish();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                finish();
+            }
+        }
+    };
+
+
 }

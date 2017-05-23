@@ -14,14 +14,14 @@ import java.util.ArrayList;
  * Created by Chad on 2017-04-30.
  */
 
-public class CustomGridAdapter extends BaseAdapter {
+public class TeamGridAdapter extends BaseAdapter {
 
     private Context context;
-    private ArrayList<String> teamList;
+    private ArrayList<Team> teamList;
 
     ViewHolder holder;
 
-    public CustomGridAdapter(Context context, ArrayList<String> teamList){
+    public TeamGridAdapter(Context context, ArrayList<Team> teamList){
         this.context = context;
         this.teamList= teamList;
     }
@@ -55,8 +55,10 @@ public class CustomGridAdapter extends BaseAdapter {
             holder = (ViewHolder)convertView.getTag();
         }
 
+        Team team = teamList.get(position);
+
         holder.imageTeam.setImageResource(R.mipmap.default_team);
-        holder.textTeamName.setText(teamList.get(position));
+        holder.textTeamName.setText(team.getName());
 
         return convertView;
     }

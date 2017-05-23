@@ -13,38 +13,39 @@ import java.util.ArrayList;
  * Created by Chad on 2017-04-30.
  */
 
-public class LatestFileListAdapter extends BaseAdapter {
+public class FileGridAdapter extends BaseAdapter {
 
     private HomeFragment fragment;
-    private ArrayList<LatestFileItem> latestFileList;
+    private ArrayList<Content> contentList;
 
     ViewHolder holder;
 
-    public LatestFileListAdapter(HomeFragment fragment, ArrayList<LatestFileItem> latestFileList) {
+    public FileGridAdapter(HomeFragment fragment, ArrayList<Content> contentList) {
         this.fragment = fragment;
-        this.latestFileList = latestFileList;
+        this.contentList = contentList;
+
     }
 
-    public ArrayList<LatestFileItem> getLatestFileList() {
-        return latestFileList;
+    public ArrayList<Content> getContentList() {
+        return contentList;
     }
 
-    public void setLatestFileList(ArrayList<LatestFileItem> latestFileList) {
-        this.latestFileList = latestFileList;
+    public void setContentList(ArrayList<Content> contentList) {
+        this.contentList = contentList;
     }
 
-    public void add(LatestFileItem item) {
-        latestFileList.add(item);
+    public void add(Content item) {
+        contentList.add(item);
     }
 
     @Override
     public int getCount() {
-        return latestFileList.size();
+        return contentList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return latestFileList.get(position);
+        return contentList.get(position);
     }
 
     @Override
@@ -57,12 +58,11 @@ public class LatestFileListAdapter extends BaseAdapter {
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) fragment.getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_latest_file, null);
+            convertView = inflater.inflate(R.layout.grid_latest_file, null);
 
             holder = new ViewHolder();
 
             holder.textName = (TextView) convertView.findViewById(R.id.text_name);
-            holder.textSize = (TextView) convertView.findViewById(R.id.text_size);
             holder.textDate = (TextView) convertView.findViewById(R.id.text_date);
 
             convertView.setTag(holder);
@@ -70,18 +70,16 @@ public class LatestFileListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        LatestFileItem currentItem = latestFileList.get(position);
+        Content content = contentList.get(position);
 
-        holder.textName.setText(currentItem.getName());
-        holder.textSize.setText(String.format("%.2f kb", currentItem.getSize()));
-        holder.textDate.setText(currentItem.getDate());
+        holder.textName.setText(content.getFileName());
+        holder.textDate.setText(content.getWriteDate());
 
         return convertView;
     }
 
     static class ViewHolder {
         TextView textName;
-        TextView textSize;
         TextView textDate;
     }
 
