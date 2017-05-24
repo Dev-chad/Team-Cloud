@@ -1,5 +1,6 @@
 package kr.co.appcode.teamcloud;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -42,6 +44,13 @@ public class ChangeTeamNameActivity extends AppCompatActivity {
         btnCheckTeamName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+
                 if (isCheckTeamName) {
                     Snackbar.make(v, "이미 팀 이름 중복확인을 완료하였습니다.", Snackbar.LENGTH_SHORT).show();
                 } else if (editTeamName.length() == 0) {
@@ -100,7 +109,6 @@ public class ChangeTeamNameActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     public boolean onOptionsItemSelected(android.view.MenuItem item) {

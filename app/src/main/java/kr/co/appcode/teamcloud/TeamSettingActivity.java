@@ -213,7 +213,6 @@ public class TeamSettingActivity extends AppCompatActivity {
     }
 
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
-
         if (item.getItemId() == R.id.menu_save) {
             if (switchPublicTeam.isChecked() == isPublic && switchAutoJoin.isChecked() == isAutoJoin && switchManageMember.isChecked() == isManageMember && switchManageBoard.isChecked() == isManageBoard && switchManageContents.isChecked() == isManageContents) {
                 Toast.makeText(this, "변경사항이 없습니다.", Toast.LENGTH_SHORT).show();
@@ -313,46 +312,6 @@ public class TeamSettingActivity extends AppCompatActivity {
 
                         isManageContents = team.isAdminManageContents();
                         switchManageContents.setChecked(isManageContents);
-
-                        /*if (jsonObject.getInt("isPublic") == 1) {
-                            switchPublicTeam.setChecked(true);
-                            isPublic = true;
-                        } else {
-                            switchPublicTeam.setChecked(false);
-                            isPublic = false;
-                        }
-
-                        if (jsonObject.getInt("isAutoJoin") == 1) {
-                            switchAutoJoin.setChecked(true);
-                            isAutoJoin = true;
-                        } else {
-                            switchAutoJoin.setChecked(false);
-                            isAutoJoin = false;
-                        }
-
-                        if (jsonObject.getInt("isManageMember") == 1) {
-                            switchManageMember.setChecked(true);
-                            isManageMember = true;
-                        } else {
-                            switchManageMember.setChecked(false);
-                            isManageMember = false;
-                        }
-
-                        if (jsonObject.getInt("isManageBoard") == 1) {
-                            switchManageBoard.setChecked(true);
-                            isManageBoard = true;
-                        } else {
-                            switchManageBoard.setChecked(false);
-                            isManageBoard = false;
-                        }
-
-                        if (jsonObject.getInt("isManageContents") == 1) {
-                            switchManageContents.setChecked(true);
-                            isManageContents = true;
-                        } else {
-                            switchManageContents.setChecked(false);
-                            isManageContents = false;
-                        }*/
                     } else if (mode == MODE_SAVE) {
                         Toast.makeText(TeamSettingActivity.this, "변경사항을 저장하였습니다.", Toast.LENGTH_SHORT).show();
                         finish();

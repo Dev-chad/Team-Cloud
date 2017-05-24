@@ -96,7 +96,6 @@ public class TeamListAdapter extends BaseAdapter {
             holder.textTeamName = (TextView) convertView.findViewById(R.id.text_team_name);
             holder.textMasterName = (TextView) convertView.findViewById(R.id.text_master);
             holder.btnJoin = (Button) convertView.findViewById(R.id.btn_join);
-
             holder.btnJoined = (Button) convertView.findViewById(R.id.btn_joined);
             holder.btnJoining = (Button) convertView.findViewById(R.id.btn_joining);
 
@@ -158,7 +157,7 @@ public class TeamListAdapter extends BaseAdapter {
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        final String teamName = teamList.get(position).getName();
+                        final String teamName = team.getName();
 
                         if (item.getItemId() == R.id.join_cancel) {
                             AlertDialog.Builder checkDialog = new AlertDialog.Builder(context);

@@ -283,6 +283,5 @@ public class CreateTeamActivity extends AppCompatActivity {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-
     }
 }

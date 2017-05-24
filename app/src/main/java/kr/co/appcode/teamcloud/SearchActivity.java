@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
@@ -67,7 +68,8 @@ public class SearchActivity extends AppCompatActivity {
                 if (totalItemCount != 0 && firstVisibleItem + visibleItemCount == totalItemCount) {
                     if (!searchFlag) {
                         if (adapter.getMax() > adapter.getCount()) {
-                            String body = "nickname=" + user.getNickname() + "&teamName=" + targetTeamName + "&start=" + String.valueOf(adapter.getCount());
+                            Log.d(TAG, "total: " + adapter.getMax() + " count: " + adapter.getCount());
+                            String body = "nickname=" + user.getNickname() + "&teamName=" + targetTeamName + "&start=" + adapter.getCount();
 
                             HttpConnection httpConnection = new HttpConnection(SearchActivity.this, body, "searchTeam.php", httpCallBack);
                             httpConnection.execute();
@@ -91,7 +93,7 @@ public class SearchActivity extends AppCompatActivity {
                     }
                     targetTeamName = editSearch.getText().toString();
 
-                    String body = "nickname=" + user.getNickname() + "&teamName=" + targetTeamName + "&start=" + String.valueOf(adapter.getCount());
+                    String body = "nickname=" + user.getNickname() + "&teamName=" + targetTeamName + "&start=" + adapter.getCount();
 
                     HttpConnection httpConnection = new HttpConnection(SearchActivity.this, body, "searchTeam.php", httpCallBack);
                     httpConnection.execute();
@@ -126,6 +128,7 @@ public class SearchActivity extends AppCompatActivity {
             try {
                 int mode = jsonObject.getInt("mode");
                 int resultCode = jsonObject.getInt("resultCode");
+                Log.d(TAG, jsonObject.toString());
 
                 if (mode == MODE_SEARCH_TEAM) {
                     textNoResult.setVisibility(View.GONE);
@@ -136,6 +139,7 @@ public class SearchActivity extends AppCompatActivity {
 
                         for (int i = 0; i < count; i++) {
                             Team team = new Team();
+                            team.setIdx(jsonObject.getString(i + "_idx"));
                             team.setName(jsonObject.getString(i + "_teamName"));
                             team.setMaster(jsonObject.getString(i + "_master"));
                             team.setLevel(jsonObject.getInt(i + "_level"));
