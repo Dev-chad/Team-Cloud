@@ -262,7 +262,8 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
                             textNoLatestContents.setVisibility(View.GONE);
                         }
 
-                        contentListAdapter.getLatestContentList().clear();
+                        contentListAdapter.getContentList().clear();
+                        fileListAdapter.getFileList().clear();
                         for (int i = 0; i < contentCount; i++) {
                             Content content = new Content(jsonObject.getString(i + "_idx"), jsonObject.getString(i + "_writer"), jsonObject.getString(i + "_title"), jsonObject.getString(i + "_desc"), jsonObject.getString(i + "_date"), jsonObject.getInt(i + "_readAuth"), jsonObject.getInt(i + "_ver"));
                             contentListAdapter.add(content);
@@ -293,15 +294,24 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
                         } else {
                             if (textNoLatestFile.getVisibility() == View.GONE) {
                                 textNoLatestFile.setVisibility(View.VISIBLE);
+                                if(fileListAdapter.getCount() > 0){
+                                    fileListAdapter.getFileList().clear();
+                                }
                             }
                         }
                     } else {
                         if (textNoLatestContents.getVisibility() == View.GONE) {
                             textNoLatestContents.setVisibility(View.VISIBLE);
+                            if(contentListAdapter.getCount() > 0){
+                                contentListAdapter.getContentList().clear();
+                            }
                         }
 
                         if (textNoLatestFile.getVisibility() == View.GONE) {
                             textNoLatestFile.setVisibility(View.VISIBLE);
+                            if(fileListAdapter.getCount() > 0){
+                                fileListAdapter.getFileList().clear();
+                            }
                         }
                     }
                 }

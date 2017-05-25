@@ -17,35 +17,35 @@ import java.util.Locale;
 public class FileListAdapter extends BaseAdapter {
 
     private HomeFragment fragment;
-    private ArrayList<Content> contentList;
+    private ArrayList<Content> fileList;
 
     ViewHolder holder;
 
-    public FileListAdapter(HomeFragment fragment, ArrayList<Content> contentList) {
+    public FileListAdapter(HomeFragment fragment, ArrayList<Content> fileList) {
         this.fragment = fragment;
-        this.contentList = contentList;
+        this.fileList = fileList;
     }
 
-    public ArrayList<Content> getContentList() {
-        return contentList;
+    public ArrayList<Content> getFileList() {
+        return fileList;
     }
 
-    public void setContentList(ArrayList<Content> contentList) {
-        this.contentList = contentList;
+    public void setFileList(ArrayList<Content> fileList) {
+        this.fileList = fileList;
     }
 
     public void add(Content item) {
-        contentList.add(item);
+        fileList.add(item);
     }
 
     @Override
     public int getCount() {
-        return contentList.size();
+        return fileList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return contentList.get(position);
+        return fileList.get(position);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class FileListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        Content content = contentList.get(position);
+        Content content = fileList.get(position);
 
         holder.textName.setText(content.getFileName());
         holder.textSize.setText(getCapacity(content.getFileSize()));

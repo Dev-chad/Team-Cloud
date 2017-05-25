@@ -25,7 +25,7 @@ public class ContentListAdapter extends BaseAdapter {
         this.contentList = contentLists;
     }
 
-    public ArrayList<Content> getLatestContentList() {
+    public ArrayList<Content> getContentList() {
         return contentList;
     }
 

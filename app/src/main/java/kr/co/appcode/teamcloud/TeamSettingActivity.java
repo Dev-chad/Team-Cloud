@@ -30,7 +30,7 @@ public class TeamSettingActivity extends AppCompatActivity {
     private Button btnChangeTeamMark;
 
     private RelativeLayout layoutChangeTeamName;
-    private RelativeLayout layoutManageMemeber;
+    private RelativeLayout layoutManageMember;
     private RelativeLayout layoutManageBoard;
     private RelativeLayout layoutDissolution;
 
@@ -89,8 +89,8 @@ public class TeamSettingActivity extends AppCompatActivity {
             }
         });
 
-        layoutManageMemeber = (RelativeLayout) findViewById(R.id.layout_manage_member);
-        layoutManageMemeber.setOnClickListener(new View.OnClickListener() {
+        layoutManageMember = (RelativeLayout) findViewById(R.id.layout_manage_member);
+        layoutManageMember.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(TeamSettingActivity.this, MemberManageActivity.class);
@@ -201,7 +201,6 @@ public class TeamSettingActivity extends AppCompatActivity {
         super.onResume();
 
         String body = "teamIdx="+team.getIdx();
-
         HttpConnection httpConnection = new HttpConnection(this, body, "getTeam.php", httpCallBack);
         httpConnection.execute();
     }

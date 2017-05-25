@@ -27,8 +27,6 @@ public class Team implements Parcelable {
     public Team() {
     }
 
-    ;
-
     public Team(String idx, String name, String master, double usedCapacity, int maxCapacity, boolean isPublic, boolean isAutoJoin, boolean isAdminManageMember, boolean isAdminManageBoard, boolean isAdminManageContents, String teamMarkUrl) {
         this.idx = idx;
         this.name = name;
@@ -273,7 +271,7 @@ public class Team implements Parcelable {
                 isAdminManageBoard = false;
             }
 
-            if (jsonObject.getInt("isAdminContents") == 1) {
+            if (jsonObject.getInt("isAdminManageContents") == 1) {
                 isAdminManageContents = true;
             } else {
                 isAdminManageContents = false;
