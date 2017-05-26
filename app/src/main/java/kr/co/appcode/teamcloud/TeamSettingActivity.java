@@ -200,7 +200,7 @@ public class TeamSettingActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        String body = "teamIdx="+team.getIdx();
+        String body = "teamIdx=" + team.getIdx();
         HttpConnection httpConnection = new HttpConnection(this, body, "getTeam.php", httpCallBack);
         httpConnection.execute();
     }

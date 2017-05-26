@@ -9,7 +9,13 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class MemberManageActivity extends AppCompatActivity {
+    private static final String TAG = "MemberManageActivity";
+    private static final int MODE_GET_MEMBER = 1;
+    private static final int MODE_EDIT_MEMBER = 2;
 
     private ListView listAdmin;
     private ListView listMember;
@@ -18,7 +24,7 @@ public class MemberManageActivity extends AppCompatActivity {
     private TextView textNoAdmin;
     private TextView textMasterName;
 
-    private String teamName;
+    private Team team;
     private User user;
 
     @Override
@@ -31,17 +37,23 @@ public class MemberManageActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
-        teamName = getIntent().getStringExtra("teamName");
-        user = getIntent().getParcelableExtra("loginUser");
+        team = getIntent().getParcelableExtra("team");
+        user = getIntent().getParcelableExtra("login_user");
 
-        listAdmin = (ListView)findViewById(R.id.list_admin);
-        listMember = (ListView)findViewById(R.id.list_member);
+        listAdmin = (ListView) findViewById(R.id.list_admin);
+        listMember = (ListView) findViewById(R.id.list_member);
 
-        textMasterName = (TextView)findViewById(R.id.text_master_name);
-        textNoAdmin = (TextView)findViewById(R.id.text_no_admin);
-        textNoMember = (TextView)findViewById(R.id.text_no_member);
+        textMasterName = (TextView) findViewById(R.id.text_master_name);
+        textMasterName.setText(team.getMaster());
 
-        textMasterName.setText(user.getNickname());
+        textNoAdmin = (TextView) findViewById(R.id.text_no_admin);
+        textNoMember = (TextView) findViewById(R.id.text_no_member);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 
     public void setListViewHeightBasedOnItems(ListView listView, int count) {
@@ -75,4 +87,21 @@ public class MemberManageActivity extends AppCompatActivity {
         listView.requestLayout();
     }
 
+    HttpCallBack httpCallBack = new HttpCallBack() {
+        @Override
+        public void CallBackResult(JSONObject jsonObject) {
+            try {
+                int resultCode = jsonObject.getInt("resultCode");
+                int mode = jsonObject.getInt("mode");
+
+                if(mode == MODE_GET_MEMBER){
+
+                }else if(mode == MODE_EDIT_MEMBER){
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 }
