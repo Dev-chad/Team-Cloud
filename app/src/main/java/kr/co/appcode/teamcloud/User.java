@@ -22,6 +22,8 @@ public class User implements Parcelable {
     private String accountType;
     private int level;
 
+    public User(){}
+
     public User(String id, String nickname, String name, int credit, int usedCapacity, int maxCapacity, String accountType) {
         this.id = id;
         this.nickname = nickname;

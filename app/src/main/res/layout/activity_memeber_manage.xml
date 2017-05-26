@@ -59,6 +59,14 @@
             </ListView>
 
             <TextView
+                android:id="@+id/text_const_no_admin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="관리자가 존재하지 않습니다"
+                android:layout_centerInParent="true"
+                android:visibility="gone"/>
+
+            <TextView
                 android:id="@+id/text_no_admin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -88,7 +96,6 @@
                 android:layout_height="100dp"
                 android:layout_below="@id/text_const_team_member"
                 android:layout_marginTop="5dp">
-
             </ListView>
 
             <TextView
@@ -98,7 +105,7 @@
                 android:layout_below="@id/text_const_team_member"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="40dp"
-                android:text="일반 멤버가 없습니다."
+                android:text="일반 멤버가 존재하지 않습니다."
                 android:visibility="gone" />
         </RelativeLayout>
     </LinearLayout>

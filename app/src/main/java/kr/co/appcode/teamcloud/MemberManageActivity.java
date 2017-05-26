@@ -3,6 +3,7 @@ package kr.co.appcode.teamcloud;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
@@ -12,6 +13,8 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class MemberManageActivity extends AppCompatActivity {
     private static final String TAG = "MemberManageActivity";
     private static final int MODE_GET_MEMBER = 1;
@@ -20,12 +23,15 @@ public class MemberManageActivity extends AppCompatActivity {
     private ListView listAdmin;
     private ListView listMember;
 
-    private TextView textNoMember;
-    private TextView textNoAdmin;
     private TextView textMasterName;
+    private TextView textNoAdmin;
+    private TextView textNoMember;
 
     private Team team;
     private User user;
+
+    private MemberListAdapter normalMemberAdapter;
+    private MemberListAdapter adminMemberAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +46,13 @@ public class MemberManageActivity extends AppCompatActivity {
         team = getIntent().getParcelableExtra("team");
         user = getIntent().getParcelableExtra("login_user");
 
+        normalMemberAdapter = new MemberListAdapter(this, new ArrayList<Member>(), 1);
+        adminMemberAdapter = new MemberListAdapter(this, new ArrayList<Member>(), 2);
+
         listAdmin = (ListView) findViewById(R.id.list_admin);
+        listAdmin.setAdapter(adminMemberAdapter);
         listMember = (ListView) findViewById(R.id.list_member);
+        listMember.setAdapter(normalMemberAdapter);
 
         textMasterName = (TextView) findViewById(R.id.text_master_name);
         textMasterName.setText(team.getMaster());
@@ -54,6 +65,8 @@ public class MemberManageActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        HttpConnection httpConnection = new HttpConnection(this, "teamIdx=" + team.getIdx(), "getMember.php", httpCallBack);
+        httpConnection.execute();
     }
 
     public void setListViewHeightBasedOnItems(ListView listView, int count) {
@@ -94,9 +107,61 @@ public class MemberManageActivity extends AppCompatActivity {
                 int resultCode = jsonObject.getInt("resultCode");
                 int mode = jsonObject.getInt("mode");
 
-                if(mode == MODE_GET_MEMBER){
+                normalMemberAdapter.getMemberList().clear();
+                adminMemberAdapter.getMemberList().clear();
 
-                }else if(mode == MODE_EDIT_MEMBER){
+                if (mode == MODE_GET_MEMBER) {
+                    if (resultCode == 1) {
+                        int count = jsonObject.getInt("count");
+
+                        if (count > 0) {
+                            for (int i = 0; i < count; i++) {
+                                Member member = new Member(jsonObject.getString(i + "_nickname"), jsonObject.getInt(i + "_level"), jsonObject.getInt(i + "_isManageMember"), jsonObject.getInt(i + "_isManageBoard"), jsonObject.getInt(i + "_isManageContents"), jsonObject.getString(i + "_accessDate"), jsonObject.getString(i + "_joinDate"));
+                                if (member.getLevel() == 1) {
+                                    normalMemberAdapter.add(member);
+                                } else {
+                                    adminMemberAdapter.add(member);
+                                }
+                            }
+
+                            normalMemberAdapter.notifyDataSetChanged();
+                            adminMemberAdapter.notifyDataSetChanged();
+                            setListViewHeightBasedOnItems(listMember, listMember.getCount());
+                            textNoMember.setVisibility(View.GONE);
+
+                            if (adminMemberAdapter.getCount() == 0) {
+                                ViewGroup.LayoutParams params = listAdmin.getLayoutParams();
+                                params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
+                                listAdmin.setLayoutParams(params);
+                                listAdmin.requestLayout();
+                                textNoAdmin.setVisibility(View.VISIBLE);
+                            } else {
+                                setListViewHeightBasedOnItems(listAdmin, listAdmin.getCount());
+                                textNoAdmin.setVisibility(View.GONE);
+                            }
+                        } else {
+                            normalMemberAdapter.getMemberList().clear();
+                            adminMemberAdapter.getMemberList().clear();
+                            normalMemberAdapter.notifyDataSetChanged();
+                            adminMemberAdapter.notifyDataSetChanged();
+
+                            ViewGroup.LayoutParams params = listMember.getLayoutParams();
+                            params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
+                            listMember.setLayoutParams(params);
+                            listMember.requestLayout();
+
+                            params = listAdmin.getLayoutParams();
+                            params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
+                            listAdmin.setLayoutParams(params);
+                            listAdmin.requestLayout();
+
+                            textNoMember.setVisibility(View.VISIBLE);
+                            textNoAdmin.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+
+                    }
+                } else if (mode == MODE_EDIT_MEMBER) {
 
                 }
             } catch (JSONException e) {
