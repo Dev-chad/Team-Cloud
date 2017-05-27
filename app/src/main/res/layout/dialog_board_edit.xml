@@ -1,9 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="250dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="300dp"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/edit_board_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:hint="게시판 이름"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLength="20"
+            app:met_autoValidate="true"
+            app:met_floatingLabel="highlight"
+            android:layout_weight="5"/>
+
+        <Button
+            android:id="@+id/btn_undo"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:text="되돌리기"
+            android:theme="@style/ColoredDarkGreenButton"/>
+    </LinearLayout>
+
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -19,29 +49,37 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:text="- 멤버 관리:"
+            android:text="- 작성 권한:"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/text_is_manage_member"
+            android:id="@+id/text_write_auth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="10dp"
             android:layout_toEndOf="@id/text_const_manage_member"
-            android:text="켜짐"
+            android:text="일반멤버"
             android:textColor="@color/red"
             android:textStyle="bold" />
 
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/switch_manage_member"
+        <SeekBar
+            android:id="@+id/seekbar_write_auth"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:max="2" />
+
+        <!--<android.support.v7.widget.SwitchCompat
+            android:id="@+id/switch_write_auth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:checked="true"
             android:textOff="꺼짐"
-            android:textOn="켜짐" />
+            android:textOn="켜짐" />-->
     </RelativeLayout>
 
     <RelativeLayout
@@ -58,68 +96,37 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:text="- 게시판 관리:"
+            android:text="- 읽기 권한:"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/text_is_manage_board"
+            android:id="@+id/text_read_auth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="10dp"
             android:layout_toEndOf="@id/text_const_manage_board"
-            android:text="켜짐"
+            android:text="일반멤버"
             android:textColor="@color/red"
             android:textStyle="bold" />
 
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/switch_manage_board"
-            android:layout_width="wrap_content"
+        <SeekBar
+            android:id="@+id/seekbar_read_auth"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:checked="true"
-            android:textOff="꺼짐"
-            android:textOn="켜짐" />
-    </RelativeLayout>
+            android:max="2" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:paddingBottom="5dp"
-        android:paddingTop="5dp">
-
-        <TextView
-            android:id="@+id/text_const_manage_contents"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:text="- 게시물 관리:"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/text_is_manage_contents"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="10dp"
-            android:layout_toEndOf="@id/text_const_manage_contents"
-            android:text="켜짐"
-            android:textColor="@color/red"
-            android:textStyle="bold" />
-
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/switch_manage_contents"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:checked="true"
-            android:textOff="꺼짐"
-            android:textOn="켜짐" />
+        <!-- <android.support.v7.widget.SwitchCompat
+             android:id="@+id/switch_read_auth"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_alignParentEnd="true"
+             android:layout_centerVertical="true"
+             android:checked="true"
+             android:textOff="꺼짐"
+             android:textOn="켜짐" />-->
     </RelativeLayout>
 
     <Button

@@ -1,6 +1,7 @@
 package kr.co.appcode.teamcloud;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,6 +38,11 @@ public class AdminManageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_manage);
+
+        ActionBar actionBar = getSupportActionBar();
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
 
         team = getIntent().getParcelableExtra("team");
         user = getIntent().getParcelableExtra("login_user");
@@ -80,6 +86,12 @@ public class AdminManageActivity extends AppCompatActivity {
 
         HttpConnection httpConnection = new HttpConnection(this, "teamIdx="+team.getIdx(), "getAdmin.php", httpCallBack);
         httpConnection.execute();
+    }
+
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 
     HttpCallBack httpCallBack = new HttpCallBack() {

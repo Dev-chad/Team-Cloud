@@ -107,7 +107,10 @@ public class TeamSettingActivity extends AppCompatActivity {
         layoutManageBoard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(TeamSettingActivity.this, ManageBoardActivity.class);
+                intent.putExtra("team", team);
+                intent.putExtra("login_user", user);
+                startActivity(intent);
             }
         });
 

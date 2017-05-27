@@ -77,8 +77,16 @@
             android:label="팀 이름 변경" />
         <activity
             android:name=".MemberManageActivity"
+            android:label="전체 멤버 관리"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name=".AdminManageActivity"></activity>
+        <activity
+            android:name=".AdminManageActivity"
+            android:label="관리자 권한 관리"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ManageBoardActivity"
+            android:label="@string/title_activity_manage_board"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
