@@ -71,11 +71,14 @@
             android:label="팀 검색" />
         <activity
             android:name=".TeamSettingActivity"
-            android:label="팀 설정"></activity>
+            android:label="팀 설정" />
         <activity
             android:name=".ChangeTeamNameActivity"
             android:label="팀 이름 변경" />
-        <activity android:name=".MemberManageActivity"></activity>
+        <activity
+            android:name=".MemberManageActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name=".AdminManageActivity"></activity>
     </application>
 
 </manifest>

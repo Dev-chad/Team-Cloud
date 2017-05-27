@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="target">
+        <item>닉네임</item>
+        <item>최근 방문 날짜</item>
+        <item>가입 날짜</item>
+        <item>업로드 용량</item>
+    </string-array>
+
+    <string-array name="order">
+        <item>내림차순</item>
+        <item>오름차순</item>
+    </string-array>
+</resources>

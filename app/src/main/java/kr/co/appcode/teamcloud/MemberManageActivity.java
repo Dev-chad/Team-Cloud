@@ -1,15 +1,23 @@
 package kr.co.appcode.teamcloud;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,11 +39,28 @@ public class MemberManageActivity extends AppCompatActivity {
     private TextView textNoAdmin;
     private TextView textNoMember;
 
+    private MaterialEditText editSearchAdmin;
+    private MaterialEditText editSearchMember;
+
+    private ImageView imageSearchAdmin;
+    private ImageView imageSearchMember;
+
     private Team team;
     private User user;
 
     private MemberListAdapter normalMemberAdapter;
     private MemberListAdapter adminMemberAdapter;
+
+    private ArrayList<Member> originMemberList;
+    private ArrayList<Member> originAdminList;
+
+    private Spinner spinnerAdminTarget;
+    private Spinner spinnerAdminOrder;
+    private Spinner spinnerMemberTarget;
+    private Spinner spinnerMemberOrder;
+
+    private boolean isSearchAdmin;
+    private boolean isSearchMember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +88,121 @@ public class MemberManageActivity extends AppCompatActivity {
 
         textNoAdmin = (TextView) findViewById(R.id.text_no_admin);
         textNoMember = (TextView) findViewById(R.id.text_no_member);
+
+        editSearchAdmin = (MaterialEditText) findViewById(R.id.edit_search_admin);
+        editSearchAdmin.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (editSearchAdmin.getError() != null) {
+                    editSearchAdmin.setError(null);
+                }
+
+                if (s.length() == 0) {
+                    adminMemberAdapter.setMemberList(originAdminList);
+                    setListViewSize();
+                }
+            }
+        });
+
+        editSearchMember = (MaterialEditText) findViewById(R.id.edit_search_member);
+        editSearchMember.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (editSearchMember.getError() != null) {
+                    editSearchMember.setError(null);
+                }
+
+                if (s.length() == 0) {
+                    normalMemberAdapter.setMemberList(originMemberList);
+                    setListViewSize();
+                }
+            }
+        });
+
+        imageSearchAdmin = (ImageView) findViewById(R.id.image_search_admin);
+        imageSearchAdmin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (editSearchAdmin.length() > 0) {
+
+                    ArrayList<Member> adminList = new ArrayList<>();
+
+                    for (Member member : originAdminList) {
+                        if (member.getNickname().contains(editSearchAdmin.getText().toString())) {
+                            adminList.add(member);
+                        }
+                    }
+
+                    adminMemberAdapter.setMemberList(adminList);
+
+                    isSearchAdmin = true;
+                    setListViewSize();
+                } else {
+                    editSearchAdmin.setError("닉네임을 입력해주세요.");
+                }
+            }
+        });
+
+        imageSearchMember = (ImageView) findViewById(R.id.image_search_member);
+        imageSearchMember.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (editSearchMember.length() > 0) {
+                    ArrayList<Member> memberList = new ArrayList<>();
+
+                    for (Member member : originMemberList) {
+                        if (member.getNickname().contains(editSearchMember.getText().toString())) {
+                            memberList.add(member);
+                        }
+                    }
+
+                    normalMemberAdapter.setMemberList(memberList);
+
+                    isSearchMember = true;
+                    setListViewSize();
+                } else {
+                    editSearchMember.setError("닉네임을 입력해주세요.");
+                }
+            }
+        });
+
+        ArrayAdapter<CharSequence> orderAdapter = ArrayAdapter.createFromResource(this, R.array.order, android.R.layout.simple_spinner_dropdown_item);
+        orderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+
+        ArrayAdapter<CharSequence> targetAdapter = ArrayAdapter.createFromResource(this, R.array.target, android.R.layout.simple_spinner_dropdown_item);
+        targetAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+
+        spinnerAdminOrder = (Spinner)findViewById(R.id.spinner_order_admin);
+        spinnerAdminOrder.setAdapter(orderAdapter);
+
+        spinnerAdminTarget = (Spinner)findViewById(R.id.spinner_target_admin);
+        spinnerAdminTarget.setAdapter(targetAdapter);
+
+        spinnerMemberOrder = (Spinner)findViewById(R.id.spinner_order_member);
+        spinnerMemberOrder.setAdapter(orderAdapter);
+
+        spinnerMemberTarget = (Spinner)findViewById(R.id.spinner_target_member);
+        spinnerMemberTarget.setAdapter(targetAdapter);
     }
 
     @Override
@@ -71,6 +211,29 @@ public class MemberManageActivity extends AppCompatActivity {
 
         HttpConnection httpConnection = new HttpConnection(this, "teamIdx=" + team.getIdx(), "getMember.php", httpCallBack);
         httpConnection.execute();
+    }
+
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+
+        Intent intent = new Intent(this, TeamSettingActivity.class);
+        intent.putExtra("login_user", user);
+        intent.putExtra("team", team);
+        startActivity(intent);
+
+        finish();
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        Intent intent = new Intent(this, TeamSettingActivity.class);
+        intent.putExtra("login_user", user);
+        intent.putExtra("team", team);
+        startActivity(intent);
+
+        finish();
     }
 
     public void setListViewHeightBasedOnItems(ListView listView, int count) {
@@ -104,6 +267,62 @@ public class MemberManageActivity extends AppCompatActivity {
         listView.requestLayout();
     }
 
+    private void setListViewSize() {
+        if (adminMemberAdapter.getCount() > 0) {
+            setListViewHeightBasedOnItems(listAdmin, listAdmin.getCount());
+
+            if (textNoAdmin.getVisibility() == View.VISIBLE) {
+                textNoAdmin.setVisibility(View.GONE);
+            }
+        } else {
+            ViewGroup.LayoutParams params = listAdmin.getLayoutParams();
+            params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
+            listAdmin.setLayoutParams(params);
+            listAdmin.requestLayout();
+
+            if (textNoAdmin.getVisibility() == View.GONE) {
+                textNoAdmin.setVisibility(View.VISIBLE);
+
+                if (isSearchAdmin) {
+                    textNoAdmin.setText("검색 결과가 없습니다.");
+                } else {
+                    textNoAdmin.setText("관리자가 존재하지 않습니다.");
+                }
+            }
+        }
+
+        if (normalMemberAdapter.getCount() > 0) {
+            setListViewHeightBasedOnItems(listMember, listMember.getCount());
+
+            if (textNoMember.getVisibility() == View.VISIBLE) {
+                textNoMember.setVisibility(View.GONE);
+            }
+        } else {
+            ViewGroup.LayoutParams params = listMember.getLayoutParams();
+            params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
+            listMember.setLayoutParams(params);
+            listMember.requestLayout();
+
+            if (textNoMember.getVisibility() == View.GONE) {
+                textNoMember.setVisibility(View.VISIBLE);
+
+                if (isSearchAdmin) {
+                    textNoMember.setText("검색 결과가 없습니다.");
+                } else {
+                    textNoMember.setText("일반 멤버가 존재하지 않습니다.");
+                }
+            }
+        }
+
+        if (isSearchMember) {
+            isSearchMember = false;
+        }
+
+        if (isSearchAdmin) {
+            isSearchAdmin = false;
+        }
+    }
+
     HttpCallBack httpCallBack = new HttpCallBack() {
         @Override
         public void CallBackResult(JSONObject jsonObject) {
@@ -128,6 +347,9 @@ public class MemberManageActivity extends AppCompatActivity {
                                 }
                             }
 
+                            originAdminList = adminMemberAdapter.getMemberList();
+                            originMemberList = normalMemberAdapter.getMemberList();
+
                             normalMemberAdapter.notifyDataSetChanged();
                             adminMemberAdapter.notifyDataSetChanged();
                         }
@@ -140,6 +362,7 @@ public class MemberManageActivity extends AppCompatActivity {
                         member.setLevel(2);
                         adminMemberAdapter.add(member);
                         normalMemberAdapter.getMemberList().remove(normalMemberAdapter.getCurrentPos());
+                        originMemberList = normalMemberAdapter.getMemberList();
                     } else {
 
                     }
@@ -149,11 +372,20 @@ public class MemberManageActivity extends AppCompatActivity {
                         member.setLevel(1);
                         normalMemberAdapter.add(member);
                         adminMemberAdapter.getMemberList().remove(adminMemberAdapter.getCurrentPos());
+                        originAdminList = adminMemberAdapter.getMemberList();
                     } else {
 
                     }
                 } else if (mode == MODE_SET_MASTER) {
                     if (resultCode == Constant.SUCCESS) {
+/*                        user.setLevel(2);
+                        team.setMaster(((Member)adminMemberAdapter.getItem(adminMemberAdapter.getCurrentPos())).getNickname());
+
+                        Intent intent = new Intent(MemberManageActivity.this, TeamPageActivity.class);
+                        intent.putExtra("login_user", user);
+                        intent.putExtra("team", team);
+                        startActivity(intent);*/
+
                         finish();
                     } else {
 
@@ -161,6 +393,7 @@ public class MemberManageActivity extends AppCompatActivity {
                 } else if (mode == MODE_BANISH) {
                     if (resultCode == Constant.SUCCESS) {
                         normalMemberAdapter.getMemberList().remove(normalMemberAdapter.getCurrentPos());
+                        originMemberList = normalMemberAdapter.getMemberList();
                     } else {
 
                     }
@@ -175,39 +408,5 @@ public class MemberManageActivity extends AppCompatActivity {
         }
     };
 
-    private void setListViewSize() {
-        if (adminMemberAdapter.getCount() > 0) {
-            setListViewHeightBasedOnItems(listAdmin, listAdmin.getCount());
 
-            if (textNoAdmin.getVisibility() == View.VISIBLE) {
-                textNoAdmin.setVisibility(View.GONE);
-            }
-        } else {
-            ViewGroup.LayoutParams params = listAdmin.getLayoutParams();
-            params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
-            listAdmin.setLayoutParams(params);
-            listAdmin.requestLayout();
-
-            if (textNoAdmin.getVisibility() == View.GONE) {
-                textNoAdmin.setVisibility(View.VISIBLE);
-            }
-        }
-
-        if (normalMemberAdapter.getCount() > 0) {
-            setListViewHeightBasedOnItems(listMember, listMember.getCount());
-
-            if (textNoMember.getVisibility() == View.VISIBLE) {
-                textNoMember.setVisibility(View.GONE);
-            }
-        } else {
-            ViewGroup.LayoutParams params = listMember.getLayoutParams();
-            params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
-            listMember.setLayoutParams(params);
-            listMember.requestLayout();
-
-            if (textNoMember.getVisibility() == View.GONE) {
-                textNoMember.setVisibility(View.VISIBLE);
-            }
-        }
-    }
 }

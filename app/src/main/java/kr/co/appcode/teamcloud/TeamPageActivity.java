@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.Profile;
 
@@ -70,14 +71,23 @@ public class TeamPageActivity extends AppCompatActivity
         btnSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(TeamPageActivity.this, TeamSettingActivity.class);
-                intent.putExtra("team", team);
-                intent.putExtra("login_user", user);
-                startActivity(intent);
+                if(user.getLevel() == 3){
+                    Intent intent = new Intent(TeamPageActivity.this, TeamSettingActivity.class);
+                    intent.putExtra("team", team);
+                    intent.putExtra("login_user", user);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(TeamPageActivity.this, "Not yet...", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         listBoard = (ListView) findViewById(R.id.list_board);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         String body = "teamIdx=" + team.getIdx() + "&nickname=" + user.getNickname();
 

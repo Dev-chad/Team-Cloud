@@ -33,6 +33,7 @@ public class TeamSettingActivity extends AppCompatActivity {
     private RelativeLayout layoutManageMember;
     private RelativeLayout layoutManageBoard;
     private RelativeLayout layoutDissolution;
+    private RelativeLayout layoutManageAdmin;
 
     private SwitchCompat switchPublicTeam;
     private SwitchCompat switchAutoJoin;
@@ -97,6 +98,8 @@ public class TeamSettingActivity extends AppCompatActivity {
                 intent.putExtra("team", team);
                 intent.putExtra("login_user", user);
                 startActivity(intent);
+
+                finish();
             }
         });
 
@@ -113,6 +116,17 @@ public class TeamSettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+        layoutManageAdmin = (RelativeLayout)findViewById(R.id.layout_manage_admin);
+        layoutManageAdmin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TeamSettingActivity.this, AdminManageActivity.class);
+                intent.putExtra("team", team);
+                intent.putExtra("login_user", user);
+                startActivity(intent);
             }
         });
 

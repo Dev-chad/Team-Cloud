@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="15dp"
+    tools:context="kr.co.appcode.teamcloud.AdminManageActivity"
+    android:background="#d9d9d9">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#fff"
+        android:padding="10dp">
+
+        <RelativeLayout
+            android:id="@+id/layout_admin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/text_const_team_admin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="팀 관리자" />
+
+            <ImageView
+                android:id="@+id/image_search_admin"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_search_black_24dp" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_search_admin"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_toStartOf="@id/image_search_admin"
+                android:hint="관리자 검색..."
+                android:maxLines="1"
+                app:met_clearButton="true"
+                android:imeOptions="actionDone"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_admin_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_admin"
+            android:layout_alignParentEnd="true"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="정렬"/>
+
+            <Spinner
+                android:id="@+id/spinner_target_admin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="기준"/>
+
+            <Spinner
+                android:id="@+id/spinner_order_admin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"/>
+        </LinearLayout>
+
+
+        <ListView
+            android:id="@+id/list_admin"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/layout_admin_filter"
+            android:layout_marginTop="5dp">
+
+        </ListView>
+
+        <TextView
+            android:id="@+id/text_no_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_admin_filter"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:text="팀 관리자가 없습니다."
+            android:visibility="gone" />
+    </RelativeLayout>
+</LinearLayout>

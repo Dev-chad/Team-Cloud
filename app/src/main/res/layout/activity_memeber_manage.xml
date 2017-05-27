@@ -43,34 +43,84 @@
             android:background="#fff"
             android:padding="10dp">
 
-            <TextView
-                android:id="@+id/text_const_team_admin"
+            <RelativeLayout
+                android:id="@+id/layout_admin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/text_const_team_admin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="팀 관리자" />
+
+                <ImageView
+                    android:id="@+id/image_search_admin"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_search_black_24dp" />
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/edit_search_admin"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_toStartOf="@id/image_search_admin"
+                    android:hint="관리자 검색..."
+                    android:maxLines="1"
+                    app:met_clearButton="true"
+                    android:imeOptions="actionDone"
+                    android:textSize="12sp" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_admin_filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="팀 관리자" />
+                android:layout_below="@id/layout_admin"
+                android:layout_alignParentEnd="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="정렬"/>
+
+                <Spinner
+                    android:id="@+id/spinner_target_admin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="기준"/>
+
+                <Spinner
+                    android:id="@+id/spinner_order_admin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
 
             <ListView
                 android:id="@+id/list_admin"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:layout_below="@id/text_const_team_admin"
+                android:layout_below="@id/layout_admin_filter"
                 android:layout_marginTop="5dp">
 
             </ListView>
 
             <TextView
-                android:id="@+id/text_const_no_admin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="관리자가 존재하지 않습니다"
-                android:layout_centerInParent="true"
-                android:visibility="gone"/>
-
-            <TextView
                 android:id="@+id/text_no_admin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/text_const_team_admin"
+                android:layout_below="@id/layout_admin_filter"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="40dp"
                 android:text="팀 관리자가 없습니다."
@@ -84,25 +134,85 @@
             android:background="#fff"
             android:padding="10dp">
 
-            <TextView
-                android:id="@+id/text_const_team_member"
+            <RelativeLayout
+                android:id="@+id/layout_member"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/text_const_team_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="일반 멤버" />
+
+                <ImageView
+                    android:id="@+id/image_search_member"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_search_black_24dp" />
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/edit_search_member"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_toStartOf="@id/image_search_member"
+                    android:hint="일반 멤버 검색..."
+                    android:maxLines="1"
+                    app:met_clearButton="true"
+                    android:imeOptions="actionDone"
+                    android:textSize="12sp" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_member_filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="일반 멤버" />
+                android:layout_below="@id/layout_member"
+                android:layout_alignParentEnd="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="정렬"/>
+
+                <Spinner
+                    android:id="@+id/spinner_target_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="기준"/>
+
+                <Spinner
+                    android:id="@+id/spinner_order_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
 
             <ListView
                 android:id="@+id/list_member"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:layout_below="@id/text_const_team_member"
+                android:layout_below="@id/layout_member_filter"
                 android:layout_marginTop="5dp">
+
             </ListView>
 
             <TextView
                 android:id="@+id/text_no_member"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/text_const_team_member"
+                android:layout_below="@id/layout_member_filter"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="40dp"
                 android:text="일반 멤버가 존재하지 않습니다."
