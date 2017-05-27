@@ -3,6 +3,7 @@ package kr.co.appcode.teamcloud;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,10 @@ import java.util.ArrayList;
 public class MemberManageActivity extends AppCompatActivity {
     private static final String TAG = "MemberManageActivity";
     private static final int MODE_GET_MEMBER = 1;
-    private static final int MODE_EDIT_MEMBER = 2;
+    private static final int MODE_SET_ADMIN = 2;
+    private static final int MODE_UNSET_ADMIN = 3;
+    private static final int MODE_SET_MASTER = 4;
+    private static final int MODE_BANISH = 5;
 
     private ListView listAdmin;
     private ListView listMember;
@@ -46,8 +50,8 @@ public class MemberManageActivity extends AppCompatActivity {
         team = getIntent().getParcelableExtra("team");
         user = getIntent().getParcelableExtra("login_user");
 
-        normalMemberAdapter = new MemberListAdapter(this, new ArrayList<Member>(), 1);
-        adminMemberAdapter = new MemberListAdapter(this, new ArrayList<Member>(), 2);
+        normalMemberAdapter = new MemberListAdapter(this, new ArrayList<Member>(), team.getIdx(), 1);
+        adminMemberAdapter = new MemberListAdapter(this, new ArrayList<Member>(), team.getIdx(), 2);
 
         listAdmin = (ListView) findViewById(R.id.list_admin);
         listAdmin.setAdapter(adminMemberAdapter);
@@ -107,10 +111,10 @@ public class MemberManageActivity extends AppCompatActivity {
                 int resultCode = jsonObject.getInt("resultCode");
                 int mode = jsonObject.getInt("mode");
 
-                normalMemberAdapter.getMemberList().clear();
-                adminMemberAdapter.getMemberList().clear();
-
                 if (mode == MODE_GET_MEMBER) {
+                    normalMemberAdapter.getMemberList().clear();
+                    adminMemberAdapter.getMemberList().clear();
+
                     if (resultCode == 1) {
                         int count = jsonObject.getInt("count");
 
@@ -126,47 +130,84 @@ public class MemberManageActivity extends AppCompatActivity {
 
                             normalMemberAdapter.notifyDataSetChanged();
                             adminMemberAdapter.notifyDataSetChanged();
-                            setListViewHeightBasedOnItems(listMember, listMember.getCount());
-                            textNoMember.setVisibility(View.GONE);
-
-                            if (adminMemberAdapter.getCount() == 0) {
-                                ViewGroup.LayoutParams params = listAdmin.getLayoutParams();
-                                params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
-                                listAdmin.setLayoutParams(params);
-                                listAdmin.requestLayout();
-                                textNoAdmin.setVisibility(View.VISIBLE);
-                            } else {
-                                setListViewHeightBasedOnItems(listAdmin, listAdmin.getCount());
-                                textNoAdmin.setVisibility(View.GONE);
-                            }
-                        } else {
-                            normalMemberAdapter.getMemberList().clear();
-                            adminMemberAdapter.getMemberList().clear();
-                            normalMemberAdapter.notifyDataSetChanged();
-                            adminMemberAdapter.notifyDataSetChanged();
-
-                            ViewGroup.LayoutParams params = listMember.getLayoutParams();
-                            params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
-                            listMember.setLayoutParams(params);
-                            listMember.requestLayout();
-
-                            params = listAdmin.getLayoutParams();
-                            params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
-                            listAdmin.setLayoutParams(params);
-                            listAdmin.requestLayout();
-
-                            textNoMember.setVisibility(View.VISIBLE);
-                            textNoAdmin.setVisibility(View.VISIBLE);
                         }
                     } else {
 
                     }
-                } else if (mode == MODE_EDIT_MEMBER) {
+                } else if (mode == MODE_SET_ADMIN) {
+                    if (resultCode == Constant.SUCCESS) {
+                        Member member = normalMemberAdapter.getMemberList().get(normalMemberAdapter.getCurrentPos());
+                        member.setLevel(2);
+                        adminMemberAdapter.add(member);
+                        normalMemberAdapter.getMemberList().remove(normalMemberAdapter.getCurrentPos());
+                    } else {
 
+                    }
+                } else if (mode == MODE_UNSET_ADMIN) {
+                    if (resultCode == Constant.SUCCESS) {
+                        Member member = adminMemberAdapter.getMemberList().get(adminMemberAdapter.getCurrentPos());
+                        member.setLevel(1);
+                        normalMemberAdapter.add(member);
+                        adminMemberAdapter.getMemberList().remove(adminMemberAdapter.getCurrentPos());
+                    } else {
+
+                    }
+                } else if (mode == MODE_SET_MASTER) {
+                    if (resultCode == Constant.SUCCESS) {
+                        finish();
+                    } else {
+
+                    }
+                } else if (mode == MODE_BANISH) {
+                    if (resultCode == Constant.SUCCESS) {
+                        normalMemberAdapter.getMemberList().remove(normalMemberAdapter.getCurrentPos());
+                    } else {
+
+                    }
                 }
+
+                Log.d(TAG, jsonObject.toString());
+
+                setListViewSize();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     };
+
+    private void setListViewSize() {
+        if (adminMemberAdapter.getCount() > 0) {
+            setListViewHeightBasedOnItems(listAdmin, listAdmin.getCount());
+
+            if (textNoAdmin.getVisibility() == View.VISIBLE) {
+                textNoAdmin.setVisibility(View.GONE);
+            }
+        } else {
+            ViewGroup.LayoutParams params = listAdmin.getLayoutParams();
+            params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
+            listAdmin.setLayoutParams(params);
+            listAdmin.requestLayout();
+
+            if (textNoAdmin.getVisibility() == View.GONE) {
+                textNoAdmin.setVisibility(View.VISIBLE);
+            }
+        }
+
+        if (normalMemberAdapter.getCount() > 0) {
+            setListViewHeightBasedOnItems(listMember, listMember.getCount());
+
+            if (textNoMember.getVisibility() == View.VISIBLE) {
+                textNoMember.setVisibility(View.GONE);
+            }
+        } else {
+            ViewGroup.LayoutParams params = listMember.getLayoutParams();
+            params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
+            listMember.setLayoutParams(params);
+            listMember.requestLayout();
+
+            if (textNoMember.getVisibility() == View.GONE) {
+                textNoMember.setVisibility(View.VISIBLE);
+            }
+        }
+    }
 }

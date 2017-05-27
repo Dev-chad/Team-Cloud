@@ -1,19 +1,25 @@
 package kr.co.appcode.teamcloud;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 
 /**
  * Created by Chad on 2017-05-27.
  */
 
-public class MemberListAdapter extends BaseAdapter{
+public class MemberListAdapter extends BaseAdapter {
     private static final int MODE_NORMAL = 1;
     private static final int MODE_ADMIN = 2;
 
@@ -23,22 +29,24 @@ public class MemberListAdapter extends BaseAdapter{
     private ArrayList<Member> memberList;
     private int currentPos;
     private int mode;
+    private String teamIdx;
 
-    public MemberListAdapter(MemberManageActivity context, ArrayList<Member> memberList, int mode) {
+    public MemberListAdapter(MemberManageActivity context, ArrayList<Member> memberList, String teamIdx, int mode) {
         this.context = context;
         this.memberList = memberList;
         this.mode = mode;
+        this.teamIdx = teamIdx;
     }
 
     public void add(Member member) {
         memberList.add(member);
     }
 
-    public void setMemberList(ArrayList<Member> memberList){
+    public void setMemberList(ArrayList<Member> memberList) {
         this.memberList = memberList;
     }
 
-    public ArrayList<Member> getMemberList(){
+    public ArrayList<Member> getMemberList() {
         return memberList;
     }
 
@@ -86,11 +94,154 @@ public class MemberListAdapter extends BaseAdapter{
 
         holder.textNickname.setText(member.getNickname());
 
-        if(mode == MODE_NORMAL){
+        holder.imgOption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        }else{
+                PopupMenu popupMenu = new PopupMenu(context, v);
+                MenuInflater menuInflater = popupMenu.getMenuInflater();
 
-        }
+                final String body = "nickname=" + member.getNickname() + "&teamIdx=" + teamIdx;
+
+                if (mode == MODE_NORMAL) {
+                    menuInflater.inflate(R.menu.menu_normal_member, popupMenu.getMenu());
+
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int itemId = item.getItemId();
+
+                            AlertDialog.Builder checkDialog = new AlertDialog.Builder(context);
+
+                            if (itemId == R.id.appoint_admin) {
+
+                                checkDialog
+                                        .setTitle("관리자 임명")
+                                        .setMessage("정말로 " + member.getNickname() + " 멤버를 관리자로 임명하시겠습니까?");
+
+                                checkDialog.setPositiveButton("임명하기", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        currentPos = position;
+
+                                        HttpConnection httpConnection = new HttpConnection(context, body+"&mode=2", "manageMember.php", context.httpCallBack);
+                                        httpConnection.execute();
+
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                checkDialog.setNegativeButton("닫기", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                checkDialog.show();
+                            } else if (itemId == R.id.banish) {
+                                checkDialog
+                                        .setTitle("팀원 내보내기")
+                                        .setMessage("정말로 " + member.getNickname() + " 멤버를 팀에서 제외시키겠습니까?");
+
+                                checkDialog.setPositiveButton("내보내기", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        currentPos = position;
+
+                                        HttpConnection httpConnection = new HttpConnection(context, body+"&mode=5", "manageMember.php", context.httpCallBack);
+                                        httpConnection.execute();
+
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                checkDialog.setNegativeButton("닫기", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                checkDialog.show();
+                            } else {
+
+                            }
+                            return false;
+                        }
+                    });
+                } else {
+                    menuInflater.inflate(R.menu.menu_admin_member, popupMenu.getMenu());
+
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int itemId = item.getItemId();
+
+                            AlertDialog.Builder checkDialog = new AlertDialog.Builder(context);
+
+                            if (itemId == R.id.appoint_master) {
+
+                                checkDialog
+                                        .setTitle("마스터 위임")
+                                        .setMessage("정말로 " + member.getNickname() + " 멤버에게 마스터를 위임하시겠습니까?");
+
+                                checkDialog.setPositiveButton("위임하기", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        currentPos = position;
+
+                                        HttpConnection httpConnection = new HttpConnection(context, body+"&mode=4", "manageMember.php", context.httpCallBack);
+                                        httpConnection.execute();
+
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                checkDialog.setNegativeButton("닫기", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                checkDialog.show();
+                            } else if (itemId == R.id.banish_admin) {
+                                checkDialog
+                                        .setTitle("관리자에서 제외")
+                                        .setMessage("정말로 " + member.getNickname() + " 멤버를 관리자에서 제외시키겠습니까?");
+
+                                checkDialog.setPositiveButton("제외하기", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        currentPos = position;
+
+                                        HttpConnection httpConnection = new HttpConnection(context, body+"&mode=3", "manageMember.php", context.httpCallBack);
+                                        httpConnection.execute();
+
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                checkDialog.setNegativeButton("닫기", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                checkDialog.show();
+                            } else {
+
+                            }
+                            return false;
+                        }
+                    });
+                }
+
+                popupMenu.show();
+            }
+        });
 
         return convertView;
     }

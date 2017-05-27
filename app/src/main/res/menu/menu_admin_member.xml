@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/appoint_master"
+        android:title="마스터 위임" />
+    <item android:id="@+id/banish_admin"
+        android:title="관리자에서 제외" />
+    <item android:id="@+id/close"
+        android:title="닫기" />
+
+</menu>
