@@ -11,6 +11,7 @@ import android.widget.AbsListView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.Profile;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -168,8 +169,10 @@ public class SearchActivity extends AppCompatActivity {
                     if (resultCode == Constant.SUCCESS) {
                         ((Team) adapter.getItem(adapter.getCurrentPos())).setLevel(-1);
                         adapter.notifyDataSetChanged();
-                    } else {
-
+                    } else if (resultCode == 2){
+                        adapter.getTeamList().get(adapter.getCurrentPos()).setLevel(1);
+                        adapter.notifyDataSetChanged();
+                        Toast.makeText(SearchActivity.this, "이미 가입되었습니다.", Toast.LENGTH_SHORT).show();
                     }
                 }
             } catch (Exception e) {

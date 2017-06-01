@@ -87,6 +87,9 @@
             android:name=".ManageBoardActivity"
             android:label="@string/title_activity_manage_board"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".RegManageActivity"
+            android:label="가입 신청 관리"/>
     </application>
 
 </manifest>

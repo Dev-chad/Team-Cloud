@@ -19,11 +19,13 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 /**
  * Created by Chad on 2017-05-28.
  */
 
-public class BoardEditDialog extends Dialog {
+public class BoardAddDialog extends Dialog {
     private Board board;
     private String teamIdx;
 
@@ -35,12 +37,14 @@ public class BoardEditDialog extends Dialog {
 
     private MaterialEditText editBoardName;
 
-    private Button btnUndo;
     private Button btnApply;
+    private Button btnClose;
 
-    public BoardEditDialog(Context context, String teamIdx, Board board) {
+    private ArrayList<Board> boardList;
+
+    public BoardAddDialog(Context context, String teamIdx, ArrayList<Board> boardList) {
         super(context);
-        this.board = board;
+        this.boardList = boardList;
         this.teamIdx = teamIdx;
     }
 
@@ -48,7 +52,7 @@ public class BoardEditDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.dialog_board_edit);
+        setContentView(R.layout.dialog_board_add);
 
         textReadAuth = (TextView) findViewById(R.id.text_read_auth);
         textWriteAuth = (TextView) findViewById(R.id.text_write_auth);
@@ -64,7 +68,7 @@ public class BoardEditDialog extends Dialog {
                     textReadAuth.setText("관리자");
                     textReadAuth.setTextColor(ContextCompat.getColor(getContext(), R.color.darkgreen));
 
-                } else if (progress == 0){
+                } else if (progress == 0) {
                     textReadAuth.setText("일반멤버");
                     textReadAuth.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
                 }
@@ -92,12 +96,10 @@ public class BoardEditDialog extends Dialog {
                     textWriteAuth.setText("관리자");
                     textWriteAuth.setTextColor(ContextCompat.getColor(getContext(), R.color.darkgreen));
 
-                } else if (progress == 0){
+                } else if (progress == 0) {
                     textWriteAuth.setText("일반멤버");
                     textWriteAuth.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
                 }
-
-                Log.d("seek", progress+"s");
             }
 
             @Override
@@ -111,7 +113,7 @@ public class BoardEditDialog extends Dialog {
             }
         });
 
-        editBoardName = (MaterialEditText)findViewById(R.id.edit_board_name);
+        editBoardName = (MaterialEditText) findViewById(R.id.edit_board_name);
         editBoardName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -125,61 +127,34 @@ public class BoardEditDialog extends Dialog {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(editBoardName.getError() != null){
+                if (editBoardName.getError() != null) {
                     editBoardName.setError(null);
                 }
             }
         });
 
-        btnUndo = (Button)findViewById(R.id.btn_undo);
-        btnUndo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editBoardName.setText(board.getName());
-            }
-        });
-
-        btnApply = (Button)findViewById(R.id.btn_apply);
+        btnApply = (Button) findViewById(R.id.btn_apply);
         btnApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String boardName = editBoardName.getText().toString();
 
-                if(boardName.length() == 0){
-                    editBoardName.setError("게시판 이름을 입력해주세요");
+                if (editBoardName.length() == 0) {
+                    editBoardName.setError("게시판 이름을 입력해주세요.");
                 } else {
-                    String body = "";
-
-                    if(!editBoardName.getText().toString().equals(board.getName())){
-
-                        body += ("modifiedBoardName="+editBoardName.getText().toString()+"&");
-                    }
-
-                    if(board.getReadAuth() != (seekBarReadAuth.getProgress()+1)){
-                        body += ("readAuth="+(seekBarReadAuth.getProgress()+1)+"&");
-                    }
-
-                    if(board.getWriteAuth() != (seekBarWriteAuth.getProgress()+1)){
-                        body += ("writeAuth="+(seekBarWriteAuth.getProgress()+1)+"&");
-                    }
-
-                    if(body.length() > 0){
-                        body += "boardName="+board.getName()+"&mode=3&teamIdx="+teamIdx;
-
-                        HttpConnection httpConnection = new HttpConnection(body, "setBoard.php", httpCallBack);
-                        httpConnection.execute();
-                    } else {
-                        Toast.makeText(getContext(), "변경사항이 없습니다.", Toast.LENGTH_SHORT).show();
-                        dismiss();
-                    }
+                    String body = "teamIdx=" + teamIdx + "&boardName=" + editBoardName.getText().toString() + "&writeAuth=" + (seekBarWriteAuth.getProgress() + 1) + "&readAuth=" + (seekBarReadAuth.getProgress() + 1) + "&mode=2";
+                    HttpConnection httpConnection = new HttpConnection(body, "setBoard.php", httpCallBack);
+                    httpConnection.execute();
                 }
             }
         });
 
-        seekBarReadAuth.setProgress(board.getReadAuth() - 1);
-        seekBarWriteAuth.setProgress(board.getWriteAuth() - 1);
-        editBoardName.setText(board.getName());
-
+        btnClose = (Button)findViewById(R.id.btn_close);
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
     }
 
     HttpCallBack httpCallBack = new HttpCallBack() {
@@ -188,15 +163,12 @@ public class BoardEditDialog extends Dialog {
             try {
                 int resultCode = jsonObject.getInt("resultCode");
 
-                if(resultCode == Constant.SUCCESS){
-                    board.setName(editBoardName.getText().toString());
-                    board.setReadAuth(seekBarReadAuth.getProgress()+1);
-                    board.setWriteAuth(seekBarWriteAuth.getProgress()+1);
-
-                    Toast.makeText(getContext(), "게시판을 수정하였습니다.", Toast.LENGTH_SHORT).show();
+                if (resultCode == Constant.SUCCESS) {
+                    boardList.add(new Board(editBoardName.getText().toString(), seekBarWriteAuth.getProgress()+1, seekBarReadAuth.getProgress()+1));
+                    Toast.makeText(getContext(), "게시판 추가하였습니다.", Toast.LENGTH_SHORT).show();
 
                     dismiss();
-                } else if(resultCode == 2){
+                } else if (resultCode == 2) {
                     editBoardName.setError("이미 존재하는 게시판입니다.");
                 } else {
                 }

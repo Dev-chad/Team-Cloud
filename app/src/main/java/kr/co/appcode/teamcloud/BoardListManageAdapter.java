@@ -98,6 +98,12 @@ public class BoardListManageAdapter extends BaseAdapter {
 
                         if (itemId == R.id.edit_board) {
                             BoardEditDialog boardEditDialog = new BoardEditDialog(context, teamIdx, board);
+                            boardEditDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    notifyDataSetChanged();
+                                }
+                            });
                             boardEditDialog.show();
 
                         } else if (itemId == R.id.remove_board) {

@@ -264,6 +264,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                         }
                     }
                 } else if (mode == MODE_GET_TEAM_LIST) {
+
                     if (resultCode == Constant.SUCCESS) {
                         layoutNoTeam.setVisibility(View.GONE);
                         int totalCount = jsonObject.getInt("totalCount");

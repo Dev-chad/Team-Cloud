@@ -126,7 +126,7 @@ public class TeamListAdapter extends BaseAdapter {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         currentPos = position;
-                        String body = "nickname="+user.getNickname()+"&teamIdx="+team.getIdx();
+                        String body = "nickname=" + user.getNickname() + "&teamIdx=" + team.getIdx();
 
                         HttpConnection httpConnection = new HttpConnection(context, body, "joinTeam.php", context.httpCallBack);
                         httpConnection.execute();
@@ -170,7 +170,7 @@ public class TeamListAdapter extends BaseAdapter {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     currentPos = position;
-                                    String body = "nickname="+user.getNickname()+"&teamIdx="+team.getIdx();
+                                    String body = "nickname=" + user.getNickname() + "&teamIdx=" + team.getIdx() + "&mode=1";
 
                                     HttpConnection httpConnection = new HttpConnection(context, body, "leaveTeam.php", context.httpCallBack);
                                     httpConnection.execute();
@@ -240,7 +240,7 @@ public class TeamListAdapter extends BaseAdapter {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         currentPos = position;
-                                        String body = "nickname="+user.getNickname()+"&teamIdx="+team.getIdx();
+                                        String body = "nickname=" + user.getNickname() + "&teamIdx=" + team.getIdx() + "&mode=2";
 
                                         HttpConnection httpConnection = new HttpConnection(context, body, "leaveTeam.php", context.httpCallBack);
                                         httpConnection.execute();
