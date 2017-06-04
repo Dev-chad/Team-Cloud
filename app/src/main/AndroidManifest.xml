@@ -3,6 +3,7 @@
     package="kr.co.appcode.teamcloud">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -86,10 +87,19 @@
         <activity
             android:name=".ManageBoardActivity"
             android:label="@string/title_activity_manage_board"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RegManageActivity"
-            android:label="가입 신청 관리"/>
+            android:label="가입 신청 관리" />
+        <activity
+            android:name=".UploadActivity"
+            android:label="업로드" />
+        <activity
+            android:name=".BoardListDialog"
+            android:theme="@style/MyTheme" />
+        <activity
+            android:name=".FileBrowserActivity"
+            android:label="파일 선택"/>
     </application>
 
 </manifest>

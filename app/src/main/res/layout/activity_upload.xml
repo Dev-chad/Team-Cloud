@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#d9d9d9"
+    android:orientation="vertical"
+    android:padding="15dp"
+    tools:context="kr.co.appcode.teamcloud.UploadActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="카테고리" />
+
+        <RelativeLayout
+            android:id="@+id/layout_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/text_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="카테고리 선택"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="▼"
+                android:textSize="12sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:background="#fff"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="제목" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/edit_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1"
+            android:imeOptions="actionDone"
+            android:padding="10dp"
+            app:met_clearButton="true" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:background="#fff"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="내용" />
+
+        <EditText
+            android:id="@+id/edit_desc"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="@null"
+            android:gravity="top|start"
+            android:imeOptions="actionDone"
+            android:inputType="textMultiLine"
+            android:padding="10dp" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:background="#fff"
+        android:visibility="gone"
+        android:padding="5dp">
+
+        <TextView
+            android:id="@+id/text_const_file_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:text="첨부 파일 정보" />
+
+        <ImageView
+            android:id="@+id/image_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/met_ic_clear"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@id/text_const_file_info"/>
+
+        <ImageView
+            android:id="@+id/image_file"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/text_const_file_info"
+            android:contentDescription="file"
+            android:src="@mipmap/ic_file" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/image_file"
+            android:layout_alignTop="@id/image_file"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/image_file"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/text_file_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/image_file"
+                android:text="파일 이름" />
+
+            <TextView
+                android:id="@+id/text_file_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_file_name"
+                android:layout_marginTop="5dp"
+                android:text="5 byte" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_file_Add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="파일 첨부하기"
+        android:theme="@style/ColoredBlueButton" />
+
+</LinearLayout>

@@ -92,7 +92,7 @@ public class ManageBoardActivity extends AppCompatActivity {
                         int count = jsonObject.getInt("count");
 
                         for (int i = 0; i < count; i++) {
-                            Board board = new Board(jsonObject.getString(i + "_name"), jsonObject.getInt(i + "_writeAuth"), jsonObject.getInt(i + "_readAuth"));
+                            Board board = new Board(jsonObject.getString(i+"_idx"), jsonObject.getString(i + "_name"), jsonObject.getInt(i + "_writeAuth"), jsonObject.getInt(i + "_readAuth"));
                             adapter.add(board);
                         }
 

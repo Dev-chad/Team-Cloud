@@ -67,11 +67,14 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
     protected JSONObject doInBackground(Void... params) {
         try {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setUseCaches(false);
+
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
 
             OutputStream os = conn.getOutputStream();
             os.write(body.getBytes("UTF-8"));

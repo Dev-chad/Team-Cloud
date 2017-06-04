@@ -160,7 +160,7 @@ public class TeamPageActivity extends AppCompatActivity
                     BoardListAdapter boardListAdapter = new BoardListAdapter(TeamPageActivity.this, new ArrayList<Board>());
 
                     for (int i = 0; i < count; i++) {
-                        Board board = new Board(jsonObject.getString(i + "_name"), jsonObject.getInt(i + "_write_auth"), jsonObject.getInt(i + "_read_auth"));
+                        Board board = new Board(jsonObject.getString(i + "_idx"), jsonObject.getString(i + "_name"), jsonObject.getInt(i + "_write_auth"), jsonObject.getInt(i + "_read_auth"));
                         boardListAdapter.add(board);
                     }
 

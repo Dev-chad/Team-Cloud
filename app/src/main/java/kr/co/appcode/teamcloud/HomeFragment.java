@@ -1,6 +1,8 @@
 package kr.co.appcode.teamcloud;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,6 +69,17 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
                 profile = Profile.getCurrentProfile();
             }
         }
+
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), UploadActivity.class);
+                intent.putExtra("team", team);
+                intent.putExtra("login_user", user);
+                startActivity(intent);
+            }
+        });
 
         listLatestContent = (ListView) view.findViewById(R.id.list_latest_content);
         listLatestFile = (ListView) view.findViewById(R.id.list_latest_file);
