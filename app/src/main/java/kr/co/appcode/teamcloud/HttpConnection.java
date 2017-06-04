@@ -111,13 +111,19 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
                 wr.writeBytes("\r\n--" + boundary + "\r\n");
                 wr.writeBytes("Content-Disposition: form-data; name=\"boardIdx\"\r\n\r\n" + values.get("boardIdx"));
                 wr.writeBytes("\r\n--" + boundary + "\r\n");
-                wr.writeBytes("Content-Disposition: form-data; name=\"title\"\r\n\r\n" + values.get("title"));
-                wr.writeBytes("\r\n--" + boundary + "\r\n");
-                wr.writeBytes("Content-Disposition: form-data; name=\"description\"\r\n\r\n" + values.get("description"));
 
+                wr.writeBytes("Content-Disposition: form-data; name=\"title\"\r\n\r\n");
+                wr.write(values.get("title").getBytes("UTF-8"));
                 wr.writeBytes("\r\n--" + boundary + "\r\n");
-                wr.writeBytes("Content-Disposition: form-data; name=\"uploadFile\"; filename=\"" + values.get("fileName") + "\"\r\n");
-                wr.writeBytes("Content-Type: application/octet-stream\r\n\r\n");
+
+                wr.writeBytes("Content-Disposition: form-data; name=\"description\"\r\n\r\n");
+                wr.write(values.get("description").getBytes("UTF-8"));
+                wr.writeBytes("\r\n--" + boundary + "\r\n");
+
+//                wr.writeBytes("Content-Disposition: form-data; name=\"uploadFile\"; filename=\"" + values.get("fileName") + "\"\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"uploadFile\"; filename=\"");
+                wr.write(values.get("fileName").getBytes("UTF-8"));
+                wr.writeBytes("\"\r\nContent-Type: application/octet-stream\r\n\r\n");
 
                 FileInputStream fileInputStream = new FileInputStream(values.get("fileUri"));
                 int bytesAvailable = fileInputStream.available();

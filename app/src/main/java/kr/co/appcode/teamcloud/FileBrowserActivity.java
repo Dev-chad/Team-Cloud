@@ -117,7 +117,7 @@ public class FileBrowserActivity extends AppCompatActivity {
             } else {
                 SimpleDateFormat format = new SimpleDateFormat("YY.mm.dd hh:mm", Locale.KOREA);
                 Date date = new Date(file.lastModified());
-                fileList.add(new UploadFile(file.getName(), file.toURI().toString(), getSize(file.length()), format.format(date)));
+                fileList.add(new UploadFile(file.getName(), file.getAbsolutePath(), getSize(file.length()), format.format(date)));
             }
         }
 
@@ -142,7 +142,7 @@ public class FileBrowserActivity extends AppCompatActivity {
     }
 
     private String getSize(long size) {
-        double dSize = Double.parseDouble("9223372036854775807");
+        double dSize = Double.parseDouble(String.valueOf(size));
         String unit;
         int count = 0;
 
