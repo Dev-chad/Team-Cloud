@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,7 +28,10 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 public class UploadActivity extends AppCompatActivity {
+    private static final String TAG = "UploadActivity";
 
     private RelativeLayout layoutCategory;
     private RelativeLayout layoutFile;
@@ -45,6 +49,7 @@ public class UploadActivity extends AppCompatActivity {
     private Board board;
     private User user;
     private Team team;
+    private UploadFile uploadFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,7 +194,6 @@ public class UploadActivity extends AppCompatActivity {
                             });
 
                             ad.show();
-
                         }
                     }
                 } else {
@@ -213,38 +217,63 @@ public class UploadActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (editTitle.length() > 0 || editDesc.length() > 0) {
-                    AlertDialog.Builder checkDialog = new AlertDialog.Builder(this);
+        int id = item.getItemId();
 
-                    checkDialog
-                            .setTitle("업로드에서 나가기")
-                            .setMessage("게시물 작성을 취소하고 나가시겠습니까?");
+        if (id == android.R.id.home) {
+            if (editTitle.length() > 0 || editDesc.length() > 0) {
+                AlertDialog.Builder checkDialog = new AlertDialog.Builder(this);
 
-                    checkDialog.setPositiveButton("나가기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                            dialog.dismiss();
-                        }
-                    });
+                checkDialog
+                        .setTitle("업로드에서 나가기")
+                        .setMessage("게시물 작성을 취소하고 나가시겠습니까?");
 
-                    checkDialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+                checkDialog.setPositiveButton("나가기", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                        dialog.dismiss();
+                    }
+                });
 
-                    checkDialog.show();
-                } else {
-                    finish();
+                checkDialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                checkDialog.show();
+            } else {
+                finish();
+            }
+            return true;
+        } else if (id == R.id.menu_upload) {
+            if (textCategory.getText().toString().equals("게시판 선택")) {
+
+            } else if (editTitle.length() == 0) {
+
+            } else if (editDesc.length() == 0) {
+
+            } else {
+                HashMap<String, String> values = new HashMap<>();
+                values.put("teamIdx", team.getIdx());
+                values.put("nickname", user.getNickname());
+                values.put("boardIdx", board.getIdx());
+                values.put("title", editTitle.getText().toString());
+                values.put("description", editDesc.getText().toString());
+
+                if(uploadFile != null){
+                    values.put("fileName", uploadFile.getFileName());
+                    values.put("fileUri", uploadFile.getFileUri());
                 }
-                return true;
-            case R.menu.menu_upload:
-                return true;
+                HttpConnection httpConnection = new HttpConnection(values, "upload.php", httpCallBack);
+                httpConnection.setUploadMode(true);
+                httpConnection.execute();
+            }
+
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -274,10 +303,11 @@ public class UploadActivity extends AppCompatActivity {
                 board = data.getParcelableExtra("board");
                 textCategory.setText(board.getName());
             } else {
-                UploadFile file = data.getParcelableExtra("selectedFile");
+                uploadFile = data.getParcelableExtra("selectedFile");
                 layoutFile.setVisibility(View.VISIBLE);
-                textFileName.setText(file.getFileName());
-                textFileSize.setText(file.getFileSize());
+                textFileName.setText(uploadFile.getFileName());
+                textFileSize.setText(uploadFile.getFileSize());
+                Toast.makeText(this, uploadFile.getFileUri(), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -289,8 +319,13 @@ public class UploadActivity extends AppCompatActivity {
                 int resultCode = jsonObject.getInt("resultCode");
 
                 if (resultCode == Constant.SUCCESS) {
-
+                    Toast.makeText(UploadActivity.this, "게시물 업로드를 완료하였습니다.", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(UploadActivity.this, "게시물 업로드 실패!!", Toast.LENGTH_SHORT).show();
                 }
+
+                Log.d(TAG, jsonObject.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }

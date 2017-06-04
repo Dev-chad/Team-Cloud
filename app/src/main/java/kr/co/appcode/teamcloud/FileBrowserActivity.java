@@ -108,6 +108,7 @@ public class FileBrowserActivity extends AppCompatActivity {
             if (file.isDirectory()) {
                 File[] list = file.listFiles();
                 if(list == null){
+
                     dirList.add(new UploadFile(file.getName(), file.getAbsolutePath(), 0));
                     Toast.makeText(this, "null", Toast.LENGTH_SHORT).show();
                 } else {
@@ -116,7 +117,7 @@ public class FileBrowserActivity extends AppCompatActivity {
             } else {
                 SimpleDateFormat format = new SimpleDateFormat("YY.mm.dd hh:mm", Locale.KOREA);
                 Date date = new Date(file.lastModified());
-                fileList.add(new UploadFile(file.getName(), file.getAbsolutePath(), getSize(file.length()), format.format(date)));
+                fileList.add(new UploadFile(file.getName(), file.toURI().toString(), getSize(file.length()), format.format(date)));
             }
         }
 
