@@ -77,6 +77,7 @@ public class UploadFileListAdapter extends BaseAdapter {
         holder.textFileName.setText(file.getFileName());
 
         if(file.getFileType() == UploadFile.TYPE_DIRECTORY){
+            holder.textInnerCount.setVisibility(View.VISIBLE);
             holder.imageFile.setImageResource(R.mipmap.ic_directory);
             holder.layoutFileInfo.setVisibility(View.GONE);
             holder.textInnerCount.setText(String.valueOf(file.getInnerCount()+"개"));
@@ -85,6 +86,7 @@ public class UploadFileListAdapter extends BaseAdapter {
             holder.layoutFileInfo.setVisibility(View.VISIBLE);
             holder.textFileDate.setText(file.getFileDate());
             holder.textFileSize.setText(file.getFileSize());
+            holder.textInnerCount.setVisibility(View.GONE);
         }
 
         return convertView;

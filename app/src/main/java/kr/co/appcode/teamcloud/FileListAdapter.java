@@ -86,36 +86,29 @@ public class FileListAdapter extends BaseAdapter {
         TextView textDate;
     }
 
-    public String getCapacity(double fileSize) {
-        String unit = "";
-        double result = 0;
+    public String getCapacity(long fileSize) {
+        double dSize = Double.parseDouble(String.valueOf(fileSize));
+        String unit;
+        int count = 0;
 
-        if (fileSize < 0.000977) {
-            result = fileSize * 1048576;
+        while (dSize >= 1024 && count < 5) {
+            dSize /= 1024;
+            count++;
+        }
+
+        if (count == 0) {
             unit = "B";
-
-        } else if (fileSize < 1) {
-            result = fileSize * 1024;
+        } else if (count == 1) {
             unit = "KB";
-
-        } else if (fileSize < 1024) {
-            result = fileSize;
+        } else if (count == 2) {
             unit = "MB";
-
-        } else if (fileSize < 1048576) {
-            result = fileSize / 1024;
+        } else if (count == 3) {
             unit = "GB";
-
-        } else if (fileSize < 1073700000) {
-            result = fileSize / 1048576;
+        } else {
             unit = "TB";
         }
 
-        if (String.format(Locale.KOREAN, "%.1f", result).contains(".0")) {
-            return String.format(Locale.KOREAN, "%d%s", Math.round(result), unit);
-        } else {
-            return String.format(Locale.KOREAN, "%.1f%s", result, unit);
-        }
+        return String.format(Locale.KOREA, "%.2f %s", dSize, unit);
     }
 
 }

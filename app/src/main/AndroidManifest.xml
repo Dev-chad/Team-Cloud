@@ -99,7 +99,8 @@
             android:theme="@style/MyTheme" />
         <activity
             android:name=".FileBrowserActivity"
-            android:label="파일 선택"/>
+            android:label="파일 선택" />
+        <activity android:name=".ContentDetailActivity"></activity>
     </application>
 
 </manifest>

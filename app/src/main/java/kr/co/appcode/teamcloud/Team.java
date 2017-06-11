@@ -14,7 +14,7 @@ public class Team implements Parcelable {
     private String idx;
     private String name;
     private String master;
-    private double usedCapacity;
+    private long usedCapacity;
     private int maxCapacity;
     private boolean isPublic;
     private boolean isAutoJoin;
@@ -27,7 +27,7 @@ public class Team implements Parcelable {
     public Team() {
     }
 
-    public Team(String idx, String name, String master, double usedCapacity, int maxCapacity, boolean isPublic, boolean isAutoJoin, boolean isAdminManageMember, boolean isAdminManageBoard, boolean isAdminManageContents, String teamMarkUrl) {
+    public Team(String idx, String name, String master, long usedCapacity, int maxCapacity, boolean isPublic, boolean isAutoJoin, boolean isAdminManageMember, boolean isAdminManageBoard, boolean isAdminManageContents, String teamMarkUrl) {
         this.idx = idx;
         this.name = name;
         this.master = master;
@@ -41,7 +41,7 @@ public class Team implements Parcelable {
         this.teamMarkUrl = teamMarkUrl;
     }
 
-    public Team(String idx, String name, String master, double usedCapacity, int maxCapacity, int isPublic, int isAutoJoin, int isAdminManageMember, int isAdminManageBoard, int isAdminManageContents, String teamMarkUrl) {
+    public Team(String idx, String name, String master, long usedCapacity, int maxCapacity, int isPublic, int isAutoJoin, int isAdminManageMember, int isAdminManageBoard, int isAdminManageContents, String teamMarkUrl) {
         this.idx = idx;
         this.name = name;
         this.master = master;
@@ -76,7 +76,7 @@ public class Team implements Parcelable {
             idx = jsonObject.getString("idx");
             name = jsonObject.getString("name");
             master = jsonObject.getString("master");
-            usedCapacity = jsonObject.getDouble("usedCapacity");
+            usedCapacity = jsonObject.getLong("usedCapacity");
             maxCapacity = jsonObject.getInt("maxCapacity");
             if (jsonObject.getInt("isPublic") == 1) {
                 isPublic = true;
@@ -108,7 +108,7 @@ public class Team implements Parcelable {
         idx = in.readString();
         name = in.readString();
         master = in.readString();
-        usedCapacity = in.readDouble();
+        usedCapacity = in.readLong();
         maxCapacity = in.readInt();
         isPublic = in.readByte() != 0;
         isAutoJoin = in.readByte() != 0;
@@ -176,11 +176,11 @@ public class Team implements Parcelable {
         this.master = master;
     }
 
-    public double getUsedCapacity() {
+    public long getUsedCapacity() {
         return usedCapacity;
     }
 
-    public void setUsedCapacity(double usedCapacity) {
+    public void setUsedCapacity(long usedCapacity) {
         this.usedCapacity = usedCapacity;
     }
 
@@ -245,7 +245,7 @@ public class Team implements Parcelable {
             idx = jsonObject.getString("idx");
             name = jsonObject.getString("name");
             master = jsonObject.getString("master");
-            usedCapacity = jsonObject.getDouble("usedCapacity");
+            usedCapacity = jsonObject.getLong("usedCapacity");
             maxCapacity = jsonObject.getInt("maxCapacity");
             if (jsonObject.getInt("isPublic") == 1) {
                 isPublic = true;

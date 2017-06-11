@@ -146,13 +146,13 @@ public class FileBrowserActivity extends AppCompatActivity {
         String unit;
         int count = 0;
 
-        while (dSize > 1024 && count < 5) {
+        while (dSize >= 1024 && count < 5) {
             dSize /= 1024;
             count++;
         }
 
         if (count == 0) {
-            unit = "Byte";
+            unit = "B";
         } else if (count == 1) {
             unit = "KB";
         } else if (count == 2) {
@@ -172,6 +172,5 @@ public class FileBrowserActivity extends AppCompatActivity {
         public int compare(UploadFile o1, UploadFile o2) {
             return o1.getFileName().toUpperCase().compareTo(o2.getFileName().toUpperCase());
         }
-
     }
 }

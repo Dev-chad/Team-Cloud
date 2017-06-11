@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 public class UploadActivity extends AppCompatActivity {
     private static final String TAG = "UploadActivity";
@@ -51,6 +53,10 @@ public class UploadActivity extends AppCompatActivity {
     private Team team;
     private UploadFile uploadFile;
 
+    private Content originContent;
+    private boolean isEdit;
+    private String originBoardName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +67,11 @@ public class UploadActivity extends AppCompatActivity {
         team = getIntent().getParcelableExtra("team");
         user = getIntent().getParcelableExtra("login_user");
         board = getIntent().getParcelableExtra("board");
+        originContent = getIntent().getParcelableExtra("content");
+        if(originContent != null){
+            isEdit = true;
+            originBoardName = board.getName();
+        }
 
         layoutCategory = (RelativeLayout) findViewById(R.id.layout_category);
         layoutCategory.setOnClickListener(new View.OnClickListener() {
@@ -98,6 +109,7 @@ public class UploadActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         layoutFile.setVisibility(View.GONE);
+                        uploadFile = null;
                         dialog.dismiss();
                     }
                 });
@@ -207,6 +219,18 @@ public class UploadActivity extends AppCompatActivity {
         if (board != null) {
             textCategory.setText(board.getName());
         }
+
+        if(isEdit){
+            editTitle.setText(originContent.getTitle());
+            editDesc.setText(originContent.getDesc());
+
+            if(originContent.getFileName() != null){
+                layoutFile.setVisibility(View.VISIBLE);
+                textFileName.setText(originContent.getFileName());
+                textFileSize.setText(getSize(originContent.getFileSize()));
+                uploadFile = new UploadFile(originContent.getFileName(), originContent.getFileUrl(), getSize(originContent.getFileSize()), originContent.getWriteDate());
+            }
+        }
     }
 
     @Override
@@ -249,26 +273,69 @@ public class UploadActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.menu_upload) {
             if (textCategory.getText().toString().equals("게시판 선택")) {
-
+                Snackbar.make(textCategory, "게시판을 선택해주세요", Snackbar.LENGTH_SHORT).show();
             } else if (editTitle.length() == 0) {
-
+                Snackbar.make(textCategory, "제목을 입력해주세요", Snackbar.LENGTH_SHORT).show();
+            } else if(editTitle.getText().toString().split(" ").length == 0){
+                Snackbar.make(textCategory, "제목이 공백입니다.", Snackbar.LENGTH_SHORT).show();
             } else if (editDesc.length() == 0) {
+                Snackbar.make(textCategory, "내용을 입력해주세요", Snackbar.LENGTH_SHORT).show();
+            } else if(editDesc.getText().toString().split(" ").length == 0){
+                Snackbar.make(textCategory, "내용이 공백입니다.", Snackbar.LENGTH_SHORT).show();
+            }else {
+                if(isEdit){
+                    if(uploadFile != null && !originContent.getFileName().equals(uploadFile.getFileName()) && !uploadFile.getFileSize().equals(getSize(originContent.getFileSize()))){
+                        HashMap<String, String> values = new HashMap<>();
+                        values.put("teamIdx", team.getIdx());
+                        values.put("nickname", user.getNickname());
+                        values.put("boardIdx", board.getIdx());
+                        values.put("title", editTitle.getText().toString());
+                        values.put("description", editDesc.getText().toString());
+                        values.put("fileName", uploadFile.getFileName());
+                        values.put("fileUri", uploadFile.getFileUri());
+                        values.put("mode", "2");
 
-            } else {
-                HashMap<String, String> values = new HashMap<>();
-                values.put("teamIdx", team.getIdx());
-                values.put("nickname", user.getNickname());
-                values.put("boardIdx", board.getIdx());
-                values.put("title", editTitle.getText().toString());
-                values.put("description", editDesc.getText().toString());
+                        HttpConnection httpConnection = new HttpConnection(values, "upload.php", httpCallBack);
+                        httpConnection.setUploadMode(true);
+                        httpConnection.execute();
+                    } else {
+                        String body = "teamIdx="+team.getIdx()+"&nickname="+user.getNickname()+"&boardIdx="+board.getIdx()+"&title="+editTitle.getText().toString()+"&description="+editDesc.getText().toString();
+                        HttpConnection httpConnection = new HttpConnection(body, "upload.php", httpCallBack);
+                        httpConnection.execute();
+                    }
 
-                if(uploadFile != null){
-                    values.put("fileName", uploadFile.getFileName());
-                    values.put("fileUri", uploadFile.getFileUri());
+                    if(!originBoardName.equals(board.getName())){
+
+                    } else if(!editTitle.getText().toString().equals(originContent.getTitle())){
+
+                    } else if(!editDesc.getText().toString().equals(originContent.getDesc())){
+
+                    } else {
+
+                    }
+                } else {
+                    if(uploadFile != null){
+
+                        HashMap<String, String> values = new HashMap<>();
+                        values.put("teamIdx", team.getIdx());
+                        values.put("nickname", user.getNickname());
+                        values.put("boardIdx", board.getIdx());
+                        values.put("title", editTitle.getText().toString());
+                        values.put("description", editDesc.getText().toString());
+                        values.put("fileName", uploadFile.getFileName());
+                        values.put("fileUri", uploadFile.getFileUri());
+                        values.put("mode", "1");
+
+                        HttpConnection httpConnection = new HttpConnection(values, "upload.php", httpCallBack);
+                        httpConnection.setUploadMode(true);
+                        httpConnection.execute();
+
+                    } else {
+                        String body = "teamIdx="+team.getIdx()+"&nickname="+user.getNickname()+"&boardIdx="+board.getIdx()+"&title="+editTitle.getText().toString()+"&description="+editDesc.getText().toString();
+                        HttpConnection httpConnection = new HttpConnection(body, "upload.php", httpCallBack);
+                        httpConnection.execute();
+                    }
                 }
-                HttpConnection httpConnection = new HttpConnection(values, "upload.php", httpCallBack);
-                httpConnection.setUploadMode(true);
-                httpConnection.execute();
             }
 
             return true;
@@ -310,6 +377,31 @@ public class UploadActivity extends AppCompatActivity {
                 Toast.makeText(this, uploadFile.getFileUri(), Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private String getSize(long size) {
+        double dSize = Double.parseDouble(String.valueOf(size));
+        String unit;
+        int count = 0;
+
+        while (dSize >= 1024 && count < 5) {
+            dSize /= 1024;
+            count++;
+        }
+
+        if (count == 0) {
+            unit = "B";
+        } else if (count == 1) {
+            unit = "KB";
+        } else if (count == 2) {
+            unit = "MB";
+        } else if (count == 3) {
+            unit = "GB";
+        } else {
+            unit = "TB";
+        }
+
+        return String.format(Locale.KOREA, "%.2f %s", dSize, unit);
     }
 
     HttpCallBack httpCallBack = new HttpCallBack() {

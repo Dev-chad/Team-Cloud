@@ -16,11 +16,11 @@ public class Content implements Parcelable{
     private String fileUrl;
     private String fileType;
     private String writeDate;
-    private double fileSize;
+    private long fileSize;
     private int readAuth;
     private int ver;
 
-    public Content(String idx, String writer, String title, String desc, String fileName, String fileUrl, String fileType, String writeDate, double fileSize, int readAuth, int ver) {
+    public Content(String idx, String writer, String title, String desc, String fileName, String fileUrl, String fileType, String writeDate, long fileSize, int readAuth, int ver) {
         this.idx = idx;
         this.writer = writer;
         this.title = title;
@@ -53,7 +53,7 @@ public class Content implements Parcelable{
         fileUrl = in.readString();
         fileType = in.readString();
         writeDate = in.readString();
-        fileSize = in.readDouble();
+        fileSize = in.readLong();
         readAuth = in.readInt();
         ver = in.readInt();
     }
@@ -68,7 +68,7 @@ public class Content implements Parcelable{
         dest.writeString(fileUrl);
         dest.writeString(fileType);
         dest.writeString(writeDate);
-        dest.writeDouble(fileSize);
+        dest.writeLong(fileSize);
         dest.writeInt(readAuth);
         dest.writeInt(ver);
     }
@@ -154,11 +154,11 @@ public class Content implements Parcelable{
         this.writeDate = writeDate;
     }
 
-    public double getFileSize() {
+    public long getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(double fileSize) {
+    public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
     }
 

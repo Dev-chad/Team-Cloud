@@ -3,6 +3,7 @@ package kr.co.appcode.teamcloud;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -68,6 +69,15 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
         }
     }
 
+    public HttpConnection(String url, HttpCallBack httpCallBack){
+        try {
+            this.url = new URL(SERVER_URL + url);
+            this.httpCallBack = httpCallBack;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setUploadMode(boolean isUploadMode) {
         this.isUploadMode = isUploadMode;
     }
@@ -93,6 +103,8 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setUseCaches(false);
+            conn.setConnectTimeout(1000);
+            conn.setReadTimeout(1000);
 
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Accept", "application/json");
@@ -144,6 +156,8 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
 
                 wr.writeBytes("\r\n--" + boundary + "--\r\n");
                 wr.flush();
+
+                Log.d(TAG, "upload");
             } else {
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
@@ -152,6 +166,7 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
                 os.flush();
                 os.close();
             }
+
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
             StringBuilder sb = new StringBuilder();
@@ -164,6 +179,7 @@ public class HttpConnection extends AsyncTask<Void, Void, JSONObject> {
             return new JSONObject(sb.toString());
         } catch (Exception e) {
             e.printStackTrace();
+            Log.d(TAG, "exception");
         }
 
         return null;

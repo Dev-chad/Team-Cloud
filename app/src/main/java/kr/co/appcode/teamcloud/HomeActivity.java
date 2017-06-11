@@ -272,7 +272,7 @@ public class HomeActivity extends AppCompatActivity implements AdapterView.OnIte
                         ArrayList<Team> teamList = new ArrayList<>();
 
                         for (int i = 0; i < totalCount; i++) {
-                            Team team = new Team(jsonObject.getString(i + "_idx"), jsonObject.getString(i + "_name"), jsonObject.getString(i + "_master"), jsonObject.getDouble(i + "_usedCapacity"), jsonObject.getInt(i + "_maxCapacity"), jsonObject.getInt(i + "_isPublic"), jsonObject.getInt(i + "_isAutoJoin"), jsonObject.getInt(i + "_isAdminManageMember"), jsonObject.getInt(i + "_isAdminManageBoard"), jsonObject.getInt(i + "_isAdminManageContents"), jsonObject.getString(i + "_teamMarkUrl"));
+                            Team team = new Team(jsonObject.getString(i + "_idx"), jsonObject.getString(i + "_name"), jsonObject.getString(i + "_master"), jsonObject.getLong(i + "_usedCapacity"), jsonObject.getInt(i + "_maxCapacity"), jsonObject.getInt(i + "_isPublic"), jsonObject.getInt(i + "_isAutoJoin"), jsonObject.getInt(i + "_isAdminManageMember"), jsonObject.getInt(i + "_isAdminManageBoard"), jsonObject.getInt(i + "_isAdminManageContents"), jsonObject.getString(i + "_teamMarkUrl"));
                             teamList.add(team);
                         }
 

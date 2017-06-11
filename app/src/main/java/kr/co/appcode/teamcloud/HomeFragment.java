@@ -19,6 +19,9 @@ import com.facebook.Profile;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
+
+import static java.lang.String.format;
 
 public class HomeFragment extends android.app.Fragment implements View.OnClickListener {
     private static final String TAG = "HomeFragment";
@@ -210,46 +213,41 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
         gridView.requestLayout();
     }
 
-    public void setCapacity(double min, int max) {
-        String unit = "";
-        double result = 0;
+    public void setCapacity(long min, int max) {
 
-        max *= 1024;
+        double dSize = Double.parseDouble(String.valueOf(min));
+        String unit;
+        int count = 0;
 
-        if (min < 0.000977) {
-            result = min * 1048576;
+        while (dSize >= 1024 && count < 5) {
+            dSize /= 1024;
+            count++;
+        }
+
+        if (count == 0) {
             unit = "B";
-
-        } else if (min < 1) {
-            result = min * 1024;
+        } else if (count == 1) {
             unit = "KB";
-
-        } else if (min < 1024) {
-            result = min;
+        } else if (count == 2) {
             unit = "MB";
-
-        } else if (min < 1048576) {
-            result = min / 1024;
+        } else if (count == 3) {
             unit = "GB";
-
-        } else if (min < 1073700000) {
-            result = min / 1048576;
+        } else {
             unit = "TB";
         }
 
-        while (min > 0 && min < 1024) {
-            min *= 10;
-            max *= 10;
-        }
-
         progressBar.setMax(max);
-        progressBar.setProgress((int) min);
+        progressBar.setProgress((int) (min/1073700000));
 
-        if (String.format("%.1f", result).contains(".0")) {
-            textUsedCapacity.setText(String.format("%d%s", Math.round(result), unit));
-        } else {
-            textUsedCapacity.setText(String.format("%.1f%s", result, unit));
+        String strSize = format(Locale.KOREA, "%.2f %s", dSize, unit);
+
+        if(strSize.contains(".00")){
+            strSize = String.format(Locale.KOREA, "%d %s", (int)dSize, unit);
+        } else if(strSize.charAt(strSize.length()-1) == '0'){
+            strSize = String.format(Locale.KOREA, "%.1f %s", dSize, unit);
         }
+
+        textUsedCapacity.setText(strSize);
     }
 
     public HttpCallBack httpCallBack = new HttpCallBack() {
@@ -260,7 +258,7 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
 
                 if (resultCode == Constant.SUCCESS) {
                     team.setMaxCapacity(jsonObject.getInt("maxCapacity"));
-                    team.setUsedCapacity(jsonObject.getDouble("usedCapacity"));
+                    team.setUsedCapacity(jsonObject.getLong("usedCapacity"));
                     team.setName(jsonObject.getString("teamName"));
 
                     setCapacity(team.getUsedCapacity(), team.getMaxCapacity());
@@ -285,7 +283,7 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
                                 content.setFileName(jsonObject.getString(i + "_fileName"));
                                 content.setFileUrl(jsonObject.getString(i + "_fileUrl"));
                                 content.setFileType(jsonObject.getString(i + "_fileType"));
-                                content.setFileSize(jsonObject.getDouble(i + "_fileSize"));
+                                content.setFileSize(jsonObject.getLong(i + "_fileSize"));
                                 fileGridAdapter.add(content);
 
                             }
@@ -307,7 +305,7 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
                         } else {
                             if (textNoLatestFile.getVisibility() == View.GONE) {
                                 textNoLatestFile.setVisibility(View.VISIBLE);
-                                if(fileListAdapter.getCount() > 0){
+                                if (fileListAdapter.getCount() > 0) {
                                     fileListAdapter.getFileList().clear();
                                 }
                             }
@@ -315,14 +313,14 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
                     } else {
                         if (textNoLatestContents.getVisibility() == View.GONE) {
                             textNoLatestContents.setVisibility(View.VISIBLE);
-                            if(contentListAdapter.getCount() > 0){
+                            if (contentListAdapter.getCount() > 0) {
                                 contentListAdapter.getContentList().clear();
                             }
                         }
 
                         if (textNoLatestFile.getVisibility() == View.GONE) {
                             textNoLatestFile.setVisibility(View.VISIBLE);
-                            if(fileListAdapter.getCount() > 0){
+                            if (fileListAdapter.getCount() > 0) {
                                 fileListAdapter.getFileList().clear();
                             }
                         }

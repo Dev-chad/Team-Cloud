@@ -1,5 +1,6 @@
 package kr.co.appcode.teamcloud;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -42,6 +44,8 @@ public class TeamPageActivity extends AppCompatActivity
     private Button btnSetting;
 
     private Team team;
+
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,16 +87,45 @@ public class TeamPageActivity extends AppCompatActivity
         });
 
         listBoard = (ListView) findViewById(R.id.list_board);
+        listBoard.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Board board = (Board)listBoard.getAdapter().getItem(position);
+
+                BoardFragment boardFragment = new BoardFragment();
+
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("login_user", user);
+                bundle.putParcelable("team", team);
+                bundle.putParcelable("board", board);
+
+                boardFragment.setArguments(bundle);
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frame_content, boardFragment)
+                        .commit();
+
+                currentFragment = boardFragment;
+
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        String body = "teamIdx=" + team.getIdx() + "&nickname=" + user.getNickname();
+        if(currentFragment == null){
+            String body = "teamIdx=" + team.getIdx() + "&nickname=" + user.getNickname();
 
-        HttpConnection httpConnection = new HttpConnection(this, body, "getBoard.php", httpCallBack);
-        httpConnection.execute();
+            HttpConnection httpConnection = new HttpConnection(this, body, "getBoard.php", httpCallBack);
+            httpConnection.execute();
+        } else {
+            currentFragment.onResume();
+        }
+
     }
 
     @Override
@@ -197,6 +230,8 @@ public class TeamPageActivity extends AppCompatActivity
                             .beginTransaction()
                             .add(R.id.frame_content, homeFragment)
                             .commit();
+
+                    currentFragment = homeFragment;
                 }
                 Log.d(TAG, jsonObject.toString());
             } catch (JSONException e) {

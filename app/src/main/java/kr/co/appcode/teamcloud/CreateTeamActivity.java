@@ -242,6 +242,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 int mode = jsonObject.getInt("mode");
                 int resultCode = jsonObject.getInt("resultCode");
 
+                Log.d(TAG, jsonObject.toString());
                 if (mode == MODE_CHECK_TEAM_NAME) {
                     if (resultCode == Constant.SUCCESS) {
                         isCheckTeamName = true;
