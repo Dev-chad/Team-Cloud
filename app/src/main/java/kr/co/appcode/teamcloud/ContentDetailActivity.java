@@ -17,6 +17,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,12 +67,42 @@ public class ContentDetailActivity extends AppCompatActivity {
         user = intent.getParcelableExtra("login_user");
         team = intent.getParcelableExtra("team");
 
-        if(content.getWriter().equals(user.getNickname())){
-            layoutMyContent = (RelativeLayout)findViewById(R.id.layout_my_content);
+        if (content.getWriter().equals(user.getNickname())) {
+            layoutMyContent = (RelativeLayout) findViewById(R.id.layout_my_content);
             layoutMyContent.setVisibility(View.VISIBLE);
 
-            imageDelete = (ImageView)findViewById(R.id.image_delete);
-            imageEdit = (ImageView)findViewById(R.id.image_edit);
+            imageDelete = (ImageView) findViewById(R.id.image_delete);
+            imageDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder checkDialog = new AlertDialog.Builder(ContentDetailActivity.this);
+
+                    checkDialog
+                            .setTitle("게시물 수정")
+                            .setMessage("해당 게시물을 삭제하시겠습니까?");
+
+                    checkDialog.setPositiveButton("삭제하기", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            HttpConnection httpConnection = new HttpConnection("teamIdx=" + team.getIdx() + "&contentIdx=" + content.getIdx(), "deleteContent.php", httpCallBack);
+                            httpConnection.execute();
+
+                            dialog.dismiss();
+                        }
+                    });
+
+                    checkDialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    checkDialog.show();
+                }
+            });
+
+            imageEdit = (ImageView) findViewById(R.id.image_edit);
             imageEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -106,40 +139,40 @@ public class ContentDetailActivity extends AppCompatActivity {
             });
         }
 
-        if(content.getFileName() != null){
-            layoutFile = (RelativeLayout)findViewById(R.id.layout_file);
+        if (content.getFileName() != null) {
+            layoutFile = (RelativeLayout) findViewById(R.id.layout_file);
             layoutFile.setVisibility(View.VISIBLE);
 
-            imageFile = (ImageView)findViewById(R.id.image_file);
-            imageDownload = (ImageView)findViewById(R.id.image_download);
+            imageFile = (ImageView) findViewById(R.id.image_file);
+            imageDownload = (ImageView) findViewById(R.id.image_download);
             imageDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     AsyncFileDownload asyncFileDownload = new AsyncFileDownload(ContentDetailActivity.this);
-                    asyncFileDownload.execute("http://appcode.cafe24.com/"+content.getFileUrl());
+                    asyncFileDownload.execute("http://appcode.cafe24.com/" + content.getFileUrl());
                 }
             });
 
-            textFileName = (TextView)findViewById(R.id.text_file_name);
+            textFileName = (TextView) findViewById(R.id.text_file_name);
             textFileName.setText(content.getFileName());
 
-            textFileSize = (TextView)findViewById(R.id.text_file_size);
+            textFileSize = (TextView) findViewById(R.id.text_file_size);
             textFileSize.setText(getSize(content.getFileSize()));
         } else {
-            textNoFile = (TextView)findViewById(R.id.text_no_file);
+            textNoFile = (TextView) findViewById(R.id.text_no_file);
             textNoFile.setVisibility(View.VISIBLE);
         }
 
-        textTitle = (TextView)findViewById(R.id.text_title);
+        textTitle = (TextView) findViewById(R.id.text_title);
         textTitle.setText(content.getTitle());
 
-        textWriter = (TextView)findViewById(R.id.text_writer);
+        textWriter = (TextView) findViewById(R.id.text_writer);
         textWriter.setText(content.getWriter());
 
-        textDate = (TextView)findViewById(R.id.text_date);
+        textDate = (TextView) findViewById(R.id.text_date);
         textDate.setText(content.getWriteDate());
 
-        textDesc = (TextView)findViewById(R.id.text_desc);
+        textDesc = (TextView) findViewById(R.id.text_desc);
         textDesc.setText(content.getDesc());
     }
 
@@ -174,20 +207,20 @@ public class ContentDetailActivity extends AppCompatActivity {
         return String.format(Locale.KOREA, "%.2f %s", dSize, unit);
     }
 
-    class AsyncFileDownload extends AsyncTask<String, String, String>{
+    class AsyncFileDownload extends AsyncTask<String, String, String> {
 
         private ProgressDialog mDlg;
         private Context mContext;
 
-        public AsyncFileDownload(Context context){
+        public AsyncFileDownload(Context context) {
             mContext = context;
         }
 
         @Override
         protected void onPreExecute() {
-            File file = new File(Environment.getExternalStorageDirectory().toString()+"/TeamCloud/"+team.getName());
+            File file = new File(Environment.getExternalStorageDirectory().toString() + "/TeamCloud/" + team.getName());
 
-            if(!file.exists()){
+            if (!file.exists()) {
                 file.mkdirs();
             }
 
@@ -217,7 +250,7 @@ public class ContentDetailActivity extends AppCompatActivity {
                 publishProgress("max", String.valueOf(lengthOfFile));
 
                 InputStream input = new BufferedInputStream(url.openStream());
-                OutputStream output = new FileOutputStream(Environment.getExternalStorageDirectory().toString()+"/TeamCloud/"+team.getName()+"/"+content.getFileName());
+                OutputStream output = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/TeamCloud/" + team.getName() + "/" + content.getFileName());
                 Log.d(TAG, output.toString());
                 byte data[] = new byte[1024];
 
@@ -225,7 +258,7 @@ public class ContentDetailActivity extends AppCompatActivity {
 
                 while ((count = input.read(data)) != -1) {
                     total += count;
-                    publishProgress("progress", "" + (int)total, total+"/"+lengthOfFile);
+                    publishProgress("progress", "" + (int) total, total + "/" + lengthOfFile);
                     output.write(data, 0, count);
                 }
 
@@ -263,4 +296,23 @@ public class ContentDetailActivity extends AppCompatActivity {
             Toast.makeText(mContext, "다운로드가 완료되었습니다.", Toast.LENGTH_SHORT).show();
         }
     }
+
+    HttpCallBack httpCallBack = new HttpCallBack() {
+        @Override
+        public void CallBackResult(JSONObject jsonObject) {
+            try {
+                int resultCode = jsonObject.getInt("resultCode");
+
+                if (resultCode == Constant.SUCCESS) {
+                    Toast.makeText(ContentDetailActivity.this, "게시물 삭제를 완료하였습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ContentDetailActivity.this, "게시물 삭제를 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+    };
 }
