@@ -9,6 +9,7 @@ import android.os.Parcelable;
 
 public class Content implements Parcelable{
     private String idx;
+    private String boardName;
     private String writer;
     private String title;
     private String desc;
@@ -20,8 +21,9 @@ public class Content implements Parcelable{
     private int readAuth;
     private int ver;
 
-    public Content(String idx, String writer, String title, String desc, String fileName, String fileUrl, String fileType, String writeDate, long fileSize, int readAuth, int ver) {
+    public Content(String idx, String boardName, String writer, String title, String desc, String fileName, String fileUrl, String fileType, String writeDate, long fileSize, int readAuth, int ver) {
         this.idx = idx;
+        this.boardName = boardName;
         this.writer = writer;
         this.title = title;
         this.desc = desc;
@@ -34,8 +36,9 @@ public class Content implements Parcelable{
         this.ver = ver;
     }
 
-    public Content(String idx, String writer, String title, String desc, String writeDate, int readAuth, int ver) {
+    public Content(String idx, String boardName, String writer, String title, String desc, String writeDate, int readAuth, int ver) {
         this.idx = idx;
+        this.boardName = boardName;
         this.writer = writer;
         this.title = title;
         this.desc = desc;
@@ -46,6 +49,7 @@ public class Content implements Parcelable{
 
     protected Content(Parcel in) {
         idx = in.readString();
+        boardName = in.readString();
         writer = in.readString();
         title = in.readString();
         desc = in.readString();
@@ -61,6 +65,7 @@ public class Content implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(idx);
+        dest.writeString(boardName);
         dest.writeString(writer);
         dest.writeString(title);
         dest.writeString(desc);
@@ -96,6 +101,14 @@ public class Content implements Parcelable{
 
     public void setIdx(String idx) {
         this.idx = idx;
+    }
+
+    public String getBoardName() {
+        return boardName;
+    }
+
+    public void setBoardName(String boardName) {
+        this.boardName = boardName;
     }
 
     public String getWriter() {

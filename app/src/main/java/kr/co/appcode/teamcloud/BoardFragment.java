@@ -58,7 +58,7 @@ public class BoardFragment extends android.app.Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ContentDetailActivity.class);
                 intent.putExtra("board", board);
-                intent.putExtra("content", (Content)listContents.getAdapter().getItem(position));
+                intent.putExtra("content", (Content) listContents.getAdapter().getItem(position));
                 intent.putExtra("login_user", user);
                 intent.putExtra("team", team);
 
@@ -86,14 +86,14 @@ public class BoardFragment extends android.app.Fragment {
             try {
                 int resultCode = jsonObject.getInt("resultCode");
 
-                if(resultCode == Constant.SUCCESS){
-                    ContentsListAdapter contentsListAdapter = (ContentsListAdapter)listContents.getAdapter();
-                    if(contentsListAdapter.getCount() > 0){
+                if (resultCode == Constant.SUCCESS) {
+                    ContentsListAdapter contentsListAdapter = (ContentsListAdapter) listContents.getAdapter();
+                    if (contentsListAdapter.getCount() > 0) {
                         contentsListAdapter.getContentList().clear();
                     }
 
-                    for(int i=0; i<jsonObject.getInt("count"); i++){
-                        Content content = new Content(jsonObject.getString(i + "_idx"), jsonObject.getString(i + "_writer"), jsonObject.getString(i + "_title"), jsonObject.getString(i + "_desc"), jsonObject.getString(i + "_date"), jsonObject.getInt(i + "_readAuth"), jsonObject.getInt(i + "_ver"));
+                    for (int i = 0; i < jsonObject.getInt("count"); i++) {
+                        Content content = new Content(jsonObject.getString(i + "_idx"), jsonObject.getString(i + "_boardName"), jsonObject.getString(i + "_writer"), jsonObject.getString(i + "_title"), jsonObject.getString(i + "_desc"), jsonObject.getString(i + "_date"), jsonObject.getInt(i + "_readAuth"), jsonObject.getInt(i + "_ver"));
 
                         if (jsonObject.has(i + "_fileName")) {
                             content.setFileName(jsonObject.getString(i + "_fileName"));

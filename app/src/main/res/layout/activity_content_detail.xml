@@ -11,10 +11,10 @@
         android:id="@+id/layout_my_content"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:background="#fff"
         android:visibility="gone">
 
@@ -58,10 +58,10 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="45dp"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="30dp">
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -136,13 +136,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="5dp"
                 android:layout_marginBottom="5dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 android:background="#d9d9d9" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:visibility="visible">
+                android:layout_height="100dp">
 
                 <TextView
                     android:id="@+id/text_const_file"
@@ -166,6 +165,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_marginEnd="5dp"
+                        android:layout_marginStart="10dp"
                         android:src="@mipmap/ic_file" />
 
                     <RelativeLayout
@@ -178,8 +178,10 @@
 
                         <TextView
                             android:id="@+id/text_file_name"
-                            android:layout_width="wrap_content"
+                            android:layout_width="200dp"
                             android:layout_height="wrap_content"
+                            android:maxLines="1"
+                            android:ellipsize="end"
                             android:text="파일 이름" />
 
                         <TextView
@@ -210,8 +212,41 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
                 android:background="#d9d9d9" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/text_const_reply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="댓글"
+                    android:layout_marginStart="5dp"
+                    android:textStyle="bold" />
+
+                <ListView
+                    android:id="@+id/list_reply"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/text_const_reply">
+
+                </ListView>
+
+                <TextView
+                    android:id="@+id/text_no_reply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="댓글이 없습니다."
+                    android:visibility="gone"/>
+            </RelativeLayout>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

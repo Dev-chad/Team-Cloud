@@ -236,14 +236,15 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
             unit = "TB";
         }
 
-        progressBar.setMax(max);
-        progressBar.setProgress((int) (min/1073700000));
+        progressBar.setMax(max*1073700000);
+
+        progressBar.setProgress((int)min);
 
         String strSize = format(Locale.KOREA, "%.2f %s", dSize, unit);
 
-        if(strSize.contains(".00")){
-            strSize = String.format(Locale.KOREA, "%d %s", (int)dSize, unit);
-        } else if(strSize.charAt(strSize.length()-1) == '0'){
+        if (strSize.contains(".00")) {
+            strSize = String.format(Locale.KOREA, "%d %s", (int) dSize, unit);
+        } else if (strSize.charAt(strSize.length() - 1) == '0') {
             strSize = String.format(Locale.KOREA, "%.1f %s", dSize, unit);
         }
 
@@ -276,7 +277,7 @@ public class HomeFragment extends android.app.Fragment implements View.OnClickLi
                         contentListAdapter.getContentList().clear();
                         fileListAdapter.getFileList().clear();
                         for (int i = 0; i < contentCount; i++) {
-                            Content content = new Content(jsonObject.getString(i + "_idx"), jsonObject.getString(i + "_writer"), jsonObject.getString(i + "_title"), jsonObject.getString(i + "_desc"), jsonObject.getString(i + "_date"), jsonObject.getInt(i + "_readAuth"), jsonObject.getInt(i + "_ver"));
+                            Content content = new Content(jsonObject.getString(i + "_idx"), jsonObject.getString(i + "_boardName"), jsonObject.getString(i + "_writer"), jsonObject.getString(i + "_title"), jsonObject.getString(i + "_desc"), jsonObject.getString(i + "_date"), jsonObject.getInt(i + "_readAuth"), jsonObject.getInt(i + "_ver"));
                             contentListAdapter.add(content);
 
                             if (jsonObject.has(i + "_fileName")) {

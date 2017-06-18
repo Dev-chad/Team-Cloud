@@ -4,9 +4,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -30,7 +34,6 @@ import java.util.Locale;
 public class ContentDetailActivity extends AppCompatActivity {
     private final static String TAG = "ContentDetailActivity";
 
-    private Board board;
     private Content content;
     private User user;
     private Team team;
@@ -59,7 +62,6 @@ public class ContentDetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-        board = intent.getParcelableExtra("board");
         content = intent.getParcelableExtra("content");
         user = intent.getParcelableExtra("login_user");
         team = intent.getParcelableExtra("team");
@@ -83,7 +85,6 @@ public class ContentDetailActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Intent intent = new Intent(ContentDetailActivity.this, UploadActivity.class);
-                            intent.putExtra("board", board);
                             intent.putExtra("login_user", user);
                             intent.putExtra("content", content);
                             intent.putExtra("team", team);
@@ -111,6 +112,29 @@ public class ContentDetailActivity extends AppCompatActivity {
             layoutFile.setVisibility(View.VISIBLE);
 
             imageFile = (ImageView)findViewById(R.id.image_file);
+            if (content.getFileType().equals("png") || content.getFileType().equals("jpeg") || content.getFileType().equals("jpg")){
+                ImageDownloadThread imageDownloadThread = new ImageDownloadThread("http://appcode.cafe24.com/"+content.getFileUrl());
+                imageDownloadThread.start();
+            }
+
+            imageFile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (content.getFileType().equals("png") || content.getFileType().equals("jpeg") || content.getFileType().equals("jpg")){
+                        Intent intent = new Intent(ContentDetailActivity.this, ImageViewerActivity.class);
+                        intent.putExtra("url", "http://appcode.cafe24.com/"+content.getFileUrl());
+                        intent.putExtra("file_name", content.getFileName());
+                        startActivityForResult(intent, 1);
+                    } else if(content.getFileType().equals("pdf")){
+                        Intent intent = new Intent(ContentDetailActivity.this, PdfViewerActivity.class);
+                        intent.putExtra("file_url", "http://appcode.cafe24.com/"+content.getFileUrl());
+                        intent.putExtra("file_name", content.getFileName());
+                        startActivityForResult(intent, 1);
+                    }
+                }
+            });
+
+
             imageDownload = (ImageView)findViewById(R.id.image_download);
             imageDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -261,6 +285,45 @@ public class ContentDetailActivity extends AppCompatActivity {
         protected void onPostExecute(String unused) {
             mDlg.dismiss();
             Toast.makeText(mContext, "다운로드가 완료되었습니다.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    class ImageDownloadThread extends Thread {
+        Bitmap bmp;
+        String url;
+
+        public ImageDownloadThread(String url){
+            this.url = url;
+        }
+
+        @Override
+        public void run() {
+            try {
+                InputStream is = (InputStream) new URL(url).getContent();
+                bmp = BitmapFactory.decodeStream(is);
+                handler.sendEmptyMessage(0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        Handler handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == 0) {   // Message id 가 0 이면
+                    imageFile.setImageBitmap(bmp);
+                }
+            }
+        };
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_OK){
+            AsyncFileDownload asyncFileDownload = new AsyncFileDownload(ContentDetailActivity.this);
+            asyncFileDownload.execute("http://appcode.cafe24.com/"+content.getFileUrl());
         }
     }
 }

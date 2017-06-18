@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class FileBrowserActivity extends AppCompatActivity {
+    private final static String TAG = "FileBrowserActivity";
     private File file;
 
     private ListView listFile;
@@ -53,6 +55,8 @@ public class FileBrowserActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final UploadFile file = (UploadFile) adapter.getItem(position);
+
+                Log.d(TAG, file.getFileUri());
 
                 if (file.getFileType() == UploadFile.TYPE_DIRECTORY) {
                     setFileList(file.getFileUri());
