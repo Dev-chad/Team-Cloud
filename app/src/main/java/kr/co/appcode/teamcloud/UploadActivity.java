@@ -68,7 +68,7 @@ public class UploadActivity extends AppCompatActivity {
         user = getIntent().getParcelableExtra("login_user");
         board = getIntent().getParcelableExtra("board");
         originContent = getIntent().getParcelableExtra("content");
-        if(originContent != null){
+        if (originContent != null) {
             isEdit = true;
             originBoardName = board.getName();
         }
@@ -220,11 +220,11 @@ public class UploadActivity extends AppCompatActivity {
             textCategory.setText(board.getName());
         }
 
-        if(isEdit){
+        if (isEdit) {
             editTitle.setText(originContent.getTitle());
             editDesc.setText(originContent.getDesc());
 
-            if(originContent.getFileName() != null){
+            if (originContent.getFileName() != null) {
                 layoutFile.setVisibility(View.VISIBLE);
                 textFileName.setText(originContent.getFileName());
                 textFileSize.setText(getSize(originContent.getFileSize()));
@@ -276,67 +276,36 @@ public class UploadActivity extends AppCompatActivity {
                 Snackbar.make(textCategory, "게시판을 선택해주세요", Snackbar.LENGTH_SHORT).show();
             } else if (editTitle.length() == 0) {
                 Snackbar.make(textCategory, "제목을 입력해주세요", Snackbar.LENGTH_SHORT).show();
-            } else if(editTitle.getText().toString().split(" ").length == 0){
+            } else if (editTitle.getText().toString().split(" ").length == 0) {
                 Snackbar.make(textCategory, "제목이 공백입니다.", Snackbar.LENGTH_SHORT).show();
             } else if (editDesc.length() == 0) {
                 Snackbar.make(textCategory, "내용을 입력해주세요", Snackbar.LENGTH_SHORT).show();
-            } else if(editDesc.getText().toString().split(" ").length == 0){
+            } else if (editDesc.getText().toString().split(" ").length == 0) {
                 Snackbar.make(textCategory, "내용이 공백입니다.", Snackbar.LENGTH_SHORT).show();
-            }else {
-                if(isEdit){
-                    if(uploadFile != null && !originContent.getFileName().equals(uploadFile.getFileName()) && !uploadFile.getFileSize().equals(getSize(originContent.getFileSize()))){
-                        HashMap<String, String> values = new HashMap<>();
-                        values.put("teamIdx", team.getIdx());
-                        values.put("nickname", user.getNickname());
-                        values.put("boardIdx", board.getIdx());
-                        values.put("title", editTitle.getText().toString());
-                        values.put("description", editDesc.getText().toString());
-                        values.put("fileName", uploadFile.getFileName());
-                        values.put("fileUri", uploadFile.getFileUri());
-                        values.put("mode", "2");
+            } else {
 
-                        HttpConnection httpConnection = new HttpConnection(values, "upload.php", httpCallBack);
-                        httpConnection.setUploadMode(true);
-                        httpConnection.execute();
-                    } else {
-                        String body = "teamIdx="+team.getIdx()+"&nickname="+user.getNickname()+"&boardIdx="+board.getIdx()+"&title="+editTitle.getText().toString()+"&description="+editDesc.getText().toString();
-                        HttpConnection httpConnection = new HttpConnection(body, "upload.php", httpCallBack);
-                        httpConnection.execute();
-                    }
+                if (uploadFile != null) {
 
-                    if(!originBoardName.equals(board.getName())){
+                    HashMap<String, String> values = new HashMap<>();
+                    values.put("teamIdx", team.getIdx());
+                    values.put("nickname", user.getNickname());
+                    values.put("boardIdx", board.getIdx());
+                    values.put("title", editTitle.getText().toString());
+                    values.put("description", editDesc.getText().toString());
+                    values.put("fileName", uploadFile.getFileName());
+                    values.put("fileUri", uploadFile.getFileUri());
 
-                    } else if(!editTitle.getText().toString().equals(originContent.getTitle())){
+                    HttpConnection httpConnection = new HttpConnection(values, "upload.php", httpCallBack);
+                    httpConnection.setUploadMode(true);
+                    httpConnection.execute();
 
-                    } else if(!editDesc.getText().toString().equals(originContent.getDesc())){
-
-                    } else {
-
-                    }
                 } else {
-                    if(uploadFile != null){
-
-                        HashMap<String, String> values = new HashMap<>();
-                        values.put("teamIdx", team.getIdx());
-                        values.put("nickname", user.getNickname());
-                        values.put("boardIdx", board.getIdx());
-                        values.put("title", editTitle.getText().toString());
-                        values.put("description", editDesc.getText().toString());
-                        values.put("fileName", uploadFile.getFileName());
-                        values.put("fileUri", uploadFile.getFileUri());
-                        values.put("mode", "1");
-
-                        HttpConnection httpConnection = new HttpConnection(values, "upload.php", httpCallBack);
-                        httpConnection.setUploadMode(true);
-                        httpConnection.execute();
-
-                    } else {
-                        String body = "teamIdx="+team.getIdx()+"&nickname="+user.getNickname()+"&boardIdx="+board.getIdx()+"&title="+editTitle.getText().toString()+"&description="+editDesc.getText().toString();
-                        HttpConnection httpConnection = new HttpConnection(body, "upload.php", httpCallBack);
-                        httpConnection.execute();
-                    }
+                    String body = "teamIdx=" + team.getIdx() + "&nickname=" + user.getNickname() + "&boardIdx=" + board.getIdx() + "&title=" + editTitle.getText().toString() + "&description=" + editDesc.getText().toString();
+                    HttpConnection httpConnection = new HttpConnection(body, "upload.php", httpCallBack);
+                    httpConnection.execute();
                 }
             }
+
 
             return true;
         }
